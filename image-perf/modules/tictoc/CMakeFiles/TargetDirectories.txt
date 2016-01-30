@@ -1,0 +1,2 @@
+/Users/bbeckman/Documents/lisp-projects/image-perf/modules/tictoc/CMakeFiles/tictoc-tests.dir
+/Users/bbeckman/Documents/lisp-projects/image-perf/modules/tictoc/CMakeFiles/tictoc.dir

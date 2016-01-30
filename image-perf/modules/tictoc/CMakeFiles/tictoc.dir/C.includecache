@@ -1,0 +1,28 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/bbeckman/Documents/lisp-projects/image-perf/modules/tictoc/src/tictoc.c
+stdint.h
+-
+tictoc.h
+/Users/bbeckman/Documents/lisp-projects/image-perf/modules/tictoc/src/tictoc.h
+stdio.h
+-
+time.h
+-
+mach/mach_time.h
+-
+windows.h
+-
+Strsafe.h
+-
+
+/Users/bbeckman/Documents/lisp-projects/image-perf/modules/tictoc/src/tictoc.h
+stdint.h
+-
+
