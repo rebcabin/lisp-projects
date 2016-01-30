@@ -16,15 +16,14 @@
   (init-pair COLOR_BLUE    COLOR_BLUE    COLOR_BLACK)
   (init-pair COLOR_YELLOW  COLOR_YELLOW  COLOR_BLACK))
 
-(defun write-pos (wscr scr-y scr-x y x)
+(defun dump-pos (wscr scr-y scr-x y x)
   (if *dump-all*
       (mvwaddstr wscr scr-y scr-x (format nil "~A, ~A" x y))))
 
 (defun write-me (wscr y x)
-  (if *dump-all*
-      (mvwaddstr wscr y x "@")))
+  (mvwaddstr wscr y x "@"))
 
-(defun write-my-char (scr max-y c)
+(defun dump-me (scr max-y c)
   (if *dump-all*
       (mvwaddstr scr (- max-y 5) 2 (format nil "~A, ~A" c (code-char c)))))
 
@@ -35,9 +34,9 @@
 
 (defun render-screen (scr max-y max-x me-y me-x c)
   (erase)
-  (write-pos scr (- max-y 4) 2 max-x max-y)
+  (dump-pos scr (- max-y 4) 2 max-x max-y)
   (write-me scr me-y me-x)
-  (write-my-char scr max-y c)
+  (dump-me scr max-y c)
   (wrefresh scr))
 
 (defun setup-screen (scr)
@@ -71,7 +70,7 @@
 
 (defun move-me-1 (me-y me-x my-box))
 
-(defun run-screen
+(defun run-screen ()
     (let ((y 0)
           (x 0)
           (me-x 0)
@@ -86,6 +85,7 @@
              (max-x (getmaxx *stdscr*))
              (me-y (floor (/ max-y 2)))
              (me-x (floor (/ max-x 2))))
+
         (render-screen scr max-y max-x me-y me-x 0)
         (loop for n from 1 to 10 do
           (let ((c (getch)))
@@ -93,3 +93,4 @@
         (teardown-screen scr max-y))
       (endwin)))
 
+(run-screen)
