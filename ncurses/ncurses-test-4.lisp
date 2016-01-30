@@ -33,8 +33,6 @@
       (do-external-symbols (s (find-package :cl-ncurses))
         (print s))))
 
-
-
 (defun render-screen (scr max-y max-x me-y me-x c)
   (erase)
   (write-pos scr (- max-y 4) 2 max-x max-y)
@@ -63,26 +61,35 @@
   (keypad scr 0)
   (wgetch scr))
 
+;;; From "Pride and Prejudice: Four Decades of Lisp"
+
+(defclass box ()
+  ((left   :initarg :left)
+   (top    :initarg :top)
+   (width  :initarg :width)
+   (height :initarg :height)))
+
 (defun move-me-1 (me-y me-x my-box))
 
-(let ((y 0)
-      (x 0)
-      (me-x 0)
-      (me-y 0)
-      (probe-x 0)
-      (delay (/ 30000.0 1000000.0))
-      (direction 1)
-      (scr (initscr))
-      (title "ping-ponging..."))
-  (setup-screen scr)
-  (let* ((max-y (getmaxy *stdscr*))
-         (max-x (getmaxx *stdscr*))
-         (me-y (floor (/ max-y 2)))
-         (me-x (floor (/ max-x 2))))
-    (render-screen scr max-y max-x me-y me-x 0)
-    (loop for n from 1 to 10 do
-      (let ((c (getch)))
-        (render-screen scr max-y max-x me-y me-x c)))
-    (teardown-screen scr max-y))
-  (endwin))
+(defun run-screen
+    (let ((y 0)
+          (x 0)
+          (me-x 0)
+          (me-y 0)
+          (probe-x 0)
+          (delay (/ 30000.0 1000000.0))
+          (direction 1)
+          (scr (initscr))
+          (title "ping-ponging..."))
+      (setup-screen scr)
+      (let* ((max-y (getmaxy *stdscr*))
+             (max-x (getmaxx *stdscr*))
+             (me-y (floor (/ max-y 2)))
+             (me-x (floor (/ max-x 2))))
+        (render-screen scr max-y max-x me-y me-x 0)
+        (loop for n from 1 to 10 do
+          (let ((c (getch)))
+            (render-screen scr max-y max-x me-y me-x c)))
+        (teardown-screen scr max-y))
+      (endwin)))
 
