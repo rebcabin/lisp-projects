@@ -9,17 +9,6 @@
 
 (defparameter *dump-all* t)
 
-(defun init-color-ncurses ()
-  (start-color)
-  (init-pair COLOR_BLACK   COLOR_BLACK   COLOR_BLACK)
-  (init-pair COLOR_GREEN   COLOR_GREEN   COLOR_BLACK)
-  (init-pair COLOR_RED     COLOR_RED     COLOR_BLACK)
-  (init-pair COLOR_CYAN    COLOR_CYAN    COLOR_BLACK)
-  (init-pair COLOR_WHITE   COLOR_WHITE   COLOR_BLACK)
-  (init-pair COLOR_MAGENTA COLOR_MAGENTA COLOR_BLACK)
-  (init-pair COLOR_BLUE    COLOR_BLUE    COLOR_BLACK)
-  (init-pair COLOR_YELLOW  COLOR_YELLOW  COLOR_BLACK))
-
 (defconstant regular-wall-str "#")
 (defconstant regular-me-str   "@")
 
@@ -57,6 +46,9 @@
     :initform 0
     :initarg  :height)))
 
+(defparameter *cur-y* 0)
+(defparameter *cur-x* 0)
+
 ;;; TODO: factor out the rendering surface into a class.
 
 (defmethod draw ((box box) (scr sb-alien-internals:alien-value))
@@ -79,7 +71,7 @@
   (wrefresh scr))
 
 (defun setup-screen (scr)
-  (init-color-ncurses)
+  (start-color)
   (curs-set 0)
   (init-pair 1 COLOR_WHITE COLOR_BLUE)
   (init-pair 2 COLOR_WHITE COLOR_GREEN)

@@ -163,11 +163,17 @@
 (defun main ()
   "Start the timer program."
   (with-curses ()
+    (charms/ll:start-color)
+    (charms/ll:init-pair 1 charms/ll:COLOR_WHITE charms/ll:COLOR_BLUE)
+    (charms/ll:init-pair 2 charms/ll:COLOR_WHITE charms/ll:COLOR_GREEN)
+    (charms/ll:init-pair 3 charms/ll:COLOR_WHITE charms/ll:COLOR_RED)
+    (charms/ll:init-pair 4 charms/ll:COLOR_WHITE charms/ll:COLOR_YELLOW)
+
     (disable-echoing)
     (enable-raw-input :interpret-control-characters t)
     (enable-non-blocking-mode *standard-window*)
     (charms/ll:wbkgdset (charms::window-pointer *standard-window*)
-                        (charms/ll:COLOR-PAIR 3))
+                        (charms/ll:COLOR-PAIR 1))
     (loop :named driver-loop
           :for c := (get-char *standard-window* :ignore-error t)
           :do (progn
