@@ -5,7 +5,7 @@
 ;;; "level" because it's ambiguous between the level of advancement of a
 ;;; character and the storey of the dungeon.
 
-(defpackage charms-storeys
+(defpackage #:charms-storeys
   (:use :cl :charms))
 
 (in-package :charms-storeys)
@@ -116,9 +116,14 @@
   (enable-raw-input :interpret-control-characters t)
   (enable-non-blocking-mode *standard-window*))
 
+;; down-arrow:  U+0102	Ă	Latin Capital Letter A with breve
+;; up-arrow:    U+0103	ă	Latin Small Letter A with breve
+;; left-arrow:  U+0104	Ą	Latin Capital Letter A with ogonek
+;; right-arrow: U+0105	ą	Latin Small Letter A with ogonek
+
 (defun main ()
   "Start the timer program."
-  (let ((last-non-nil-c "--nothing-yet--"))
+  (let ((last-non-nil-c "--nothing-from-keyboad-yet--"))
     (with-curses ()
       (set-up-colors)
       (set-up-input)
@@ -132,6 +137,11 @@
                   ;; Redraw time
                   (clear-window *standard-window*)
                   (paint-time)
+                  (dump *standard-window*
+                        (format nil "~A"
+                                (case last-non-nil-c
+                                  ((\LATIN_SMALL_LETTER_A_WITH_OGONEK) "right-arrow")))
+                        (make-instance 'point :x 2 :y 3))
                   (dump *standard-window*
                         (format nil "~A" last-non-nil-c)
                         (make-instance 'point :x 2 :y 2))
