@@ -1,14 +1,31 @@
 (load "~/quicklisp/setup.lisp")
 (ql:quickload :cl-charms)
+
+;;; "Storeys" is a pun on "story" and the levels of a dungeon. We avoid the word
+;;; "level" because it's ambiguous between the level of advancement of a
+;;; character and the storey of the dungeon.
+
 (defpackage charms-storeys
   (:use :cl :charms))
+
 (in-package :charms-storeys)
 
 (defparameter *dump-all* t)
 
-(defun dump-pos (wscr scr-y scr-x y x)
+(defclass point ()
+  ((x :accessor point-x
+      :initform 0
+      :initarg  :x)
+   (y :accessor point-y
+      :initform 0
+      :initarg  :y)))
+
+(defconstant regular-wall-str "#")
+(defconstant regular-me-str   "@")
+
+(defmethod dump ((w window) (thing string) (dump-p point))
   (if *dump-all*
-      (mvwaddstr wscr scr-y scr-x (format nil "~A, ~A" x y))))
+      (write-string-at-point w thing (point-x dump-p) (point-y dump-p))))
 
 (defun write-me (wscr y x)
   (mvwaddstr wscr y x "@"))
@@ -50,14 +67,11 @@
 (defun start/stop/clear ()
   "Start, stop, and clear the timer successively."
   (cond
-    (*stop*
-     (setf *start* nil
-           *stop* nil))
-    ((not *start*)
-     (setf *stop* nil
-           *start* (get-internal-real-time)))
-    (t
-     (setf *stop* (get-internal-real-time)))))
+    (*stop*        (setf *start* nil
+                         *stop* nil))
+    ((not *start*) (setf *stop* nil
+                         *start* (get-internal-real-time)))
+    (t             (setf *stop* (get-internal-real-time)))))
 
 (defun time-elapsed ()
   "Compute the time elapsed since *START* (to *END* if set). If the timer hasn't started, return NIL."
@@ -76,11 +90,13 @@
            (printed-time (if dt
                              (format nil "~,2F" dt)
                              "Press [SPACE] to start/stop/clear; q to quit"))
-           (length/2 (floor (length printed-time) 2)))
+           (length/2 (floor (length printed-time) 2))
+           (half-width (- (floor width 2) length/2))
+           (half-height (floor height 2)))
       (write-string-at-point *standard-window*
                              printed-time
-                             (- (floor width 2) length/2)
-                             (floor height 2)))))
+                             half-width
+                             half-height))))
 
 ;;; Main driver
 
@@ -95,25 +111,34 @@
 
 (defun set-up-input ()
   (disable-echoing)
+  (charms/ll:curs-set 0)
   (enable-raw-input :interpret-control-characters t)
   (enable-non-blocking-mode *standard-window*))
 
 (defun main ()
   "Start the timer program."
-  (with-curses ()
-    (set-up-colors)
-    (set-up-input)
-    (loop :named driver-loop
-          :for c := (get-char *standard-window* :ignore-error t)
-          :do (progn
-                ;; Redraw time
-                (clear-window *standard-window*)
-                (paint-time)
-                (refresh-window *standard-window*)
-                ;; Process input
-                (case c
-                  ((nil) nil)
-                  ((#\Space) (start/stop/clear))
-                  ((#\q #\Q) (return-from driver-loop)))))))
+  (let ((last-non-nil-c "--nothing-yet--"))
+    (with-curses ()
+      (set-up-colors)
+      (set-up-input)
+      (loop :named driver-loop
+            :for c := (get-char *standard-window* :ignore-error t)
+            :do (progn
+                  ;; capture char state
+                  (setf last-non-nil-c
+                        (if (not (null c))
+                            c last-non-nil-c))
+                  ;; Redraw time
+                  (clear-window *standard-window*)
+                  (paint-time)
+                  (dump *standard-window*
+                        (format nil "~A" last-non-nil-c)
+                        (make-instance 'point :x 2 :y 2))
+                  (refresh-window *standard-window*)
+                  ;; Process input
+                  (case c
+                    ((nil) nil)
+                    ((#\Space) (start/stop/clear))
+                    ((#\q #\Q) (return-from driver-loop))) )))))
 
 (main)
