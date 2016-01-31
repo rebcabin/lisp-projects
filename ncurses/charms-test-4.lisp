@@ -1,5 +1,5 @@
 (load "~/quicklisp/setup.lisp")
-(ql:quickload :cl-ncurses)
+(ql:quickload :cl-charms)
 
 (in-package :cl-ncurses)
 

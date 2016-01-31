@@ -1,7 +1,11 @@
+;;; TODO: port to charms (see charms-test-5.lisp; stalled at setting colors.
+
 (load "~/quicklisp/setup.lisp")
 (ql:quickload :cl-ncurses)
 
-(in-package :cl-ncurses)
+(defpackage curses-storeys
+  (:use :cl :cl-ncurses))
+(in-package :curses-storeys)
 
 (defparameter *dump-all* t)
 
@@ -16,12 +20,15 @@
   (init-pair COLOR_BLUE    COLOR_BLUE    COLOR_BLACK)
   (init-pair COLOR_YELLOW  COLOR_YELLOW  COLOR_BLACK))
 
+(defconstant regular-wall-str "#")
+(defconstant regular-me-str   "@")
+
 (defun dump-pos (wscr scr-y scr-x y x)
   (if *dump-all*
       (mvwaddstr wscr scr-y scr-x (format nil "~A, ~A" x y))))
 
 (defun write-me (wscr y x)
-  (mvwaddstr wscr y x "@"))
+  (mvwaddstr wscr y x regular-me-str))
 
 (defun dump-me (scr max-y c)
   (if *dump-all*
@@ -34,27 +41,34 @@
 
 (defclass box ()
   ((left
-    :accessor box-left
+    :accessor left
     :initform 0
     :initarg  :left)
    (top
-    :accessor box-top
+    :accessor top
     :initform 0
     :initarg  :top)
    (width
-    :accessor box-width
+    :accessor width
     :initform 0
     :initarg  :width)
    (height
-    :accessor box-height
+    :accessor height
     :initform 0
     :initarg  :height)))
 
 ;;; TODO: factor out the rendering surface into a class.
 
-(defmethod draw ((b box) (scr sb-alien-internals:alien-value))
-  (mvwaddstr scr (box-top b) (box-left b) "#")
-  )
+(defmethod draw ((box box) (scr sb-alien-internals:alien-value))
+  (let* ((tp (top box))
+         (lf (left box))
+         (bt (+ (- (height box) 1) tp))
+         (rt (+ (- (width  box) 1) lf)))
+    (mvwaddstr scr tp lf regular-wall-str)
+    (mvwaddstr scr tp rt regular-wall-str)
+    (mvwaddstr scr bt rt regular-wall-str)
+    (mvwaddstr scr bt lf regular-wall-str)
+    ))
 
 (defun render-screen (scr storey max-y max-x me-y me-x c)
   (erase)
@@ -105,7 +119,7 @@
              (storey (make-instance 'box :left 0 :top 0
                                          :width max-x :height max-y)))
         (render-screen scr storey max-y max-x me-y me-x 0)
-        (loop for n from 1 to 10 do
+        (loop for n from 1 to 3 do
           (let ((c (getch)))
             (render-screen scr storey max-y max-x me-y me-x c)))
         (teardown-screen scr max-y))
