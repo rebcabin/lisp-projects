@@ -6,25 +6,6 @@
 
 (defparameter *dump-all* t)
 
-(defun init-color-ncurses ()
-  (start-color)
-  (charms/ll:init-pair charms/ll:COLOR_BLACK
-                       charms/ll:COLOR_BLACK   charms/ll:COLOR_BLACK)
-  (charms/ll:init-pair charms/ll:COLOR_GREEN
-                       charms/ll:COLOR_GREEN   charms/ll:COLOR_BLACK)
-  (charms/ll:init-pair charms/ll:COLOR_RED
-                       charms/ll:COLOR_RED     charms/ll:COLOR_BLACK)
-  (charms/ll:init-pair charms/ll:COLOR_CYAN
-                       charms/ll:COLOR_CYAN    charms/ll:COLOR_BLACK)
-  (charms/ll:init-pair charms/ll:COLOR_WHITE
-                       charms/ll:COLOR_WHITE   charms/ll:COLOR_BLACK)
-  (charms/ll:init-pair charms/ll:COLOR_MAGENTA
-                       charms/ll:COLOR_MAGENTA charms/ll:COLOR_BLACK)
-  (charms/ll:init-pair charms/ll:COLOR_BLUE
-                       charms/ll:COLOR_BLUE    charms/ll:COLOR_BLACK)
-  (charms/ll:init-pair charms/ll:COLOR_YELLOW
-                       charms/ll:COLOR_YELLOW  charms/ll:COLOR_BLACK))
-
 (defun dump-pos (wscr scr-y scr-x y x)
   (if *dump-all*
       (mvwaddstr wscr scr-y scr-x (format nil "~A, ~A" x y))))
@@ -158,22 +139,29 @@
                              (- (floor width 2) length/2)
                              (floor height 2)))))
 
+
+
 ;;; Main driver
+
+(defun set-up-colors ()
+  (charms/ll:start-color)
+  (charms/ll:init-pair 1 charms/ll:COLOR_WHITE charms/ll:COLOR_BLUE)
+  (charms/ll:init-pair 2 charms/ll:COLOR_WHITE charms/ll:COLOR_GREEN)
+  (charms/ll:init-pair 3 charms/ll:COLOR_WHITE charms/ll:COLOR_RED)
+  (charms/ll:init-pair 4 charms/ll:COLOR_WHITE charms/ll:COLOR_YELLOW)
+  (charms/ll:wbkgdset (charms::window-pointer *standard-window*)
+                      (charms/ll:COLOR-PAIR 1)))
+
+(defun set-up-input ()
+  (disable-echoing)
+  (enable-raw-input :interpret-control-characters t)
+  (enable-non-blocking-mode *standard-window*))
 
 (defun main ()
   "Start the timer program."
   (with-curses ()
-    (charms/ll:start-color)
-    (charms/ll:init-pair 1 charms/ll:COLOR_WHITE charms/ll:COLOR_BLUE)
-    (charms/ll:init-pair 2 charms/ll:COLOR_WHITE charms/ll:COLOR_GREEN)
-    (charms/ll:init-pair 3 charms/ll:COLOR_WHITE charms/ll:COLOR_RED)
-    (charms/ll:init-pair 4 charms/ll:COLOR_WHITE charms/ll:COLOR_YELLOW)
-
-    (disable-echoing)
-    (enable-raw-input :interpret-control-characters t)
-    (enable-non-blocking-mode *standard-window*)
-    (charms/ll:wbkgdset (charms::window-pointer *standard-window*)
-                        (charms/ll:COLOR-PAIR 1))
+    (set-up-colors)
+    (set-up-input)
     (loop :named driver-loop
           :for c := (get-char *standard-window* :ignore-error t)
           :do (progn
