@@ -112,6 +112,7 @@
 (defun set-up-input ()
   (disable-echoing)
   (charms/ll:curs-set 0)
+  (enable-extra-keys *standard-window*)
   (enable-raw-input :interpret-control-characters t)
   (enable-non-blocking-mode *standard-window*))
 
@@ -124,7 +125,7 @@
       (loop :named driver-loop
             :for c := (get-char *standard-window* :ignore-error t)
             :do (progn
-                  ;; capture char state
+                  ;; Capture char state
                   (setf last-non-nil-c
                         (if (not (null c))
                             c last-non-nil-c))
