@@ -42,64 +42,7 @@
 
 ;;; TODO: factor out the rendering surface into a class.
 
-(defmethod draw ((b box) (scr sb-alien-internals:alien-value))
-  (mvwaddstr scr (box-top b) (box-left b) "#")
-  )
-
-(defun render-screen (scr storey max-y max-x me-y me-x c)
-  (erase)
-  (draw storey scr)
-  (dump-pos scr (- max-y 4) 2 max-x max-y)
-  (write-me scr me-y me-x)
-  (dump-me scr max-y c)
-  (wrefresh scr))
-
-'(defun setup-screen (scr)
-  (init-color-ncurses)
-  (curs-set 0)
-  (init-pair 1 COLOR_WHITE COLOR_BLUE)
-  (init-pair 2 COLOR_WHITE COLOR_GREEN)
-  (init-pair 3 COLOR_WHITE COLOR_RED)
-  (init-pair 4 COLOR_WHITE COLOR_YELLOW)
-  (erase)
-  (bkgd (COLOR-PAIR 1))
-  (box scr 0 0)
-  (attron WA_BOLD)
-  (keypad scr 1)
-  (noecho))
-
-(defun teardown-screen (scr max-y)
-  (mvwaddstr scr (- max-y 2) 2 "Press any key to exit.")
-  (wrefresh scr)
-  (echo)
-  (keypad scr 0)
-  (wgetch scr))
-
 (defun move-me-1 (me-y me-x my-box))
-
-(defun run-screen ()
-    (let ((y 0)
-          (x 0)
-          (me-x 0)
-          (me-y 0)
-          (probe-x 0)
-          (delay (/ 30000.0 1000000.0))
-          (direction 1)
-          (scr (charms/ll:initscr))
-          (title "ping-ponging..."))
-      '(setup-screen scr)
-      (let* ((max-y  (getmaxy *stdscr*))
-             (max-x  (getmaxx *stdscr*))
-             (me-y   (floor (/ max-y 2)))
-             (me-x   (floor (/ max-x 2)))
-             (storey (make-instance 'box :left 0 :top 0
-                                         :width max-x :height max-y)))
-        (render-screen scr storey max-y max-x me-y me-x 0)
-        (loop for n from 1 to 10 do
-          (let ((c (getch)))
-            (render-screen scr storey max-y max-x me-y me-x c)))
-        (teardown-screen scr max-y))
-      (endwin)))
 
 (defvar *start* nil)
 (defvar *stop* nil)
@@ -132,14 +75,12 @@
     (let* ((dt (time-elapsed))
            (printed-time (if dt
                              (format nil "~,2F" dt)
-                             "Press [SPACE] to start/stop/clear"))
+                             "Press [SPACE] to start/stop/clear; q to quit"))
            (length/2 (floor (length printed-time) 2)))
       (write-string-at-point *standard-window*
                              printed-time
                              (- (floor width 2) length/2)
                              (floor height 2)))))
-
-
 
 ;;; Main driver
 
