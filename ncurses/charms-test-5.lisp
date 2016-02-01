@@ -36,18 +36,6 @@
 (defun dumpw (thing x y)
   (dump *standard-window* thing (point x y)))
 
-(defun write-me (wscr y x)
-  (mvwaddstr wscr y x "@"))
-
-(defun dump-me (scr max-y c)
-  (if *dump-all*
-      (mvwaddstr scr (- max-y 5) 2 (format nil "~A, ~A" c (code-char c)))))
-
-(defun dump-ncurses-symbols ()
-  (if *dump-all*
-      (do-external-symbols (s (find-package :cl-ncurses))
-        (print s))))
-
 ;;; We'll have a world-box that contains a window box that contains room-boxes.
 
 (defclass box ()
@@ -93,24 +81,6 @@ started, return NIL."
        (/ (- (or *stop* (get-internal-real-time))
              *start*)
           internal-time-units-per-second)))
-
-;;; Rendering function
-
-(defun paint-time ()
-  "Paint the elapsed time to the center of the screen."
-  (multiple-value-bind (width height)
-      (window-dimensions *standard-window*)
-    (let* ((dt (time-elapsed))
-           (printed-time (if dt
-                             (format nil "~,2F" dt)
-                             "Press [SPACE] to start/stop/clear; q to quit"))
-           (length/2 (floor (length printed-time) 2))
-           (half-width (- (floor width 2) length/2))
-           (half-height (floor height 2)))
-      (write-string-at-point *standard-window*
-                             printed-time
-                             half-width
-                             half-height))))
 
 (defun window-box ()
   (multiple-value-bind (width height)
