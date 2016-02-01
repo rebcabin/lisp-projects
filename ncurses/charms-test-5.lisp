@@ -48,9 +48,6 @@
 
 ;;; D I S P L A Y ==============================================================
 
-(defconstant regular-wall-str "#")
-(defconstant regular-me-str   "@")
-
 (defconstant regular-wall-char #\#)
 (defconstant regular-me-char   #\@)
 
@@ -88,6 +85,18 @@
 
 (defmethod box-right ((b box))
   (+ (box-left b) (box-width b)))
+
+(defmethod box-top-left ((b box))
+  (make-instance 'point :x (box-left  b) :y (box-top    b)))
+
+(defmethod box-top-right ((b box))
+  (make-instance 'point :x (box-right b) :y (box-top    b)))
+
+(defmethod box-bottom-left ((b box))
+  (make-instance 'point :x (box-left  b) :y (box-bottom b)))
+
+(defmethod box-bottom-right ((b box))
+  (make-instance 'point :x (box-right b) :y (box-bottom b)))
 
 (defmethod displace ((p point) (b box) direction)
   (case direction
@@ -186,10 +195,11 @@ started, return NIL."
               (incf erroire delta-x))))))
 
 (defmethod draw ((b box) (wb box))
-  (draw-line *window-box*
-             (make-instance 'point :x 10 :y 15)
-             (make-instance 'point :x 40 :y 50))
-  )
+  (draw-line *window-box* (box-top-left b) (box-top-right b))
+  (draw-line *window-box* (box-top-left b) (box-bottom-left b))
+  (draw-line *window-box* (box-bottom-right b) (box-top-right b))
+  (draw-line *window-box* (box-bottom-right b) (box-bottom-left b))
+)
 
 ;;; S E T - U P ================================================================
 
