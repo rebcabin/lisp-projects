@@ -175,8 +175,8 @@ started, return NIL."
     (write-string-at-point *standard-window*
                            regular-me-str me-x me-y)))
 
-(defun set-up-characters
-  nil)
+(defun set-up-characters ()
+  (setf *me-point (window-mid-point)))
 
 (defun main ()
   "Start the timer program."
