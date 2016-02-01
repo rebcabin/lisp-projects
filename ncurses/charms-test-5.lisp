@@ -31,7 +31,8 @@
   (make-instance 'point :x 0 :y 0))
 
 (defmethod displace-left ((p point))
-  (decf (point-x p)))
+  (decf (point-x p))
+  t)
 
 ;;; D I S P L A Y ==============================================================
 
@@ -73,6 +74,13 @@
 (defmethod box-right ((b box))
   (+ (box-left b) (box-width b)))
 
+(defmethod displace ((p point) (b box) direction)
+  (case direction
+    ((:left) (let ((lb (box-left b))
+                   (px (point-x p)))
+               (when (> (- px 1) lb) (displace-left p))
+               ))))
+
 ;;; T I M E R ==================================================================
 
 (defvar *start* nil)
@@ -101,6 +109,8 @@ started, return NIL."
     (make-instance 'box :top 0 :left 0
                    :width width :height height)))
 
+(defparameter *window-box* nil)
+
 (defmethod box-midpoint ((b box))
   (let* ((lf (box-left   b))
          (rt (box-right  b))
@@ -111,7 +121,7 @@ started, return NIL."
     (make-instance 'point :x mx :y my)))
 
 (defun window-mid-point ()
-  (box-midpoint (window-box)))
+  (box-midpoint *window-box*))
 
 ;;; S E T - U P ================================================================
 
@@ -150,7 +160,7 @@ started, return NIL."
   (case c
     ((#\u0102 #\j) :down)
     ((#\u0103 #\k) :up)
-    ((#\u0104 #\h) (displace-left *me-point*))
+    ((#\u0104 #\h) (displace *me-point* *window-box* :left))
     ((#\u0105 #\l) :right)
     (otherwise c)))
 
@@ -181,6 +191,7 @@ started, return NIL."
   "Start the timer program."
   (let ((last-non-nil-c #\-))
     (with-curses ()
+      (setf *window-box* (window-box))
       (set-up-colors)
       (set-up-input)
       (set-up-characters)
