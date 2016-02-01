@@ -10,7 +10,11 @@
 
 (in-package #:charms-storeys)
 
+;;; D E B U G G I N G ==========================================================
+
 (defparameter *dump-all* t)
+
+;;; P O I N T ==================================================================
 
 (defclass point ()
   ((x :accessor point-x
@@ -26,6 +30,11 @@
 (defun zero-point ()
   (make-instance 'point :x 0 :y 0))
 
+(defmethod displace-left ((p point))
+  (decf (point-x p)))
+
+;;; D I S P L A Y ==============================================================
+
 (defconstant regular-wall-str "#")
 (defconstant regular-me-str   "@")
 
@@ -35,6 +44,8 @@
 
 (defun dumpw (thing x y)
   (dump *standard-window* thing (point x y)))
+
+;;; B O X ======================================================================
 
 ;;; We'll have a world-box that contains a window box that contains room-boxes.
 
@@ -62,7 +73,7 @@
 (defmethod box-right ((b box))
   (+ (box-left b) (box-width b)))
 
-;;; TODO: factor out the rendering surface into a class.
+;;; T I M E R ==================================================================
 
 (defvar *start* nil)
 (defvar *stop* nil)
@@ -82,6 +93,8 @@ started, return NIL."
              *start*)
           internal-time-units-per-second)))
 
+;;; W I N D O W ================================================================
+
 (defun window-box ()
   (multiple-value-bind (width height)
       (window-dimensions *standard-window*)
@@ -100,7 +113,7 @@ started, return NIL."
 (defun window-mid-point ()
   (box-midpoint (window-box)))
 
-;;; Main driver
+;;; S E T - U P ================================================================
 
 (defun set-up-colors ()
   (charms/ll:start-color)
@@ -118,6 +131,8 @@ started, return NIL."
   (enable-raw-input :interpret-control-characters t)
   (enable-non-blocking-mode *standard-window*))
 
+;;; C O N T R O L ==============================================================
+
 ;; down-arrow:  U+0102	Ă	Latin Capital Letter A with breve
 ;; up-arrow:    U+0103	ă	Latin Small Letter A with breve
 ;; left-arrow:  U+0104	Ą	Latin Capital Letter A with ogonek
@@ -131,13 +146,28 @@ started, return NIL."
     ((#\u0105 #\l) :right)
     (otherwise c)))
 
-(defun process-input (c)
+(defun move-character (c)
+  (case c
+    ((#\u0102 #\j) :down)
+    ((#\u0103 #\k) :up)
+    ((#\u0104 #\h) (displace-left *me-point*))
+    ((#\u0105 #\l) :right)
+    (otherwise c)))
+
+(defun control-process (c)
   (case c
     ((nil) nil)
     ((#\Space) (start/stop/clear))
     ((#\q #\Q) (return-from driver-loop))))
 
+;;; E N T I T I E S ============================================================
+
 (defparameter *me-point* (zero-point))
+
+(defun set-up-characters ()
+  (setf *me-point* (window-mid-point)))
+
+;;; R E N D E R I N G ==========================================================
 
 (defun paint-screen ()
   (let* ((me-x (point-x *me-point*))
@@ -145,9 +175,7 @@ started, return NIL."
     (write-string-at-point *standard-window*
                            regular-me-str me-x me-y)))
 
-(defun set-up-characters ()
-  (setf *me-point* (window-mid-point))
-  )
+;;; M A I N ====================================================================
 
 (defun main ()
   "Start the timer program."
@@ -162,17 +190,20 @@ started, return NIL."
             ;; even when no key has been pressed. Must always check
             ;; "last-non-nil-c."
             :do (progn
-                  ;; Capture char state
                   (setf last-non-nil-c (or c last-non-nil-c))
-                  ;; Redraw screen
+
+                  (move-character c)
+
                   (clear-window *standard-window*)
-                  (paint-screen)
                   (dumpw (format nil "~A" (char-command last-non-nil-c)) 2 3)
                   (dumpw (format nil "~A" last-non-nil-c)                2 2)
                   (dumpw (format nil "~A, ~A"
                                  (point-x *me-point*)
                                  (point-y *me-point*)) 2 4)
+                  ;; Render
+                  (paint-screen)
                   (refresh-window *standard-window*)
-                  (process-input c) )))))
+
+                  (control-process c) )))))
 
 (main)
