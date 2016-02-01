@@ -202,7 +202,7 @@ started, return NIL."
   (case c
     ((nil) nil)
     ((#\Space) (start/stop/clear))
-    ((#\q #\Q) (return-from driver-loop))))
+    ((#\q #\Q) t)))
 
 ;;; E N T I T I E S ============================================================
 
@@ -222,7 +222,6 @@ started, return NIL."
 ;;; M A I N ====================================================================
 
 (defun main ()
-  "Start the timer program."
   (let ((last-non-nil-c #\-))
     (with-curses ()
       (setf *window-box* (window-box))
@@ -253,6 +252,7 @@ started, return NIL."
                   (paint-screen)
                   (refresh-window *standard-window*)
 
-                  (control-process c) )))))
+                  (when (control-process c)
+                    (return-from driver-loop)) )))))
 
 (main)
