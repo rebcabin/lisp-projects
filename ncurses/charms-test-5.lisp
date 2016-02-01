@@ -147,7 +147,15 @@ started, return NIL."
 (defun window-mid-point ()
   (box-midpoint *window-box*))
 
+(defmethod write-clip-char ((bb box) (c character) (x integer) (y integer))
+  (when (and (>= x (box-left   bb))
+             (<  x (box-right  bb))
+             (>= y (box-top    bb))
+             (<  y (box-bottom bb)))
+    (write-char-at-point *standard-window* c x y)))
+
 (defmethod draw-line ((bb box) (tl point) (br point))
+  "Bresenham's cribbed from http://goo.gl/9ptT1g."
   (declare (ignorable bb))
   (let* ((x1 (point-x tl))
          (x2 (point-x br))
@@ -170,15 +178,8 @@ started, return NIL."
       (loop
         :for x :upfrom x1 :to x2
         :do (if steep
-                (write-char-at-point *standard-window*
-                                     regular-wall-char
-                                     x y)
-                (write-char-at-point *standard-window*
-                                     regular-wall-char
-                                     y x)
-                ;(setf (rgb-pixel buffer x y) pixel)
-                ;(setf (rgb-pixel buffer y x) pixel)
-                )
+                (write-clip-char *window-box* regular-wall-char x y)
+                (write-clip-char *window-box* regular-wall-char y x))
             (setf erroire (- erroire delta-y))
             (when (< erroire 0)
               (incf y y-step)
@@ -186,8 +187,8 @@ started, return NIL."
 
 (defmethod draw ((b box) (wb box))
   (draw-line *window-box*
-             (make-instance 'point :x  4 :y  3)
-             (make-instance 'point :x 10 :y 15))
+             (make-instance 'point :x 10 :y 15)
+             (make-instance 'point :x 40 :y 50))
   )
 
 ;;; S E T - U P ================================================================
