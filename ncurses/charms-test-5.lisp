@@ -51,6 +51,9 @@
 (defconstant regular-wall-str "#")
 (defconstant regular-me-str   "@")
 
+(defconstant regular-wall-char #\#)
+(defconstant regular-me-char   #\@)
+
 (defmethod dump ((w window) (thing string) (dump-p point))
   (if *dump-all*
       (write-string-at-point w thing (point-x dump-p) (point-y dump-p))))
@@ -144,6 +147,49 @@ started, return NIL."
 (defun window-mid-point ()
   (box-midpoint *window-box*))
 
+(defmethod draw-line ((bb box) (tl point) (br point))
+  (declare (ignorable bb))
+  (let* ((x1 (point-x tl))
+         (x2 (point-x br))
+         (y1 (point-y tl))
+         (y2 (point-y br))
+         (dist-x (abs (- x1 x2)))
+         (dist-y (abs (- y1 y2)))
+         (steep (> dist-y dist-x)))
+    (when steep
+      (psetf x1 y1 y1 x1
+             x2 y2 y2 x2))
+    (when (> x1 x2)
+      (psetf x1 x2 x2 x1
+             y1 y2 y2 y1))
+    (let* ((delta-x (- x2 x1))
+           (delta-y (abs (- y1 y2)))
+           (erroire (floor delta-x 2))
+           (y-step (if (< y1 y2) 1 -1))
+           (y y1))
+      (loop
+        :for x :upfrom x1 :to x2
+        :do (if steep
+                (write-char-at-point *standard-window*
+                                     regular-wall-char
+                                     x y)
+                (write-char-at-point *standard-window*
+                                     regular-wall-char
+                                     y x)
+                ;(setf (rgb-pixel buffer x y) pixel)
+                ;(setf (rgb-pixel buffer y x) pixel)
+                )
+            (setf erroire (- erroire delta-y))
+            (when (< erroire 0)
+              (incf y y-step)
+              (incf erroire delta-x))))))
+
+(defmethod draw ((b box) (wb box))
+  (draw-line *window-box*
+             (make-instance 'point :x  4 :y  3)
+             (make-instance 'point :x 10 :y 15))
+  )
+
 ;;; S E T - U P ================================================================
 
 (defun set-up-colors ()
@@ -162,7 +208,14 @@ started, return NIL."
   (enable-raw-input :interpret-control-characters t)
   (enable-non-blocking-mode *standard-window*))
 
-;;; C O N T R O L ==============================================================
+;;; E N T I T I E S ============================================================
+
+(defparameter *me-point* (zero-point))
+
+(defun set-up-characters ()
+  (setf *me-point* (window-mid-point)))
+
+;;; M O V E M E N T   A N D   C O N T R O L ====================================
 
 ;; down-arrow:  U+0102	Ă	Latin Capital Letter A with breve
 ;; up-arrow:    U+0103	ă	Latin Small Letter A with breve
@@ -204,20 +257,13 @@ started, return NIL."
     ((#\Space) (start/stop/clear))
     ((#\q #\Q) t)))
 
-;;; E N T I T I E S ============================================================
-
-(defparameter *me-point* (zero-point))
-
-(defun set-up-characters ()
-  (setf *me-point* (window-mid-point)))
-
 ;;; R E N D E R I N G ==========================================================
 
 (defun paint-screen ()
   (let* ((me-x (point-x *me-point*))
          (me-y (point-y *me-point*)))
-    (write-string-at-point *standard-window*
-                           regular-me-str me-x me-y)))
+    (write-char-at-point *standard-window*
+                         regular-me-char me-x me-y)))
 
 ;;; M A I N ====================================================================
 
@@ -236,9 +282,11 @@ started, return NIL."
             :do (progn
                   (setf last-non-nil-c (or c last-non-nil-c))
 
+                  (clear-window *standard-window*)
+
+                  (draw *window-box* *window-box*)
                   (move-character c)
 
-                  (clear-window *standard-window*)
                   (dumpw (format nil "~A" (char-command last-non-nil-c)) 2 3)
                   (dumpw (format nil "~A" last-non-nil-c)                2 2)
                   (dumpw (format nil "[~A|~A|~A] [~A|~A|~A]"
@@ -248,7 +296,7 @@ started, return NIL."
                                  (box-top *window-box*)
                                  (point-y *me-point*)
                                  (box-bottom *window-box*)) 2 4)
-                  ;; Render
+
                   (paint-screen)
                   (refresh-window *standard-window*)
 
