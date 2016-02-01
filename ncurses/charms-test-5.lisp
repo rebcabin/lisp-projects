@@ -6,9 +6,9 @@
 ;;; character and the storey of the dungeon.
 
 (defpackage #:charms-storeys
-  (:use :cl :charms))
+  (:use #:cl #:charms))
 
-(in-package :charms-storeys)
+(in-package #:charms-storeys)
 
 (defparameter *dump-all* t)
 
@@ -20,12 +20,18 @@
       :initform 0
       :initarg  :y)))
 
+(defun point (x y)
+  (make-instance 'point :x x :y y))
+
 (defconstant regular-wall-str "#")
 (defconstant regular-me-str   "@")
 
 (defmethod dump ((w window) (thing string) (dump-p point))
   (if *dump-all*
       (write-string-at-point w thing (point-x dump-p) (point-y dump-p))))
+
+(defun dumpw (thing x y)
+  (dump *standard-window* thing (point x y)))
 
 (defun write-me (wscr y x)
   (mvwaddstr wscr y x "@"))
@@ -38,6 +44,8 @@
   (if *dump-all*
       (do-external-symbols (s (find-package :cl-ncurses))
         (print s))))
+
+;;; We'll have a world-box that contains a window box that contains room-boxes.
 
 (defclass box ()
   ((left
@@ -67,14 +75,13 @@
 (defun start/stop/clear ()
   "Start, stop, and clear the timer successively."
   (cond
-    (*stop*        (setf *start* nil
-                         *stop* nil))
-    ((not *start*) (setf *stop* nil
-                         *start* (get-internal-real-time)))
-    (t             (setf *stop* (get-internal-real-time)))))
+    (*stop*        (setf   *start* nil  *stop*  nil))
+    ((not *start*) (setf   *stop*  nil  *start* (get-internal-real-time)))
+    (t             (setf   *stop* (get-internal-real-time)))))
 
 (defun time-elapsed ()
-  "Compute the time elapsed since *START* (to *END* if set). If the timer hasn't started, return NIL."
+  "Compute the time elapsed since *START* (to *END* if set). If the timer hasn't
+started, return NIL."
   (and *start*
        (/ (- (or *stop* (get-internal-real-time))
              *start*)
@@ -116,40 +123,51 @@
   (enable-raw-input :interpret-control-characters t)
   (enable-non-blocking-mode *standard-window*))
 
+(defmethod first-char ((s string))
+  (aref s 0))
+
+(defmethod first-char ((c character))
+  c)
+
 ;; down-arrow:  U+0102	Ă	Latin Capital Letter A with breve
 ;; up-arrow:    U+0103	ă	Latin Small Letter A with breve
 ;; left-arrow:  U+0104	Ą	Latin Capital Letter A with ogonek
 ;; right-arrow: U+0105	ą	Latin Small Letter A with ogonek
 
+(defun check-char (c)
+  (case c
+    ((#\u0102 #\j) :down)
+    ((#\u0103 #\k) :up)
+    ((#\u0104 #\h) :left)
+    ((#\u0105 #\l) :right)
+    (otherwise c)))
+
+(defun process-input (c)
+  (case c
+    ((nil) nil)
+    ((#\Space) (start/stop/clear))
+    ((#\q #\Q) (return-from driver-loop))))
+
 (defun main ()
   "Start the timer program."
-  (let ((last-non-nil-c "--nothing-from-keyboad-yet--"))
+  (let ((last-non-nil-c #\-))
     (with-curses ()
       (set-up-colors)
       (set-up-input)
       (loop :named driver-loop
             :for c := (get-char *standard-window* :ignore-error t)
+            ;; Because we're in non-blocking mode, get-char returns constantly,
+            ;; even when no key has been pressed. Must always check
+            ;; "last-non-nil-c."
             :do (progn
                   ;; Capture char state
-                  (setf last-non-nil-c
-                        (if (not (null c))
-                            c last-non-nil-c))
-                  ;; Redraw time
+                  (setf last-non-nil-c (or c last-non-nil-c))
+                  ;; Redraw screen
                   (clear-window *standard-window*)
                   (paint-time)
-                  (dump *standard-window*
-                        (format nil "~A"
-                                (case last-non-nil-c
-                                  ((\LATIN_SMALL_LETTER_A_WITH_OGONEK) "right-arrow")))
-                        (make-instance 'point :x 2 :y 3))
-                  (dump *standard-window*
-                        (format nil "~A" last-non-nil-c)
-                        (make-instance 'point :x 2 :y 2))
+                  (dumpw (format nil "~A" (check-char last-non-nil-c)) 2 3)
+                  (dumpw (format nil "~A" last-non-nil-c)              2 2)
                   (refresh-window *standard-window*)
-                  ;; Process input
-                  (case c
-                    ((nil) nil)
-                    ((#\Space) (start/stop/clear))
-                    ((#\q #\Q) (return-from driver-loop))) )))))
+                  (process-input c) )))))
 
 (main)
