@@ -23,6 +23,9 @@
 (defun point (x y)
   (make-instance 'point :x x :y y))
 
+(defun zero-point ()
+  (make-instance 'point :x 0 :y 0))
+
 (defconstant regular-wall-str "#")
 (defconstant regular-me-str   "@")
 
@@ -65,9 +68,13 @@
     :initform 0
     :initarg  :height)))
 
-;;; TODO: factor out the rendering surface into a class.
+(defmethod box-bottom ((b box))
+  (+ (box-top b) (box-height b)))
 
-(defun move-me-1 (me-y me-x my-box))
+(defmethod box-right ((b box))
+  (+ (box-left b) (box-width b)))
+
+;;; TODO: factor out the rendering surface into a class.
 
 (defvar *start* nil)
 (defvar *stop* nil)
@@ -105,6 +112,24 @@ started, return NIL."
                              half-width
                              half-height))))
 
+(defun window-box ()
+  (multiple-value-bind (width height)
+      (window-dimensions *standard-window*)
+    (make-instance 'box :top 0 :left 0
+                   :width width :height height)))
+
+(defmethod box-midpoint ((b box))
+  (let* ((lf (box-left   b))
+         (rt (box-right  b))
+         (tp (box-top    b))
+         (bt (box-bottom b))
+         (mx (floor (- rt lf)))
+         (my (floor (- bt tp))))
+    (make-instance 'point :x mx :y my)))
+
+(defun window-mid-point ()
+  (box-midpoint (window-box)))
+
 ;;; Main driver
 
 (defun set-up-colors ()
@@ -123,18 +148,12 @@ started, return NIL."
   (enable-raw-input :interpret-control-characters t)
   (enable-non-blocking-mode *standard-window*))
 
-(defmethod first-char ((s string))
-  (aref s 0))
-
-(defmethod first-char ((c character))
-  c)
-
 ;; down-arrow:  U+0102	Ă	Latin Capital Letter A with breve
 ;; up-arrow:    U+0103	ă	Latin Small Letter A with breve
 ;; left-arrow:  U+0104	Ą	Latin Capital Letter A with ogonek
 ;; right-arrow: U+0105	ą	Latin Small Letter A with ogonek
 
-(defun check-char (c)
+(defun char-command (c)
   (case c
     ((#\u0102 #\j) :down)
     ((#\u0103 #\k) :up)
@@ -148,12 +167,24 @@ started, return NIL."
     ((#\Space) (start/stop/clear))
     ((#\q #\Q) (return-from driver-loop))))
 
+(defparameter *me-point* (zero-point))
+
+(defun paint-screen ()
+  (let* ((me-x (point-x *me-point*))
+         (me-y (point-y *me-point*)))
+    (write-string-at-point *standard-window*
+                           regular-me-str me-x me-y)))
+
+(defun set-up-characters
+  nil)
+
 (defun main ()
   "Start the timer program."
   (let ((last-non-nil-c #\-))
     (with-curses ()
       (set-up-colors)
       (set-up-input)
+      (set-up-characters)
       (loop :named driver-loop
             :for c := (get-char *standard-window* :ignore-error t)
             ;; Because we're in non-blocking mode, get-char returns constantly,
@@ -164,8 +195,8 @@ started, return NIL."
                   (setf last-non-nil-c (or c last-non-nil-c))
                   ;; Redraw screen
                   (clear-window *standard-window*)
-                  (paint-time)
-                  (dumpw (format nil "~A" (check-char last-non-nil-c)) 2 3)
+                  (paint-screen)
+                  (dumpw (format nil "~A" (char-command last-non-nil-c)) 2 3)
                   (dumpw (format nil "~A" last-non-nil-c)              2 2)
                   (refresh-window *standard-window*)
                   (process-input c) )))))
