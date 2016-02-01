@@ -34,6 +34,18 @@
   (decf (point-x p))
   t)
 
+(defmethod displace-right ((p point))
+  (incf (point-x p))
+  t)
+
+(defmethod displace-up ((p point))
+  (decf (point-y p))
+  t)
+
+(defmethod displace-down ((p point))
+  (incf (point-y p))
+  t)
+
 ;;; D I S P L A Y ==============================================================
 
 (defconstant regular-wall-str "#")
@@ -76,10 +88,19 @@
 
 (defmethod displace ((p point) (b box) direction)
   (case direction
-    ((:left) (let ((lb (box-left b))
-                   (px (point-x p)))
-               (when (> (- px 1) lb) (displace-left p))
-               ))))
+    ((:left)  (let ((lb (box-left b))
+                    (px (point-x  p)))
+                (when (> (- px 1) lb) (displace-left p))))
+    ((:up)    (let ((tb (box-top b))
+                    (py (point-y  p)))
+                (when (> (- py 1) tb) (displace-up p))))
+    ((:right) (let ((rb (box-right b))
+                    (px (point-x   p)))
+                (when (< px (- rb 2)) (displace-right p))))
+    ((:down)  (let ((bb (box-bottom b))
+                   (py (point-y   p)))
+               (when (< py (- bb 2)) (displace-down p))))
+    ))
 
 ;;; T I M E R ==================================================================
 
@@ -158,10 +179,10 @@ started, return NIL."
 
 (defun move-character (c)
   (case c
-    ((#\u0102 #\j) :down)
-    ((#\u0103 #\k) :up)
-    ((#\u0104 #\h) (displace *me-point* *window-box* :left))
-    ((#\u0105 #\l) :right)
+    ((#\u0102 #\j) (displace *me-point* *window-box* :down ))
+    ((#\u0103 #\k) (displace *me-point* *window-box* :up   ))
+    ((#\u0104 #\h) (displace *me-point* *window-box* :left ))
+    ((#\u0105 #\l) (displace *me-point* *window-box* :right))
     (otherwise c)))
 
 (defun control-process (c)
@@ -208,9 +229,13 @@ started, return NIL."
                   (clear-window *standard-window*)
                   (dumpw (format nil "~A" (char-command last-non-nil-c)) 2 3)
                   (dumpw (format nil "~A" last-non-nil-c)                2 2)
-                  (dumpw (format nil "~A, ~A"
+                  (dumpw (format nil "[~A|~A|~A] [~A|~A|~A]"
+                                 (box-left *window-box*)
                                  (point-x *me-point*)
-                                 (point-y *me-point*)) 2 4)
+                                 (box-right *window-box*)
+                                 (box-top *window-box*)
+                                 (point-y *me-point*)
+                                 (box-bottom *window-box*)) 2 4)
                   ;; Render
                   (paint-screen)
                   (refresh-window *standard-window*)
