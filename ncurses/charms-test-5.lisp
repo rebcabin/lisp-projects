@@ -123,8 +123,8 @@ started, return NIL."
          (rt (box-right  b))
          (tp (box-top    b))
          (bt (box-bottom b))
-         (mx (floor (- rt lf)))
-         (my (floor (- bt tp))))
+         (mx (floor (- rt lf) 2))
+         (my (floor (- bt tp) 2)))
     (make-instance 'point :x mx :y my)))
 
 (defun window-mid-point ()
@@ -176,7 +176,8 @@ started, return NIL."
                            regular-me-str me-x me-y)))
 
 (defun set-up-characters ()
-  (setf *me-point* (window-mid-point)))
+  (setf *me-point* (window-mid-point))
+  )
 
 (defun main ()
   "Start the timer program."
@@ -184,6 +185,7 @@ started, return NIL."
     (with-curses ()
       (set-up-colors)
       (set-up-input)
+      (set-up-characters)
       (loop :named driver-loop
             :for c := (get-char *standard-window* :ignore-error t)
             ;; Because we're in non-blocking mode, get-char returns constantly,
