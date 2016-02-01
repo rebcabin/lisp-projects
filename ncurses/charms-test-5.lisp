@@ -176,7 +176,7 @@ started, return NIL."
                            regular-me-str me-x me-y)))
 
 (defun set-up-characters ()
-  (setf *me-point (window-mid-point)))
+  (setf *me-point* (window-mid-point)))
 
 (defun main ()
   "Start the timer program."
@@ -184,7 +184,6 @@ started, return NIL."
     (with-curses ()
       (set-up-colors)
       (set-up-input)
-      (set-up-characters)
       (loop :named driver-loop
             :for c := (get-char *standard-window* :ignore-error t)
             ;; Because we're in non-blocking mode, get-char returns constantly,
@@ -197,7 +196,10 @@ started, return NIL."
                   (clear-window *standard-window*)
                   (paint-screen)
                   (dumpw (format nil "~A" (char-command last-non-nil-c)) 2 3)
-                  (dumpw (format nil "~A" last-non-nil-c)              2 2)
+                  (dumpw (format nil "~A" last-non-nil-c)                2 2)
+                  (dumpw (format nil "~A, ~A"
+                                 (point-x *me-point*)
+                                 (point-y *me-point*)) 2 4)
                   (refresh-window *standard-window*)
                   (process-input c) )))))
 
