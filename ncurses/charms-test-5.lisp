@@ -30,6 +30,12 @@
 (defun zero-point ()
   (make-instance 'point :x 0 :y 0))
 
+(defmethod decr-x ((p point))
+  (point (1- (point-x p)) (point-y p)))
+
+(defmethod decr-y ((p point))
+  (point (point-x p) (1- (point-y p))))
+
 (defmethod displace-left ((p point))
   (decf (point-x p))
   t)
@@ -79,6 +85,13 @@
     :accessor box-height
     :initform 0
     :initarg  :height)))
+
+(defmethod flip-about-diagonal-pinning-upper-left ((b box))
+  (make-instance 'box
+                 :left   (box-left   b)
+                 :top    (box-top    b)
+                 :width  (box-height b)
+                 :height (box-width  b)))
 
 (defmethod box-bottom ((b box))
   (+ (box-top b) (box-height b)))
@@ -163,13 +176,17 @@ started, return NIL."
              (<  y (box-bottom bb)))
     (write-char-at-point *standard-window* c x y)))
 
+(defmethod incr ((c character))
+  (code-char (1+ (char-code c))))
+
 (defmethod draw-line ((bb box) (tl point) (br point))
   "Bresenham's cribbed from http://goo.gl/9ptT1g."
   (declare (ignorable bb))
-  (let* ((x1 (point-x tl))
-         (x2 (point-x br))
-         (y1 (point-y tl))
-         (y2 (point-y br))
+  (let* ((c  #\0) ;debugging
+         (x1 (point-y tl))
+         (x2 (point-y br))
+         (y1 (point-x tl))
+         (y2 (point-x br))
          (dist-x (abs (- x1 x2)))
          (dist-y (abs (- y1 y2)))
          (steep (> dist-y dist-x)))
@@ -187,19 +204,27 @@ started, return NIL."
       (loop
         :for x :upfrom x1 :to x2
         :do (if steep
-                (write-clip-char *window-box* regular-wall-char x y)
-                (write-clip-char *window-box* regular-wall-char y x))
+                (write-clip-char *window-box* c x y)
+                (write-clip-char *window-box* c y x))
             (setf erroire (- erroire delta-y))
+            (setf c (incr c))
             (when (< erroire 0)
               (incf y y-step)
-              (incf erroire delta-x))))))
+              (incf erroire delta-x)))) ))
 
 (defmethod draw ((b box) (wb box))
-  (draw-line *window-box* (box-top-left b) (box-top-right b))
-  (draw-line *window-box* (box-top-left b) (box-bottom-left b))
-  (draw-line *window-box* (box-bottom-right b) (box-top-right b))
-  (draw-line *window-box* (box-bottom-right b) (box-bottom-left b))
-)
+  (let ((tl (box-top-left b))
+        (tr (decr-x (box-top-right b)))
+        (bl (decr-y (box-bottom-left b)))
+        (br (decr-x (decr-y (box-bottom-right b)))))
+    (draw-line *window-box* tl tr)
+    (draw-line *window-box* tl bl)
+    (draw-line *window-box*
+               (make-instance 'point :x 87 :y 26)
+               (make-instance 'point :x 87 :y 27))
+    ;; (draw-line *window-box* br tr)
+    ;; (draw-line *window-box* br bl)
+    ))
 
 ;;; S E T - U P ================================================================
 
