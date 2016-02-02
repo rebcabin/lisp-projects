@@ -170,11 +170,14 @@ started, return NIL."
   (box-midpoint *window-box*))
 
 (defmethod write-clip-char ((bb box) (c character) (x integer) (y integer))
+  (dumpw (format nil "l: ~A, r: ~A, t: ~A, b: ~A, x: ~A, y: ~A"
+                 (box-left bb) (box-right bb) (box-top bb) (box-bottom bb) x y) 2 5)
+  (write-char-at-point *standard-window* #\# 87 28)
   (when (and (>= x (box-left   bb))
              (<  x (box-right  bb))
              (>= y (box-top    bb))
              (<  y (box-bottom bb)))
-    (write-char-at-point *standard-window* c x y)))
+    '(write-char-at-point *standard-window* c x y)))
 
 (defmethod incr ((c character))
   (code-char (1+ (char-code c))))
@@ -189,7 +192,7 @@ started, return NIL."
          (y2 (point-x br))
          (dist-x (abs (- x1 x2)))
          (dist-y (abs (- y1 y2)))
-         (steep (> dist-y dist-x)))
+         (steep  (> dist-y dist-x)))
     (when steep
       (psetf x1 y1 y1 x1
              x2 y2 y2 x2))
@@ -199,8 +202,8 @@ started, return NIL."
     (let* ((delta-x (- x2 x1))
            (delta-y (abs (- y1 y2)))
            (erroire (floor delta-x 2))
-           (y-step (if (< y1 y2) 1 -1))
-           (y y1))
+           (y-step  (if (< y1 y2) 1 -1))
+           (y       y1))
       (loop
         :for x :upfrom x1 :to x2
         :do (if steep
@@ -221,7 +224,7 @@ started, return NIL."
     (draw-line *window-box* tl bl)
     (draw-line *window-box*
                (make-instance 'point :x 87 :y 26)
-               (make-instance 'point :x 87 :y 27))
+               (make-instance 'point :x 87 :y 28))
     ;; (draw-line *window-box* br tr)
     ;; (draw-line *window-box* br bl)
     ))
