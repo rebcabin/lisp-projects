@@ -170,22 +170,27 @@ started, return NIL."
   (box-midpoint *window-box*))
 
 (defmethod write-clip-char ((bb box) (c character) (x integer) (y integer))
-  (dumpw (format nil "l: ~A, r: ~A, t: ~A, b: ~A, x: ~A, y: ~A"
-                 (box-left bb) (box-right bb) (box-top bb) (box-bottom bb) x y) 2 5)
-  (write-char-at-point *standard-window* #\# 87 28)
   (when (and (>= x (box-left   bb))
              (<  x (box-right  bb))
              (>= y (box-top    bb))
              (<  y (box-bottom bb)))
-    '(write-char-at-point *standard-window* c x y)))
+    '(write-char-at-point *standard-window* c x y)
+    ;; Must use low-level mvwaddch so we can write to the last position in the
+    ;; screen. See https://manned.org/mvwaddch: "If scrollok is not enabled,
+    ;; writing a character at the lower right margin succeeds. However, an error
+    ;; is returned because it is not possible to wrap to a new line.
+    ;; --> ignore errors here <-
+    (charms/ll:mvwaddch (charms::window-pointer *standard-window*)
+                        y x
+                        (charms::character-to-c-char c))))
 
 (defmethod incr ((c character))
   (code-char (1+ (char-code c))))
 
-(defmethod draw-line ((bb box) (tl point) (br point))
+(defmethod draw-line ((bb box) (tl point) (br point) (c character))
   "Bresenham's cribbed from http://goo.gl/9ptT1g."
   (declare (ignorable bb))
-  (let* ((c  #\0) ;debugging
+  (let* (; (c  #\0) ;debugging
          (x1 (point-y tl))
          (x2 (point-y br))
          (y1 (point-x tl))
@@ -210,23 +215,20 @@ started, return NIL."
                 (write-clip-char *window-box* c x y)
                 (write-clip-char *window-box* c y x))
             (setf erroire (- erroire delta-y))
-            (setf c (incr c))
+            ;(setf c (incr c))
             (when (< erroire 0)
               (incf y y-step)
               (incf erroire delta-x)))) ))
 
-(defmethod draw ((b box) (wb box))
+(defmethod draw ((b box) (wb box) (c character))
   (let ((tl (box-top-left b))
         (tr (decr-x (box-top-right b)))
         (bl (decr-y (box-bottom-left b)))
         (br (decr-x (decr-y (box-bottom-right b)))))
-    (draw-line *window-box* tl tr)
-    (draw-line *window-box* tl bl)
-    (draw-line *window-box*
-               (make-instance 'point :x 87 :y 26)
-               (make-instance 'point :x 87 :y 28))
-    ;; (draw-line *window-box* br tr)
-    ;; (draw-line *window-box* br bl)
+    (draw-line *window-box* tl tr c)
+    (draw-line *window-box* tl bl c)
+    (draw-line *window-box* br tr c)
+    (draw-line *window-box* br bl c)
     ))
 
 ;;; S E T - U P ================================================================
@@ -323,7 +325,12 @@ started, return NIL."
 
                   (clear-window *standard-window*)
 
-                  (draw *window-box* *window-box*)
+                  (draw-line *window-box*
+                             (make-instance 'point :x 48 :y 12)
+                             (make-instance 'point :x  7 :y  7)
+                             #\.)
+
+                  (draw *window-box* *window-box* regular-wall-char)
                   (move-character c)
 
                   (dumpw (format nil "~A" (char-command last-non-nil-c)) 2 3)

@@ -1,0 +1,110 @@
+
+charms-test-4.lisp,363
+(defparameter *dump-all* 6,85
+(defun init-color-ncurses 8,114
+(defun dump-pos 19,593
+(defun write-me 23,713
+(defun dump-me 26,769
+(defun dump-ncurses-symbols 30,892
+(defclass box 35,1020
+(defmethod draw 55,1380
+(defun render-screen 59,1495
+(defun setup-screen 67,1696
+(defun teardown-screen 81,2017
+(defun move-me-1 88,2169
+(defun run-screen 90,2207
+
+charms-test-5.lisp,1413
+(defpackage #:charms-storeys8,259
+(defparameter *dump-all* 15,426
+(defclass point 19,537
+(defun point 27,683
+(defun zero-point 30,739
+(defmethod decr-x 33,797
+(defmethod decr-y 36,868
+(defmethod displace-left 39,939
+(defmethod displace-right 43,1003
+(defmethod displace-up 47,1068
+(defmethod displace-down 51,1130
+(defconstant regular-wall-char 57,1276
+(defconstant regular-me-char 58,1312
+(defmethod dump 60,1349
+(defun dumpw 64,1500
+(defclass box 71,1735
+(defmethod flip-about-diagonal-pinning-upper-left 89,2037
+(defmethod box-bottom 96,2282
+(defmethod box-right 99,2349
+(defmethod box-top-left 102,2415
+(defmethod box-top-right 105,2511
+(defmethod box-bottom-left 108,2608
+(defmethod box-bottom-right 111,2707
+(defmethod displace 114,2807
+(defvar *start* 132,3510
+(defvar *stop* 133,3531
+(defun start/stop/clear 135,3552
+(defun time-elapsed 142,3831
+(defun window-box 152,4171
+(defparameter *window-box* 158,4364
+(defmethod box-midpoint 160,4397
+(defun window-mid-point 169,4658
+(defmethod write-clip-char 172,4717
+(defmethod incr 187,5483
+(defmethod draw-line 190,5550
+(defmethod draw 223,6594
+(defun set-up-colors 236,7024
+(defun set-up-input 245,7467
+(defparameter *me-point* 254,7759
+(defun set-up-characters 256,7799
+(defun char-command 266,8189
+(defun move-character 274,8347
+(defun control-process 295,9067
+(defun paint-screen 303,9258
+(defun main 311,9536
+
+debug-4-1.lisp,0
+
+ncurses-test-1.lisp,0
+
+ncurses-test-2.lisp,163
+(defun init-color-ncurses 6,86
+(defvar *primes* 17,565
+(defun is-prime-p 26,942
+(defun write-number 34,1167
+(defvar *max* 41,1417
+(defun scroll-test 43,1438
+
+ncurses-test-3.lisp,0
+
+ncurses-test-4.lisp,363
+(defparameter *dump-all* 6,86
+(defun init-color-ncurses 8,115
+(defun dump-pos 19,594
+(defun write-me 23,714
+(defun dump-me 26,770
+(defun dump-ncurses-symbols 30,893
+(defclass box 35,1021
+(defmethod draw 55,1381
+(defun render-screen 59,1496
+(defun setup-screen 67,1697
+(defun teardown-screen 81,2018
+(defun move-me-1 88,2170
+(defun run-screen 90,2208
+
+ncurses-test-5.lisp,500
+(defpackage curses-storeys6,138
+(defparameter *dump-all* 10,221
+(defconstant regular-wall-str 12,250
+(defconstant regular-me-str 13,285
+(defun dump-pos 15,321
+(defun write-me 19,441
+(defun dump-me 22,508
+(defun dump-ncurses-symbols 26,631
+(defclass box 31,759
+(defparameter *cur-y* 49,1045
+(defparameter *cur-x* 50,1070
+(defmethod draw 54,1154
+(defun render-screen 65,1529
+(defun setup-screen 73,1730
+(defun teardown-screen 87,2044
+(defun move-me-1 94,2196
+(defun run-screen 96,2234
