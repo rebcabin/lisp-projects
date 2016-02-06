@@ -1,19 +1,25 @@
 ;;; R E N D E R I N G ==========================================================
 
-(defmethod write-clip-char ((bb box) (c character) (x integer) (y integer))
+(defmethod write-clip-char
+    ((bb box) (c character) (x integer) (y integer)
+     (glyph-writer function))
   (when (and (>= x (box-left   bb))
              (<  x (box-right  bb))
              (>= y (box-top    bb))
              (<  y (box-bottom bb)))
-    '(write-char-at-point *standard-window* c x y)
-    ;; Must use low-level mvwaddch so we can write to the last position in the
-    ;; screen. See https://manned.org/mvwaddch: "If scrollok is not enabled,
-    ;; writing a character at the lower right margin succeeds. However, an error
-    ;; is returned because it is not possible to wrap to a new line.
-    ;; --> ignore errors here <-
-    (charms/ll:mvwaddch (charms::window-pointer *standard-window*)
-                        y x
-                        (charms::character-to-c-char c))))
+    (funcall glyph-writer x y c)
+    ))
+
+(defun window-glyph-writer (x y c)
+  '(write-char-at-point *standard-window* c x y)
+  ;; Must use low-level mvwaddch so we can write to the last position in the
+  ;; screen. See https://manned.org/mvwaddch: "If scrollok is not enabled,
+  ;; writing a character at the lower right margin succeeds. However, an error
+  ;; is returned because it is not possible to wrap to a new line.
+  ;; --> ignore errors here <-
+  (charms/ll:mvwaddch (charms::window-pointer *standard-window*)
+                      y x
+                      (charms::character-to-c-char c)))
 
 (defmethod incr ((c character))
   (code-char (1+ (char-code c))))
@@ -43,8 +49,14 @@
       (loop
         :for x :upfrom x1 :to x2
         :do (if steep
-                (write-clip-char bb (funcall glypher x y 'straight) x y)
-                (write-clip-char bb (funcall glypher x y 'swapped ) y x))
+                (write-clip-char
+                 bb (funcall glypher x y 'straight)
+                 x y
+                 #'window-glyph-writer)
+                (write-clip-char
+                 bb (funcall glypher x y 'swapped )
+                 y x
+                 #'window-glyph-writer))
             (setf erroire (- erroire delta-y))
             ;(setf c (incr c))
             (when (< erroire 0)
