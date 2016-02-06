@@ -1,5 +1,0 @@
-(load "~/quicklisp/setup.lisp")
-(ql:quickload :cl-ncurses)
-(load "~/quicklisp/dists/quicklisp/software/cl-ncurses_0.1.4/tests/scroll-test.lisp")
-(in-package :cl-ncurses)
-(scroll-test)
