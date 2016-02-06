@@ -267,13 +267,15 @@ started, return NIL."
 
                   (clear-window *standard-window*)
 
-                  (draw-line *window-box*
-                             (make-instance 'point :x 48 :y 12)
-                             (make-instance 'point :x  7 :y  7)
-                             #\.)
+                  (draw-line :bounding-box *window-box*
+                             :from-point   (make-instance 'point :x 48 :y 12)
+                             :to-point     (make-instance 'point :x  7 :y  7)
+                             :glyph-fn     #\.)
+
                   ;; rooms, items, and characters
                   (draw *window-box* *window-box* regular-wall-char)
                   (move-character c)
+
                   ;; debugging and HUD
                   (dumpw (format nil "~A" (char-command last-non-nil-c)) 2 3)
                   (dumpw (format nil "~A" last-non-nil-c)                2 2)

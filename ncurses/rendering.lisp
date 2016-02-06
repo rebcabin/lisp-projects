@@ -20,7 +20,7 @@
 (defmethod incr ((c character))
   (code-char (1+ (char-code c))))
 
-(defmethod draw-line ((bb box) (tl point) (br point) (c character))
+(defmethod draw-line% ((bb box) (tl point) (br point) (c character))
   "Bresenham's cribbed from http://goo.gl/9ptT1g."
   (declare (ignorable bb))
   (let* (; (c  #\0) ;debugging
@@ -53,14 +53,17 @@
               (incf y y-step)
               (incf erroire delta-x)))) ))
 
+(defun draw-line (&key bounding-box from-point to-point glyph-fn)
+  (draw-line% bounding-box from-point to-point glyph-fn))
+
 (defmethod draw ((b box) (wb box) (c character))
   (let ((tl (box-top-left b))
         (tr (decr-x (box-top-right b)))
         (bl (decr-y (box-bottom-left b)))
         (br (decr-x (decr-y (box-bottom-right b)))))
-    (draw-line *window-box* tl tr c)
-    (draw-line *window-box* tl bl c)
-    (draw-line *window-box* br tr c)
-    (draw-line *window-box* br bl c)
+    (draw-line% *window-box* tl tr c)
+    (draw-line% *window-box* tl bl c)
+    (draw-line% *window-box* br tr c)
+    (draw-line% *window-box* br bl c)
     ))
 
