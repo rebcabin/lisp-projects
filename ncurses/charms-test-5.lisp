@@ -319,7 +319,7 @@ started, return NIL."
             :for c := (get-char *standard-window* :ignore-error t)
             ;; Because we're in non-blocking mode, get-char returns constantly,
             ;; even when no key has been pressed. Must always check
-            ;; "last-non-nil-c."
+            ;; last-non-nil-c instead of the return value of get-char.
             :do (progn
                   (setf last-non-nil-c (or c last-non-nil-c))
 
@@ -329,10 +329,10 @@ started, return NIL."
                              (make-instance 'point :x 48 :y 12)
                              (make-instance 'point :x  7 :y  7)
                              #\.)
-
+                  ;; rooms, items, and characters
                   (draw *window-box* *window-box* regular-wall-char)
                   (move-character c)
-
+                  ;; debugging and HUD
                   (dumpw (format nil "~A" (char-command last-non-nil-c)) 2 3)
                   (dumpw (format nil "~A" last-non-nil-c)                2 2)
                   (dumpw (format nil "[~A|~A|~A] [~A|~A|~A]"
