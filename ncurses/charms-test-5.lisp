@@ -270,7 +270,7 @@ started, return NIL."
                   (draw-line :bounding-box *window-box*
                              :from-point   (make-instance 'point :x 48 :y 12)
                              :to-point     (make-instance 'point :x  7 :y  7)
-                             :glyph-fn     (lambda (x y) (declare (ignorable x y)) #\.))
+                             :glyph-fn     (lambda (x y dir) (declare (ignorable x y dir)) #\.))
 
                   ;; rooms, items, and characters
                   (draw *window-box* *window-box* regular-wall-char)

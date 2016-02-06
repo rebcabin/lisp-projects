@@ -43,8 +43,8 @@
       (loop
         :for x :upfrom x1 :to x2
         :do (if steep
-                (write-clip-char bb (funcall glypher x y) x y)
-                (write-clip-char bb (funcall glypher x y) y x))
+                (write-clip-char bb (funcall glypher x y 'straight) x y)
+                (write-clip-char bb (funcall glypher x y 'swapped ) y x))
             (setf erroire (- erroire delta-y))
             ;(setf c (incr c))
             (when (< erroire 0)
@@ -59,7 +59,7 @@
         (tr (decr-x (box-top-right b)))
         (bl (decr-y (box-bottom-left b)))
         (br (decr-x (decr-y (box-bottom-right b))))
-        (gl (lambda (x y) (declare (ignorable x y)) c)))
+        (gl (lambda (x y dir) (declare (ignorable x y dir)) c)))
     (draw-line% *window-box* tl tr gl)
     (draw-line% *window-box* tl bl gl)
     (draw-line% *window-box* br tr gl)
