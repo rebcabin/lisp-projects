@@ -6,7 +6,9 @@
 (defmethod resilient-load ((file-name string))
   (load (concatenate 'string (sb-posix:getcwd) "/" file-name)))
 
-(cl-quickcheck:quickcheck 
+(shadow 'cl-quickcheck:report '#:cl-user)
+
+(cl-quickcheck:quickcheck
  (resilient-load "self-test.lisp")
  (resilient-load "updoc.lisp")
  (resilient-load "alpha.lisp")
