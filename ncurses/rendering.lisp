@@ -18,7 +18,7 @@
 (defmethod incr ((c character))
   (code-char (1+ (char-code c))))
 
-(defmethod draw-line% ((bb box) (tl point) (br point) (c character))
+(defmethod draw-line% ((bb box) (tl point) (br point) (glypher function))
   "Bresenham's cribbed from http://goo.gl/9ptT1g."
   (declare (ignorable bb))
   (let* (; (c  #\0) ;debugging
@@ -43,8 +43,8 @@
       (loop
         :for x :upfrom x1 :to x2
         :do (if steep
-                (write-clip-char *window-box* c x y)
-                (write-clip-char *window-box* c y x))
+                (write-clip-char *window-box* (funcall glypher x y) x y)
+                (write-clip-char *window-box* (funcall glypher x y) y x))
             (setf erroire (- erroire delta-y))
             ;(setf c (incr c))
             (when (< erroire 0)
@@ -58,10 +58,11 @@
   (let ((tl (box-top-left b))
         (tr (decr-x (box-top-right b)))
         (bl (decr-y (box-bottom-left b)))
-        (br (decr-x (decr-y (box-bottom-right b)))))
-    (draw-line% *window-box* tl tr c)
-    (draw-line% *window-box* tl bl c)
-    (draw-line% *window-box* br tr c)
-    (draw-line% *window-box* br bl c)
+        (br (decr-x (decr-y (box-bottom-right b))))
+        (gl (lambda (x y) (declare (ignorable x y)) c)))
+    (draw-line% *window-box* tl tr gl)
+    (draw-line% *window-box* tl bl gl)
+    (draw-line% *window-box* br tr gl)
+    (draw-line% *window-box* br bl gl)
     ))
 
