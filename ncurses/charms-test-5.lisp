@@ -14,43 +14,11 @@
 
 (defparameter *dump-all* t)
 
-;;; P O I N T ==================================================================
+;;; L I B R A R I E S ==========================================================
 
-(defclass point ()
-  ((x :accessor point-x
-      :initform 0
-      :initarg  :x)
-   (y :accessor point-y
-      :initform 0
-      :initarg  :y)))
-
-(defun point (x y)
-  (make-instance 'point :x x :y y))
-
-(defun zero-point ()
-  (make-instance 'point :x 0 :y 0))
-
-(defmethod decr-x ((p point))
-  (point (1- (point-x p)) (point-y p)))
-
-(defmethod decr-y ((p point))
-  (point (point-x p) (1- (point-y p))))
-
-(defmethod displace-left ((p point))
-  (decf (point-x p))
-  t)
-
-(defmethod displace-right ((p point))
-  (incf (point-x p))
-  t)
-
-(defmethod displace-up ((p point))
-  (decf (point-y p))
-  t)
-
-(defmethod displace-down ((p point))
-  (incf (point-y p))
-  t)
+(load "point.lisp")
+(load "box.lisp")
+(load "rendering.lisp")
 
 ;;; D I S P L A Y ==============================================================
 
@@ -63,69 +31,6 @@
 
 (defun dumpw (thing x y)
   (dump *standard-window* thing (point x y)))
-
-;;; B O X ======================================================================
-
-;;; We'll have a world-box that contains a window box that contains room-boxes.
-
-(defclass box ()
-  ((left
-    :accessor box-left
-    :initform 0
-    :initarg  :left)
-   (top
-    :accessor box-top
-    :initform 0
-    :initarg  :top)
-   (width
-    :accessor box-width
-    :initform 0
-    :initarg  :width)
-   (height
-    :accessor box-height
-    :initform 0
-    :initarg  :height)))
-
-(defmethod flip-about-diagonal-pinning-upper-left ((b box))
-  (make-instance 'box
-                 :left   (box-left   b)
-                 :top    (box-top    b)
-                 :width  (box-height b)
-                 :height (box-width  b)))
-
-(defmethod box-bottom ((b box))
-  (+ (box-top b) (box-height b)))
-
-(defmethod box-right ((b box))
-  (+ (box-left b) (box-width b)))
-
-(defmethod box-top-left ((b box))
-  (make-instance 'point :x (box-left  b) :y (box-top    b)))
-
-(defmethod box-top-right ((b box))
-  (make-instance 'point :x (box-right b) :y (box-top    b)))
-
-(defmethod box-bottom-left ((b box))
-  (make-instance 'point :x (box-left  b) :y (box-bottom b)))
-
-(defmethod box-bottom-right ((b box))
-  (make-instance 'point :x (box-right b) :y (box-bottom b)))
-
-(defmethod displace ((p point) (b box) direction)
-  (case direction
-    ((:left)  (let ((lb (box-left b))
-                    (px (point-x  p)))
-                (when (> (- px 1) lb) (displace-left p))))
-    ((:up)    (let ((tb (box-top b))
-                    (py (point-y  p)))
-                (when (> (- py 1) tb) (displace-up p))))
-    ((:right) (let ((rb (box-right b))
-                    (px (point-x   p)))
-                (when (< px (- rb 2)) (displace-right p))))
-    ((:down)  (let ((bb (box-bottom b))
-                   (py (point-y   p)))
-               (when (< py (- bb 2)) (displace-down p))))
-    ))
 
 ;;; T I M E R ==================================================================
 
@@ -171,7 +76,6 @@ started, return NIL."
 
 ;;; R E N D E R I N G ==========================================================
 
-(load "rendering.lisp")
 
 ;;; S E T - U P ================================================================
 
