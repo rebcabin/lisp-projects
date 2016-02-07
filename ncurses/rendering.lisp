@@ -38,20 +38,39 @@
       (loop
         :for x :upfrom x1 :to x2
         :do (if steep
-                (write-clip-char bb (funcall glyph-fn x y 'straight) x y glyph-writer-fn)
-                (write-clip-char bb (funcall glyph-fn x y 'swapped ) y x glyph-writer-fn))
+                (write-clip-char bb (funcall glyph-fn x y 'straight)
+                                 x y glyph-writer-fn)
+                (write-clip-char bb (funcall glyph-fn x y 'swapped )
+                                 y x glyph-writer-fn))
             (setf erroire (- erroire delta-y))
             ;(setf c (incr c))
             (when (< erroire 0)
               (incf y y-step)
               (incf erroire delta-x)))) ))
 
-(defun draw-line (&key bounding-box from-point to-point
-                    glyph-fn glyph-writer-fn)
-  (draw-line% bounding-box from-point to-point
-              glyph-fn glyph-writer-fn))
+(defun draw-line (&key
+                    bounding-box
+                    from-point
+                    to-point
+                    glyph-fn
+                    glyph-writer-fn)
+  (draw-line% bounding-box
+              from-point
+              to-point
+              glyph-fn
+              glyph-writer-fn))
 
-(defmethod draw ((bb box) (wb box) (gl function) (gw function))
+(defmethod draw (&key
+                   bounding-box
+                   window-box
+                   glyph-fn
+                   glyph-writer-fn)
+  (draw% bounding-box
+         window-box
+         glyph-fn
+         glyph-writer-fn))
+
+(defmethod draw% ((bb box) (wb box) (gl function) (gw function))
   (let ((tl (box-top-left                     bb))
         (tr (decr-x (box-top-right            bb)))
         (bl (decr-y (box-bottom-left          bb)))

@@ -290,10 +290,10 @@ started, return NIL."
                              :glyph-writer-fn #'write-glyph)
 
                   ;; rooms, items, and characters
-                  (draw *window-box*
-                        *window-box*
-                        (basic-glypher regular-wall-char)
-                        #'write-glyph)
+                  (draw :bounding-box    *window-box*
+                        :window-box      *window-box*
+                        :glyph-fn        (basic-glypher regular-wall-char)
+                        :glyph-writer-fn #'write-glyph)
 
                   (move-character c)
 
