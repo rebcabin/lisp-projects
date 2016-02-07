@@ -267,13 +267,14 @@ started, return NIL."
 
                   (clear-window *standard-window*)
 
-                  (draw-line :bounding-box *window-box*
-                             :from-point   (make-instance 'point :x 48 :y 12)
-                             :to-point     (make-instance 'point :x  7 :y  7)
-                             :glyph-fn     (lambda (x y dir) (declare (ignorable x y dir)) #\.))
+                  (draw-line :bounding-box    *window-box*
+                             :from-point      (make-instance 'point :x 48 :y 12)
+                             :to-point        (make-instance 'point :x  7 :y  7)
+                             :glyph-fn        (lambda (x y dir) (declare (ignorable x y dir)) #\.)
+                             :glyph-writer-fn (lambda () nil))
 
                   ;; rooms, items, and characters
-                  (draw *window-box* *window-box* regular-wall-char)
+                  (draw *window-box* *window-box* regular-wall-char (lambda () nil))
                   (move-character c)
 
                   ;; debugging and HUD
