@@ -259,6 +259,11 @@ started, return NIL."
                       y x
                       (charms::character-to-c-char c)))
 
+(defmethod basic-glypher ((c character))
+  (lambda (x y direction)
+    (declare (ignorable x y direction))
+    c))
+
 ;;; M A I N ====================================================================
 
 (defun main ()
@@ -281,11 +286,15 @@ started, return NIL."
                   (draw-line :bounding-box    *window-box*
                              :from-point      (make-instance 'point :x 48 :y 12)
                              :to-point        (make-instance 'point :x  7 :y  7)
-                             :glyph-fn        (lambda (x y dir) (declare (ignorable x y dir)) #\.)
+                             :glyph-fn        (basic-glypher #\.)
                              :glyph-writer-fn #'write-glyph)
 
                   ;; rooms, items, and characters
-                  (draw *window-box* *window-box* regular-wall-char #'write-glyph)
+                  (draw *window-box*
+                        *window-box*
+                        (basic-glypher regular-wall-char)
+                        #'write-glyph)
+
                   (move-character c)
 
                   ;; debugging and HUD

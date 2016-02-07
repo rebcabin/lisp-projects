@@ -51,16 +51,14 @@
   (draw-line% bounding-box from-point to-point
               glyph-fn glyph-writer-fn))
 
-(defmethod draw ((bb box) (wb box) (c character) (gw function))
+(defmethod draw ((bb box) (wb box) (gl function) (gw function))
   (let ((tl (box-top-left                     bb))
         (tr (decr-x (box-top-right            bb)))
         (bl (decr-y (box-bottom-left          bb)))
-        (br (decr-x (decr-y (box-bottom-right bb))))
-        (gl (lambda (x y dir) (declare (ignorable x y dir)) c)))
+        (br (decr-x (decr-y (box-bottom-right bb)))))
     (draw-line% wb tl tr gl gw)
     (draw-line% wb tl bl gl gw)
     (draw-line% wb br tr gl gw)
-    (draw-line% wb br bl gl gw)
-    ))
+    (draw-line% wb br bl gl gw)))
 
 
