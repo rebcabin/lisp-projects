@@ -1,4 +1,4 @@
-;;; R E N D E R I N G ==========================================================
+;;; R E N D E R I N G ======================================================
 
 (defmethod write-clip-char ((bb box)
                             (c character) (x integer) (y integer)
