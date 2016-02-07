@@ -1,19 +1,22 @@
 ;;; R E N D E R I N G ==========================================================
 
+(defun write-glyph (x y c)
+  '(write-char-at-point *standard-window* c x y)
+  ;; Must use low-level mvwaddch so we can write to the last position in the
+  ;; screen. See https://manned.org/mvwaddch: "If scrollok is not enabled,
+  ;; writing a character at the lower right margin succeeds. However, an error
+  ;; is returned because it is not possible to wrap to a new line.
+  ;; --> ignore errors here <-
+  (charms/ll:mvwaddch (charms::window-pointer *standard-window*)
+                      y x
+                      (charms::character-to-c-char c)))
+
 (defmethod write-clip-char ((bb box) (c character) (x integer) (y integer))
   (when (and (>= x (box-left   bb))
              (<  x (box-right  bb))
              (>= y (box-top    bb))
              (<  y (box-bottom bb)))
-    '(write-char-at-point *standard-window* c x y)
-    ;; Must use low-level mvwaddch so we can write to the last position in the
-    ;; screen. See https://manned.org/mvwaddch: "If scrollok is not enabled,
-    ;; writing a character at the lower right margin succeeds. However, an error
-    ;; is returned because it is not possible to wrap to a new line.
-    ;; --> ignore errors here <-
-    (charms/ll:mvwaddch (charms::window-pointer *standard-window*)
-                        y x
-                        (charms::character-to-c-char c))))
+    (write-glyph x y c)))
 
 (defmethod incr ((c character))
   (code-char (1+ (char-code c))))
