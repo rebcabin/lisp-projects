@@ -74,9 +74,6 @@ started, return NIL."
 (defun window-mid-point ()
   (box-midpoint *window-box*))
 
-;;; R E N D E R I N G ==========================================================
-
-
 ;;; S E T - U P ================================================================
 
 (defun set-up-colors ()
