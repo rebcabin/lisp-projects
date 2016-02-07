@@ -12,8 +12,10 @@
 (defmethod incr ((c character))
   (code-char (1+ (char-code c))))
 
+;;; Internal functions may have variables with short names.
+
 (defmethod draw-line% ((bb box) (tl point) (br point)
-                       (glyph-fn function) (glyph-writer-fn function))
+                       (gf function) (gw function))
   "Bresenham's cribbed from http://goo.gl/9ptT1g."
   (declare (ignorable bb))
   (let* (; (c  #\0) ;debugging
@@ -38,10 +40,8 @@
       (loop
         :for x :upfrom x1 :to x2
         :do (if steep
-                (write-clip-char bb (funcall glyph-fn x y 'straight)
-                                 x y glyph-writer-fn)
-                (write-clip-char bb (funcall glyph-fn x y 'swapped )
-                                 y x glyph-writer-fn))
+                (write-clip-char bb (funcall gf x y 'straight) x y gw)
+                (write-clip-char bb (funcall gf x y 'swapped ) y x gw))
             (setf erroire (- erroire delta-y))
             ;(setf c (incr c))
             (when (< erroire 0)
@@ -60,15 +60,6 @@
               glyph-fn
               glyph-writer-fn))
 
-(defmethod draw (&key
-                   bounding-box
-                   window-box
-                   glyph-fn
-                   glyph-writer-fn)
-  (draw% bounding-box
-         window-box
-         glyph-fn
-         glyph-writer-fn))
 
 (defmethod draw% ((bb box) (wb box) (gl function) (gw function))
   (let ((tl (box-top-left                     bb))
@@ -79,5 +70,16 @@
     (draw-line% wb tl bl gl gw)
     (draw-line% wb br tr gl gw)
     (draw-line% wb br bl gl gw)))
+
+(defmethod draw (&key
+                   bounding-box
+                   window-box
+                   glyph-fn
+                   glyph-writer-fn)
+  (draw% bounding-box
+         window-box
+         glyph-fn
+         glyph-writer-fn))
+
 
 
