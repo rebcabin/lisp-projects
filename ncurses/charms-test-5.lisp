@@ -248,6 +248,17 @@ started, return NIL."
     (write-char-at-point *standard-window*
                          regular-me-char me-x me-y)))
 
+(defun write-glyph (x y c)
+  '(write-char-at-point *standard-window* c x y)
+  ;; Must use low-level mvwaddch so we can write to the last position in the
+  ;; screen. See https://manned.org/mvwaddch: "If scrollok is not enabled,
+  ;; writing a character at the lower right margin succeeds. However, an error
+  ;; is returned because it is not possible to wrap to a new line.
+  ;; --> ignore errors here <-
+  (charms/ll:mvwaddch (charms::window-pointer *standard-window*)
+                      y x
+                      (charms::character-to-c-char c)))
+
 ;;; M A I N ====================================================================
 
 (defun main ()
@@ -271,10 +282,10 @@ started, return NIL."
                              :from-point      (make-instance 'point :x 48 :y 12)
                              :to-point        (make-instance 'point :x  7 :y  7)
                              :glyph-fn        (lambda (x y dir) (declare (ignorable x y dir)) #\.)
-                             :glyph-writer-fn (lambda () nil))
+                             :glyph-writer-fn #'write-glyph)
 
                   ;; rooms, items, and characters
-                  (draw *window-box* *window-box* regular-wall-char (lambda () nil))
+                  (draw *window-box* *window-box* regular-wall-char #'write-glyph)
                   (move-character c)
 
                   ;; debugging and HUD
