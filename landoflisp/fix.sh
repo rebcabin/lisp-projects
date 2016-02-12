@@ -1,0 +1,16 @@
+mv dice_of_doom_v1.lisp.txt dice_of_doom_v1.lisp
+mv dice_of_doom_v2.lisp.txt dice_of_doom_v2.lisp
+mv dice_of_doom_v3.lisp.txt dice_of_doom_v3.lisp
+mv dice_of_doom_v4.lisp.txt dice_of_doom_v4.lisp
+mv evolution.lisp.txt evolution.lisp
+mv graph-util.lisp.txt graph-util.lisp
+mv guess.lisp.txt guess.lisp
+mv lazy.lisp.txt lazy.lisp
+mv orc-battle.lisp.txt orc-battle.lisp
+mv robots.lisp.txt robots.lisp
+mv robots.txt robots
+mv svg.lisp.txt svg.lisp
+mv webserver.lisp.txt webserver.lisp
+mv wizard_special_actions.lisp.txt wizard_special_actions.lisp
+mv wizards_game.lisp.txt wizards_game.lisp
+mv wumpus.lisp.txt wumpus.lisp

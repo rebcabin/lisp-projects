@@ -1,0 +1,171 @@
+<html>
+  <header>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"
+>
+  </header>
+  <body>
+    <center>
+      Here are the major source code examples from the book. Most of them are games. There are zillions of other smaller examples in the book that are omitted from this list.
+    <table border=1>
+      <tr>
+        <td>
+          <b>Chapter</b>
+        </td>
+        <td>
+          <b>File Name</b>
+        </td>
+        <td>
+          <b>Description</b>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          2
+        </td>
+        <td>
+          <a href="guess.lisp.txt">guess.lisp</a>
+        </td>
+        <td>
+          This is a super simple number guessing game. It's also designed to illustrate what it's like to work within a REPL.
+        </td>
+      </tr>
+      <tr>
+        <td>
+          5 & 6
+        </td>
+        <td>
+          <a href="wizards_game.lisp.txt">wizards_game.lisp</a>
+        </td>
+        <td>
+          This is a simple text adventure game. It can't be "won" yet, because it needs additional commands from chapter 17. It includes the customized REPL code from chapter 6.
+        </td>
+      </tr>
+      <tr>
+        <td>
+          7
+        </td>
+        <td>
+          <a href="graph-util.lisp.txt">graph-util.lisp</a>
+        </td>
+        <td>
+          This is a library for interfacing with graphviz, letting you draw pretty graphs from CLISP. If you are using SBCL, you may want to look <a href="http://blog.ciaranbradley.com/crossing-the-streams-land-of-lisp-chapter-12-0">here</a> for some useful info.
+        </td>
+      </tr>
+      <tr>
+        <td>
+          8
+        </td>
+        <td>
+          <a href="wumpus.lisp.txt">wumpus.lisp</a>
+        </td>
+        <td>
+          This implements a version of "Hunt the Wumpus". It requires that <i>grap-util.lisp</i> is in the same directory. Type "(new game)" and then use the "(walk #)" and "(charge #)" commands. The graphs are written to a file <i>known-city.dot.png</i> which you can view in a browser and refresh after each move.
+        </td>
+      </tr>
+      <tr>
+        <td>
+          9
+        </td>
+        <td>
+          <a href="orc-battle.lisp.txt">orc-battle.lisp</a>
+        </td>
+        <td>
+          This is basically a battle engine like you might find in an old-school rpg game. It is actually kind of addicting as a stand-alone game, as well. It teaches object oriented and generic programming.
+        </td>
+      </tr>
+      <tr>
+        <td>
+          10
+        </td>
+        <td>
+          <a href="evolution.lisp.txt">evolution.lisp</a>
+        </td>
+        <td>
+          This is an evolution simulation. Draws a world to the REPL using ASCII graphics.
+        </td>
+      </tr>
+      <tr>
+        <td>
+          11
+        </td>
+        <td>
+          <a href="robots.lisp.txt">robots.lisp</a>
+        </td>
+        <td>
+          This game is kind of a joke to show off the crazy things you can do with <i>loop</i> and <i>format</i>. But it's also fun to play!
+        </td>
+      </tr>
+      <tr>
+        <td>
+          13
+        </td>
+        <td>
+          <a href="webserver.lisp.txt">webserver.lisp</a>
+        </td>
+        <td>
+          This implements an extremely crude, but marginally functional web server from scratch.
+        </td>
+      </tr>
+      <tr>
+        <td>
+          15
+        </td>
+        <td>
+          <a href="dice_of_doom_v1.lisp.txt">dice_of_doom_v1.lisp</a>
+        </td>
+        <td>
+          This implements the <i>Dice of Doom</i> boardgame. It is the crudest version with only basic optimization, but has a fully implemented AI.
+        </td>
+      </tr>
+      <tr>
+        <td>
+          17
+        </td>
+        <td>
+          <a href="svg.lisp.txt">svg.lisp</a><br>
+          <a href="wizard_special_actions.lisp.txt">wizard_special_actions.lisp</a>
+        </td>
+        <td>
+          The first file implements a crude DSL for creating SVG images.<br>
+          The second file adds special actions to the <a>Wizard's Game</a>, completing the game play. It requires <i>wizards_game.lisp</i> in the same directory to work properly.
+        </td>
+      </tr>
+      <tr>
+        <td>
+          18
+        </td>
+        <td>
+          <a href="lazy.lisp.txt">lazy.lisp</a><br>
+          <a href="dice_of_doom_v2.lisp.txt">dice_of_doom_v2.lisp</a>
+        </td>
+        <td>
+          The first file implements a simple <i>lazy list</i> library.<br>
+          The second file makes Dice of Doom lazy and adds classic AI optimizations. It requires <i>lazy.lisp</i> and <i>dice_of_doom_v1.lisp</i> to be in the same directory.
+        </td>
+      </tr>
+      <tr>
+        <td>
+          19
+        </td>
+        <td>
+          <a href="dice_of_doom_v3.lisp.txt">dice_of_doom_v3.lisp</a>
+        </td>
+        <td>
+          This file turns dice of doom into a crude browser-based game with graphics. It is so crude that it can only support one player using the "site" at a time. It requires the earlier <i>Dice of Doom</i> files and <i>webserver.lisp</i> to be in the same directory.
+        </td>
+      </tr>
+      <tr>
+        <td>
+          20
+        </td>
+        <td>
+          <a href="dice_of_doom_v4.lisp.txt">dice_of_doom_v4.lisp</a>
+        </td>
+        <td>
+          This ties up some loose ends for the Dice of Doom game, to turn it into a rich dice rolling board game with a large board. It allows for multiple AI players. It has the same file requirements as <i>dice_of_doom_v3.lisp</i> from chapter 19.
+        </td>
+      </tr>
+    </table>
+    </center>
+  </body>
+</html>
