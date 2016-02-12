@@ -1,0 +1,1303 @@
+
+(X) 
+
+Parameters used for this run.
+=============================
+Maximum number of Generations:                    1
+Size of Population:                               50
+Maximum depth of new individuals:                 6
+Maximum depth of new subtrees for mutants:        4
+Maximum depth of individuals after crossover:     17
+Fitness-proportionate reproduction fraction:      0.1
+Crossover at any point fraction:                  0.2
+Crossover at function points fraction:            0.2
+Number of fitness cases:                          10
+Selection method:                                 FITNESS-PROPORTIONATE
+Generation method:                                RAMPED-HALF-AND-HALF
+Randomizer seed:                                  1.0d0
+Fitness cases
+ 0      0.0      0.0
+ 1      0.1      0.0050000004
+ 2      0.2      0.020000001
+ 3      0.3      0.045
+ 4      0.4      0.080000006
+ 5      0.5      0.125
+ 6      0.6      0.18
+ 7      0.7      0.24499999
+ 8      0.8      0.32000002
+ 9      0.9      0.40499997
+
+Generation 0:  Average standardized-fitness = 139.5997.  
+The best individual program of the population had a 
+standardized fitness measure of 1.125 and 0 hits. 
+It was: 
+(% 0.27620053 2.8361385)
+
+
+
+
+The best-of-run individual program for this run was found on 
+generation 0 and had a standardized fitness measure of 1.125 and 0 hits.  
+It was:
+(% 0.27620053 2.8361385)
+
+Parameters used for this run.
+=============================
+Maximum number of Generations:                    1
+Size of Population:                               1
+Maximum depth of new individuals:                 6
+Maximum depth of new subtrees for mutants:        4
+Maximum depth of individuals after crossover:     17
+Fitness-proportionate reproduction fraction:      0.1
+Crossover at any point fraction:                  0.2
+Crossover at function points fraction:            0.2
+Number of fitness cases:                          10
+Selection method:                                 FITNESS-PROPORTIONATE
+Generation method:                                RAMPED-HALF-AND-HALF
+Randomizer seed:                                  1.0d0
+Fitness cases
+ 0      0.0      0.0
+ 1      0.1      0.0050000004
+ 2      0.2      0.020000001
+ 3      0.3      0.045
+ 4      0.4      0.080000006
+ 5      0.5      0.125
+ 6      0.6      0.18
+ 7      0.7      0.24499999
+ 8      0.8      0.32000002
+ 9      0.9      0.40499997
+
+Generation 0:  Average standardized-fitness = 0.0.  
+The best individual program of the population had a 
+standardized fitness measure of 0.0 and 10 hits. 
+It was: 
+(* 0.5 X X)
+
+
+
+
+The best-of-run individual program for this run was found on 
+generation 0 and had a standardized fitness measure of 0.0 and 10 hits.  
+It was:
+(* 0.5 X X)
+
+Parameters used for this run.
+=============================
+Maximum number of Generations:                    1
+Size of Population:                               1
+Maximum depth of new individuals:                 6
+Maximum depth of new subtrees for mutants:        4
+Maximum depth of individuals after crossover:     17
+Fitness-proportionate reproduction fraction:      0.1
+Crossover at any point fraction:                  0.2
+Crossover at function points fraction:            0.7
+Number of fitness cases:                          8
+Selection method:                                 FITNESS-PROPORTIONATE
+Generation method:                                RAMPED-HALF-AND-HALF
+Randomizer seed:                                  1.0d0
+Fitness cases
+ 1    T   T   T       T
+ 2    T   T   NIL       T
+ 3    T   NIL   T       T
+ 4    T   NIL   NIL       NIL
+ 5    NIL   T   T       T
+ 6    NIL   T   NIL       NIL
+ 7    NIL   NIL   T       NIL
+ 8    NIL   NIL   NIL       NIL
+
+Generation 0:  Average standardized-fitness = 0.0.  
+The best individual program of the population had a 
+standardized fitness measure of 0.0 and 8 hits. 
+It was: 
+(OR (AND D2 D1 (NOT D0)) (AND D2 (NOT D1) D0)
+    (OR (AND (NOT D2) D1 D0) (AND D2 D1 D0)))
+
+
+
+
+The best-of-run individual program for this run was found on 
+generation 0 and had a standardized fitness measure of 0.0 and 8 hits.  
+It was:
+(OR (AND D2 D1 (NOT D0)) (AND D2 (NOT D1) D0)
+    (OR (AND (NOT D2) D1 D0) (AND D2 D1 D0)))
+
+Parameters used for this run.
+=============================
+Maximum number of Generations:                    1
+Size of Population:                               1
+Maximum depth of new individuals:                 6
+Maximum depth of new subtrees for mutants:        4
+Maximum depth of individuals after crossover:     17
+Fitness-proportionate reproduction fraction:      0.1
+Crossover at any point fraction:                  0.2
+Crossover at function points fraction:            0.7
+Number of fitness cases:                          4
+Selection method:                                 FITNESS-PROPORTIONATE
+Generation method:                                RAMPED-HALF-AND-HALF
+Randomizer seed:                                  1.0d0
+Fitness cases
+ 1    -5   -5
+ 2    -5   5
+ 3    5   -5
+ 4    5   5
+
+Generation 0:  Average standardized-fitness = 28.0.  
+The best individual program of the population had a 
+standardized fitness measure of 28.0 and 4 hits. 
+It was: 
+(IFX (GOW) (IFY (GOS) (GOS) (GON)) (GOE))
+
+
+
+
+The best-of-run individual program for this run was found on 
+generation 0 and had a standardized fitness measure of 28.0 and 4 hits.  
+It was:
+(IFX (GOW) (IFY (GOS) (GOS) (GON)) (GOE))
+
+Parameters used for this run.
+=============================
+Maximum number of Generations:                    1
+Size of Population:                               50
+Maximum depth of new individuals:                 6
+Maximum depth of new subtrees for mutants:        4
+Maximum depth of individuals after crossover:     17
+Fitness-proportionate reproduction fraction:      0.1
+Crossover at any point fraction:                  0.2
+Crossover at function points fraction:            0.2
+Number of fitness cases:                          10
+Selection method:                                 FITNESS-PROPORTIONATE
+Generation method:                                RAMPED-HALF-AND-HALF
+Randomizer seed:                                  1.0d0
+Fitness cases
+ 0      0.0      0.0
+ 1      0.1      0.0050000004
+ 2      0.2      0.020000001
+ 3      0.3      0.045
+ 4      0.4      0.080000006
+ 5      0.5      0.125
+ 6      0.6      0.18
+ 7      0.7      0.24499999
+ 8      0.8      0.32000002
+ 9      0.9      0.40499997
+
+Generation 0:  Average standardized-fitness = 139.5997.  
+The best individual program of the population had a 
+standardized fitness measure of 1.125 and 0 hits. 
+It was: 
+(% 0.27620053 2.8361385)
+
+
+
+
+The best-of-run individual program for this run was found on 
+generation 0 and had a standardized fitness measure of 1.125 and 0 hits.  
+It was:
+(% 0.27620053 2.8361385)
+0   1.125    (% 0.27620053 2.8361385)
+1   1.1498555    (% (* X X) 1.1068583)
+2   1.3487517    (* (- (* -1.7019666 X) (- -3.4927826 X))
+                    (+ (* 0.20221393 X) (- X X)))
+3   1.425    (- X X)
+4   1.425    (* X X)
+5   1.425    (* (% (- X X) (+ 2.3533826 -0.3353205)) X)
+6   1.8293095    (%
+                  (%
+                   (- (+ (* X 3.1880422) (* X X)) (* (* X X) (* 0.55149883 X)))
+                   (- (+ (% -1.653081 X) (- X X)) (% (+ -4.677232 X) (* X X))))
+                  (+
+                   (+ (- (- X -0.34876192) (- -3.6918797 -4.179673))
+                      (* (+ 0.839926 X) (+ -0.26181707 X)))
+                   (+ (+ (- -4.41429 X) (% -3.8672554 3.3704195))
+                      (+ (- X X) (- -3.7128384 X)))))
+7   1.9308227    (* (+ X (% X (+ 4.9299207 X))) X)
+8   2.4547906    (*
+                  (* (* (- (- -4.5136747 X) (% X X)) (- (+ X X) X))
+                     (* -0.7671664 (+ (% X X) (- X X))))
+                  (- X (* (% X (% X X)) X)))
+9   2.6102028    (* -0.2633784 X)
+10   2.9655328    (%
+                   (% (% (% X 4.493974) (* -0.19988486 3.4968846))
+                      (* (+ X X) (- 4.425247 X)))
+                   (- (% (+ 1.224496 -0.7617296) (- X X))
+                      (% (% X 1.4868126) (- X -0.52862144))))
+11   3.0008936    (%
+                   (+ (- (+ 4.182624 X) (- 2.864532 1.1117676))
+                      (+ (+ 2.3078525 X) (* X X)))
+                   (* (* (% 3.0817616 X) (% X 1.0185632))
+                      (- (% X -4.87937) (* 3.9836261 -1.3471744))))
+12   3.8208437    (*
+                   (- (% -0.73182917 (% 3.8552542 X))
+                      (+ (% -3.0491238 3.404202) 0.31898576))
+                   (% (+ (% -1.512946 4.3985753) (- X X))
+                      (+ (- -0.72441924 -3.0326781) (* X -3.6949408))))
+13   5.149976    (% (% (- X 1.1658435) (% -1.8677272 X))
+                    (+ (+ X -1.5391896) (* X X)))
+14   5.262334    (* (* 1.4860742 X) (% X X))
+15   5.569058    (* X 1.5542351)
+16   7.5749993    (+ X X)
+17   8.558423    (-
+                  (%
+                   (% (- (* 3.5928953 X) (% -0.86015785 4.7366033))
+                      (- (+ X -0.89809334) (+ X -0.05969611)))
+                   (+ (+ (- X X) (* -4.7611556 X)) (* (- X X) (% X X))))
+                  (-
+                   (* (- (- 3.487831 X) (- 4.483833 X))
+                      (* (% 3.9281948 -0.5182943) (- X X)))
+                   (+ (- (* X X) (* 0.20217144 X))
+                      (- (* X -2.0336945) (- X 0.8650577)))))
+18   9.57572    (% (- (+ 2.9543707 -1.9969099) (- 2.3822148 X))
+                   (* (% 0.6390376 -3.6118743) (+ 4.657569 X)))
+19   9.831982    (% (% -2.8315318 (% (% -3.0894458 X) (* -1.7959237 X))) X)
+20   11.7410345    (%
+                    (+ (- (+ 2.679219 X) (* -4.8732476 X))
+                       (+ (+ 3.5160959 X) (- -4.319147 X)))
+                    (+ (- (- -4.4525027 X) (% 1.5638663 4.0346174))
+                       (- (% X X) (- X X))))
+21   12.6997795    (% X (% X (% -3.8564837 3.3780146)))
+22   13.555372    (% (+ (% 1.7277244 X) (* X X))
+                     (+ (- -4.352416 X) (% X 0.98307824)))
+23   14.844799    (% (* X 0.5397657) (* X X))
+24   18.56015    (* -1.713515 (% X X))
+25   20.883574    (* X 4.957461)
+26   21.509014    (-
+                   (%
+                    (- (* (+ -0.79862505 X) (+ 3.1045141 X))
+                       (- (+ -2.101136 X) (% 3.3897085 4.0357146)))
+                    (- (* (- X X) (* X X))
+                       (% 1.173804 (- 4.2317824 0.2235922))))
+                   (- -4.758808
+                      (* (- (+ -3.592131 X) (% 0.01369437 0.4926521))
+                         (% (- X 3.5380437) -4.7247624))))
+27   21.880085    (- (% (- 2.841741 -1.2686137) (- X X))
+                     (* (+ -1.8610164 4.9065247) (% X X)))
+28   22.267208    (* -4.631602 X)
+29   24.9435    (% -3.9952111 -1.5151454)
+30   31.209572    (- X 3.428457)
+31   34.290264    (+ 0.7489301
+                     (- 4.6692276 (+ 0.17951283 (- 2.8608422 1.1937239))))
+32   50.70869    (% 1.8075032 X)
+33   52.233307    (% -1.7606525 X)
+34   53.9609    (* (* (+ 2.8848104 X) (% X X)) (% (% X X) (* -1.8249424 X)))
+35   69.00908    (+ (* (- (+ X 4.1899447) (% X (% 2.3388085 X))) (% X X))
+                    (+ X 2.07532))
+36   69.13524    (-
+                  (+
+                   (- (+ (- X -0.98216635) (% -1.9983444 -2.6257071))
+                      (- (- X -2.029894) (% 0.14674824 X)))
+                   (+ (- (- 3.6466777 X) (* X X))
+                      (* (* 1.069824 0.24103776) (* 4.217368 2.4607773))))
+                  (-
+                   (- (- (- X X) (* X 0.39565828))
+                      (- (- -1.0563971 X) (% X -0.41710168)))
+                   (- (+ (% -1.4297888 X) (+ -4.7008667 -3.4397538))
+                      (- (* X 3.392511) (- X -0.8242112)))))
+37   74.88494    (% (- 3.2357996 X)
+                    (+ (* -1.909316 -0.693399) (+ -1.8859422 0.18279739)))
+38   76.581375    (% -2.5560532 -0.32767236)
+39   97.65106    (- (* X X) (% 3.4668489 X))
+40   107.632866    (%
+                    (+ (- (* (* -4.078478 3.8589332) (- X -2.4796898)) X)
+                       (* (% (% 1.6870841 -4.1436815) (- -2.2998343 X))
+                          (+ -4.420695 (% 4.193448 X))))
+                    (- (+ (% (- X 1.4768554) (% -4.191186 X)) (- X X))
+                       (+ X 3.667066)))
+41   179.70311    (*
+                   (*
+                    (+ (- (* X -2.6151426) (+ X 4.841323)) (- (+ X X) (- X X)))
+                    (% (* (* X X) (+ -3.4151063 0.84605384))
+                       (- (* 3.216723 -0.7165481) (+ -0.34449843 -4.5536075))))
+                   (-
+                    (- (+ (- X 2.872485) (- 4.0900965 4.970004))
+                       (* (% X X) (% 1.8246046 X)))
+                    (- (% (- 1.1227466 3.52467) (- X X))
+                       (+ (- -4.833051 3.5818024) (- 0.11485451 -4.6109514)))))
+42   187.52957    (% (% 1.6088084 X) (* X 1.3179733))
+43   210.78201    (% (% X X) (+ -0.19416372 X))
+44   277.1765    (% (+ -3.5876594 -4.5243096) (* 0.8352457 X))
+45   491.52875    (+
+                   (*
+                    (+ (+ (* 0.75664127 X) (+ -2.606173 X))
+                       (* (* X 2.904377) (% X 3.2402575)))
+                    (- (* (% X -3.3620656) (% X 4.1964693))
+                       (* (+ X 1.4034218) (+ -2.492516 X))))
+                   (-
+                    (+ (% (% -0.6260205 X) (- 2.751988 -1.530116))
+                       (% (- 4.523614 X) (% X -1.2104564)))
+                    (+ (% (- X 4.463056) (* X X))
+                       (% (* X 1.7094389) (* X 3.2862067)))))
+46   533.29224    (* (% -4.033012 X) (- 4.936583 X))
+47   612.8376    (-
+                  (* -3.2462676
+                     (* (* (* X -4.030564) (- 1.1329259 -3.3109674))
+                        -2.2830653))
+                  (* X 3.1202111))
+48   974.9602    (*
+                  (* (* (* X 2.0847464) (- X 3.5585754))
+                     (- (% X -0.16531472) (* 2.090002 X)))
+                  (% (- (% 1.2318344 -2.5585566) (- -2.9488075 X))
+                     (* (* -0.14590299 X) (+ 0.34992957 4.4995694))))
+49   2533.96    (+
+                 (* (% (- -1.3263857 X) (+ 2.529611 X))
+                    (- (+ X -1.3163471) (+ 0.63588595 X)))
+                 (* (% (* 3.334928 -3.976563) (+ -4.0465307 X))
+                    (- (* X 2.3385549) (% X -0.007070948))))
+
+Parameters used for this run.
+=============================
+Maximum number of Generations:                    31
+Size of Population:                               200
+Maximum depth of new individuals:                 6
+Maximum depth of new subtrees for mutants:        4
+Maximum depth of individuals after crossover:     17
+Fitness-proportionate reproduction fraction:      0.1
+Crossover at any point fraction:                  0.2
+Crossover at function points fraction:            0.2
+Number of fitness cases:                          10
+Selection method:                                 FITNESS-PROPORTIONATE
+Generation method:                                RAMPED-HALF-AND-HALF
+Randomizer seed:                                  1.0d0
+Fitness cases
+ 0      0.0      0.0
+ 1      0.1      0.0050000004
+ 2      0.2      0.020000001
+ 3      0.3      0.045
+ 4      0.4      0.080000006
+ 5      0.5      0.125
+ 6      0.6      0.18
+ 7      0.7      0.24499999
+ 8      0.8      0.32000002
+ 9      0.9      0.40499997
+
+Generation 0:  Average standardized-fitness = 1186.3804.  
+The best individual program of the population had a 
+standardized fitness measure of 0.4201299 and 2 hits. 
+It was: 
+(% X 2.7838948)
+
+Generation 1:  Average standardized-fitness = 78.71375.  
+The best individual program of the population had a 
+standardized fitness measure of 0.4128513 and 2 hits. 
+It was: 
+(% X 2.8361385)
+
+Generation 2:  Average standardized-fitness = 18.417793.  
+The best individual program of the population had a 
+standardized fitness measure of 0.18848777 and 2 hits. 
+It was: 
+(*
+ (-
+  (*
+   (- (% (+ (% 4.0940886 X) X) (* (+ -2.372332 X) (- 2.7593598 X))) -1.903111)
+   X)
+  (- (- (- (% (% X X) (+ X 2.3130052)) X) (+ X (% (% X 3.3673694) (+ X X))))
+     X))
+ (+ (* 0.20221393 X) (- X X)))
+
+Generation 3:  Average standardized-fitness = 42.33367.  
+The best individual program of the population had a 
+standardized fitness measure of 0.2308732 and 4 hits. 
+It was: 
+(* (- (* (% X 3.4892256) X) (* -1.8683883 X)) (+ (* 0.20221393 X) (- X X)))
+
+Generation 4:  Average standardized-fitness = 46.730595.  
+The best individual program of the population had a 
+standardized fitness measure of 0.40652797 and 3 hits. 
+It was: 
+(* (% X 3.5222514) (* X 2.2635446))
+
+Generation 5:  Average standardized-fitness = 102.07578.  
+The best individual program of the population had a 
+standardized fitness measure of 0.16187084 and 4 hits. 
+It was: 
+(%
+ (%
+  (-
+   (+ (* X 3.1880422)
+      (* (+ (+ 2.249731 (% X X)) (* 0.292804 (% -0.6843662 (- X -4.329556))))
+         X))
+   (* (* X X) (* 0.55149883 X)))
+  (+ X (+ -3.503007 X)))
+ (+
+  (+ (- (- X -0.34876192) (- -3.6918797 -4.179673))
+     (* (+ 0.839926 X) (+ -0.26181707 X)))
+  (+ (+ (- -4.41429 X) (% X 3.5222514)) (+ (- X X) (- -3.7128384 X)))))
+
+Generation 6:  Average standardized-fitness = 21.161438.  
+The best individual program of the population had a 
+standardized fitness measure of 0.16187084 and 4 hits. 
+It was: 
+(%
+ (%
+  (-
+   (+ (* X 3.1880422)
+      (* (+ (+ 2.249731 (% X X)) (* 0.292804 (% -0.6843662 (- X -4.329556))))
+         X))
+   (* (* X X) (* 0.55149883 X)))
+  (+ X (+ -3.503007 X)))
+ (+
+  (+ (- (- X -0.34876192) (- -3.6918797 -4.179673))
+     (* (+ 0.839926 X) (+ -0.26181707 X)))
+  (+ (+ (- -4.41429 X) (% X 3.5222514)) (+ (- X X) (- -3.7128384 X)))))
+
+Generation 7:  Average standardized-fitness = 45.049076.  
+The best individual program of the population had a 
+standardized fitness measure of 0.06778756 and 7 hits. 
+It was: 
+(%
+ (- (+ 0.025485467 (* X X))
+    (*
+     (* (+ X -0.11225905)
+        (* -1.0168632
+           (* (- (+ -0.28649113 0.8848059) (% X 3.2838252))
+              (% X
+                 (+
+                  (* -3.8108263
+                     (% 0.5365324 (- (- 3.4117339 3.8232317) (- X 3.34099))))
+                  (+ X 4.8730187))))))
+     X))
+ 2.2290492)
+
+Generation 8:  Average standardized-fitness = 5.446468.  
+The best individual program of the population had a 
+standardized fitness measure of 0.074403286 and 7 hits. 
+It was: 
+(%
+ (- (+ 0.025485467 (* X X))
+    (*
+     (* (+ X -0.11225905)
+        (* -1.0168632
+           (* (- (+ -0.28649113 0.8848059) (% X 3.2838252))
+              (% X
+                 (+
+                  (* -3.8108263
+                     (% 0.5365324
+                        (-
+                         (-
+                          (- (* X (+ 0.28670466 (* X X)))
+                             (+ (* -4.1072764 (* 2.4396172 3.0297277))
+                                (% X (% 0.055919673 X))))
+                          3.8232317)
+                         (- X 3.34099))))
+                  (+ X 4.8730187))))))
+     X))
+ 2.2290492)
+
+Generation 9:  Average standardized-fitness = 5.6395245.  
+The best individual program of the population had a 
+standardized fitness measure of 0.07398561 and 7 hits. 
+It was: 
+(%
+ (- (+ 0.025485467 (* X X))
+    (*
+     (* (+ X -0.11225905)
+        (* -1.0168632
+           (* (- (+ -0.28649113 0.8848059) (% X 3.2838252))
+              (% X
+                 (+
+                  (* -3.8108263
+                     (% 0.5365324
+                        (-
+                         (-
+                          (-
+                           (* X
+                              (+ 0.28670466
+                                 (+ (* X (% X (% X X)))
+                                    (* X
+                                       (- (- X 3.1324584) (- X -4.6959853))))))
+                           (+ (* -4.1072764 (* 2.4396172 3.0297277))
+                              (% X (% 0.055919673 X))))
+                          3.8232317)
+                         (- X 3.34099))))
+                  (+ X 4.8730187))))))
+     X))
+ 2.2290492)
+
+Generation 10:  Average standardized-fitness = 2.3859992.  
+The best individual program of the population had a 
+standardized fitness measure of 0.051125564 and 8 hits. 
+It was: 
+(%
+ (- (+ 0.025485467 (* X X))
+    (*
+     (* (+ X -0.11225905)
+        (* -1.0168632
+           (* (- (+ X (* (- X X) (% X (+ X X)))) (% X 3.2838252))
+              (% X
+                 (+
+                  (* -3.8108263
+                     (% 0.5365324
+                        (-
+                         (-
+                          (- (* X (+ 0.28670466 (* X X)))
+                             (+ (* -4.1072764 (* 2.4396172 3.0297277))
+                                (% X (% 0.055919673 X))))
+                          3.8232317)
+                         (- X 3.34099))))
+                  (+ X 4.8730187))))))
+     X))
+ 2.2290492)
+
+Generation 11:  Average standardized-fitness = 11.230317.  
+The best individual program of the population had a 
+standardized fitness measure of 0.07541706 and 7 hits. 
+It was: 
+(%
+ (- (+ 0.025485467 (* X X))
+    (*
+     (* (+ X -0.11225905)
+        (* -1.0168632
+           (* (- (+ -0.28649113 0.8848059) (% X 3.2838252))
+              (% X
+                 (+
+                  (* -3.8108263
+                     (% 0.5365324
+                        (-
+                         (-
+                          (- (* X (+ 0.28670466 (* X X)))
+                             (+
+                              (* -4.1072764
+                                 (* 2.4396172
+                                    (*
+                                     (+ (+ 0.26971617 0.94430655)
+                                        (% (* -2.269445 X) (% X X)))
+                                     (+ (+ -1.5906327 (+ -3.7544327 X))
+                                        (% (% 2.3305337 X) 0.1160041)))))
+                              (% X (% 0.055919673 X))))
+                          3.8232317)
+                         (- X 3.34099))))
+                  (+ X 4.8730187))))))
+     X))
+ 2.2290492)
+
+Generation 12:  Average standardized-fitness = 3.0492349.  
+The best individual program of the population had a 
+standardized fitness measure of 0.07541706 and 7 hits. 
+It was: 
+(%
+ (- (+ 0.025485467 (* X X))
+    (*
+     (* (+ X -0.11225905)
+        (* -1.0168632
+           (* (- (+ -0.28649113 0.8848059) (% X 3.2838252))
+              (% X
+                 (+
+                  (* -3.8108263
+                     (% 0.5365324
+                        (-
+                         (-
+                          (- (* X (+ 0.28670466 (* X X)))
+                             (+
+                              (* -4.1072764
+                                 (* 2.4396172
+                                    (*
+                                     (+ (+ 0.26971617 0.94430655)
+                                        (% (* -2.269445 X) (% X X)))
+                                     (+ (+ -1.5906327 (+ -3.7544327 X))
+                                        (% (% 2.3305337 X) 0.1160041)))))
+                              (% X (% 0.055919673 X))))
+                          3.8232317)
+                         (- X 3.34099))))
+                  (+ X 4.8730187))))))
+     X))
+ 2.2290492)
+
+Generation 13:  Average standardized-fitness = 3.5589764.  
+The best individual program of the population had a 
+standardized fitness measure of 0.053036187 and 8 hits. 
+It was: 
+(%
+ (- (+ 0.025485467 (* X X))
+    (*
+     (* (+ X -0.11225905)
+        (* -1.0168632
+           (* (- (+ -0.28649113 0.8848059) 0.025485467)
+              (% X
+                 (+
+                  (* -3.8108263
+                     (% 0.5365324
+                        (-
+                         (-
+                          (- (* X (+ 0.28670466 (* X X)))
+                             (- (* -4.2332335 -0.64042795) (+ -0.925988 X)))
+                          3.8232317)
+                         (- X
+                            (+
+                             (- X (* (+ 3.524979 -0.25669682) (+ 4.918146 X)))
+                             (* (+ (+ X 1.4209253) (% X X)) -0.15893854))))))
+                  (+ X 4.8730187))))))
+     X))
+ 2.2290492)
+
+Generation 14:  Average standardized-fitness = 5.743376.  
+The best individual program of the population had a 
+standardized fitness measure of 0.05302967 and 8 hits. 
+It was: 
+(%
+ (- (+ 0.025485467 (* X X))
+    (*
+     (* (+ X -0.11225905)
+        (* -1.0168632
+           (* (- (+ -0.28649113 0.8848059) 0.025485467)
+              (% X
+                 (+
+                  (* -3.8108263
+                     (% 0.5365324
+                        (-
+                         (-
+                          (-
+                           (* X
+                              (+
+                               (% (+ -1.3733677 (- X (% -3.6023958 3.8171718)))
+                                  (+
+                                   (* (- -4.3390822 4.9435186)
+                                      (+ -1.7710329 -4.4035563))
+                                   (* (* X X) (+ X X))))
+                               (* X X)))
+                           (- (* -4.2332335 -0.64042795) (+ -0.925988 X)))
+                          3.8232317)
+                         (- X
+                            (+
+                             (- X (* (+ 3.524979 -0.25669682) (+ 4.918146 X)))
+                             (* (+ (+ X 1.4209253) (% X X)) -0.15893854))))))
+                  (+ X 4.8730187))))))
+     X))
+ 2.2290492)
+
+Generation 15:  Average standardized-fitness = 5.471216.  
+The best individual program of the population had a 
+standardized fitness measure of 0.052986413 and 8 hits. 
+It was: 
+(%
+ (- (+ 0.025485467 (* X X))
+    (*
+     (* (+ X -0.11225905)
+        (* -1.0168632
+           (* (- (+ -0.28649113 0.8848059) 0.025485467)
+              (% X
+                 (+
+                  (* -3.8108263
+                     (% 0.5365324
+                        (-
+                         (-
+                          (-
+                           (* X
+                              (+
+                               (% (+ -1.3733677 (- X (% -3.6023958 3.8171718)))
+                                  (+
+                                   (* (- -4.3390822 4.9435186)
+                                      (+ -1.7710329 -4.4035563))
+                                   (* (* X X) (+ X X))))
+                               (* X X)))
+                           (- (* -4.2332335 -0.64042795) (+ -0.925988 X)))
+                          3.8232317)
+                         (- X
+                            (+
+                             (-
+                              (+ (- (* X X) (+ 3.1871555 (+ -2.328982 X)))
+                                 (*
+                                  (+ (% 4.314369 -4.790332) (* -0.25170252 X))
+                                  (- (% X X) (% X X))))
+                              (* (+ 3.524979 -0.25669682) (+ 4.918146 X)))
+                             (* (+ (+ X 1.4209253) (% X X)) -0.15893854))))))
+                  (+ X 4.8730187))))))
+     X))
+ 2.2290492)
+
+Generation 16:  Average standardized-fitness = 4.746717.  
+The best individual program of the population had a 
+standardized fitness measure of 0.052967045 and 8 hits. 
+It was: 
+(%
+ (- (+ 0.025485467 (* X X))
+    (*
+     (* (+ X -0.11225905)
+        (* -1.0168632
+           (* (- (+ -0.28649113 0.8848059) 0.025485467)
+              (% X
+                 (+
+                  (* -3.8108263
+                     (% 0.5365324
+                        (-
+                         (-
+                          (-
+                           (* (- X 3.30595)
+                              (+
+                               (% (+ -1.3733677 (- X (% -3.6023958 3.8171718)))
+                                  (+
+                                   (* (- -4.3390822 4.9435186)
+                                      (+ -1.7710329 -4.4035563))
+                                   (* (* X X) (+ X X))))
+                               (* X X)))
+                           (- (* -4.2332335 -0.64042795) (+ -0.925988 X)))
+                          3.8232317)
+                         (- X
+                            (+
+                             (- X (* (+ 3.524979 -0.25669682) (+ 4.918146 X)))
+                             (* (+ (+ X 1.4209253) (% X X)) -0.15893854))))))
+                  (+ X 4.8730187))))))
+     X))
+ 2.2290492)
+
+Generation 17:  Average standardized-fitness = 3.5120718.  
+The best individual program of the population had a 
+standardized fitness measure of 0.052192554 and 8 hits. 
+It was: 
+(%
+ (- (+ 0.025485467 (* X X))
+    (*
+     (* (+ X -0.11225905)
+        (* -1.0168632
+           (* (- (+ -0.28649113 0.8848059) 0.025485467)
+              (% X
+                 (+
+                  (* -3.8108263
+                     (% 0.5365324
+                        (-
+                         (-
+                          (-
+                           (* X
+                              (+
+                               (% (+ -1.3733677 (- X (% -3.6023958 3.8171718)))
+                                  (+
+                                   (* (- -4.3390822 4.9435186)
+                                      (+ -1.7710329 -4.4035563))
+                                   (* (* X X) (+ X X))))
+                               (* X X)))
+                           (- (* -4.2332335 -0.64042795) (+ -0.925988 X)))
+                          3.8232317)
+                         (- X
+                            (+
+                             (- X
+                                (*
+                                 (+ 3.524979
+                                    (-
+                                     (% (+ -4.8231487 (- -3.9209352 2.7970452))
+                                        (* (+ X X) (% X 0.095314346)))
+                                     4.7568393))
+                                 (+ 4.918146 X)))
+                             (*
+                              (+
+                               (+
+                                (+ (+ X (% -0.4213312 X))
+                                   (% (% 4.323227 -2.4299686)
+                                      (* -4.1433697 -2.5469465)))
+                                1.8365315)
+                               (% X X))
+                              -0.15893854))))))
+                  (+ X 4.8730187))))))
+     X))
+ 2.2290492)
+
+Generation 18:  Average standardized-fitness = 1.720216.  
+The best individual program of the population had a 
+standardized fitness measure of 0.052192554 and 8 hits. 
+It was: 
+(%
+ (- (+ 0.025485467 (* X X))
+    (*
+     (* (+ X -0.11225905)
+        (* -1.0168632
+           (* (- (+ -0.28649113 0.8848059) 0.025485467)
+              (% X
+                 (+
+                  (* -3.8108263
+                     (% 0.5365324
+                        (-
+                         (-
+                          (-
+                           (* X
+                              (+
+                               (% (+ -1.3733677 (- X (% -3.6023958 3.8171718)))
+                                  (+
+                                   (* (- -4.3390822 4.9435186)
+                                      (+ -1.7710329 -4.4035563))
+                                   (* (* X X) (+ X X))))
+                               (* X X)))
+                           (- (* -4.2332335 -0.64042795) (+ -0.925988 X)))
+                          3.8232317)
+                         (- X
+                            (+
+                             (- X
+                                (*
+                                 (+ 3.524979
+                                    (-
+                                     (% (+ -4.8231487 (- -3.9209352 2.7970452))
+                                        (* (+ X X) (% X 0.095314346)))
+                                     4.7568393))
+                                 (+ 4.918146 X)))
+                             (*
+                              (+
+                               (+
+                                (+ (+ X (% -0.4213312 X))
+                                   (% (% 4.323227 -2.4299686)
+                                      (* -4.1433697 -2.5469465)))
+                                1.8365315)
+                               (% X X))
+                              -0.15893854))))))
+                  (+ X 4.8730187))))))
+     X))
+ 2.2290492)
+
+Generation 19:  Average standardized-fitness = 1.5445546.  
+The best individual program of the population had a 
+standardized fitness measure of 0.007958659 and 10 hits. 
+It was: 
+(% X
+   (+ (% 1.9853702 X)
+      (* X
+         (%
+          (% (- (* X 1.1507946) (% -2.4059024 -3.0308995))
+             (* 4.6189275 (% -0.91178423 X)))
+          (% (- (- X X) (+ 4.487164 X)) (* X 1.4911964))))))
+
+
+
+
+The best-of-run individual program for this run was found on 
+generation 19 and had a standardized fitness measure of 0.007958659 and 10 hits.  
+It was:
+(% X
+   (+ (% 1.9853702 X)
+      (* X
+         (%
+          (% (- (* X 1.1507946) (% -2.4059024 -3.0308995))
+             (* 4.6189275 (% -0.91178423 X)))
+          (% (- (- X X) (+ 4.487164 X)) (* X 1.4911964))))))
+
+Parameters used for this run.
+=============================
+Maximum number of Generations:                    21
+Size of Population:                               100
+Maximum depth of new individuals:                 6
+Maximum depth of new subtrees for mutants:        4
+Maximum depth of individuals after crossover:     17
+Fitness-proportionate reproduction fraction:      0.1
+Crossover at any point fraction:                  0.2
+Crossover at function points fraction:            0.7
+Number of fitness cases:                          8
+Selection method:                                 FITNESS-PROPORTIONATE
+Generation method:                                RAMPED-HALF-AND-HALF
+Randomizer seed:                                  1.0d0
+Fitness cases
+ 1    T   T   T       T
+ 2    T   T   NIL       T
+ 3    T   NIL   T       T
+ 4    T   NIL   NIL       NIL
+ 5    NIL   T   T       T
+ 6    NIL   T   NIL       NIL
+ 7    NIL   NIL   T       NIL
+ 8    NIL   NIL   NIL       NIL
+
+Generation 0:  Average standardized-fitness = 3.44.  
+The best individual program of the population had a 
+standardized fitness measure of 1.0 and 7 hits. 
+It was: 
+(OR (AND D2 D1 D1) (AND D1 D0))
+
+Generation 1:  Average standardized-fitness = 2.98.  
+The best individual program of the population had a 
+standardized fitness measure of 1.0 and 7 hits. 
+It was: 
+(OR (AND D2 D1 D1) (AND (OR D1 D0) D0 D2))
+
+Generation 2:  Average standardized-fitness = 3.07.  
+The best individual program of the population had a 
+standardized fitness measure of 1.0 and 7 hits. 
+It was: 
+(AND (OR D1 D2) D0 D0)
+
+Generation 3:  Average standardized-fitness = 3.04.  
+The best individual program of the population had a 
+standardized fitness measure of 1.0 and 7 hits. 
+It was: 
+(AND D0 (OR D2 D1))
+
+Generation 4:  Average standardized-fitness = 2.9.  
+The best individual program of the population had a 
+standardized fitness measure of 1.0 and 7 hits. 
+It was: 
+(AND (OR D0 D2) D2 (OR D0 D1))
+
+Generation 5:  Average standardized-fitness = 2.9.  
+The best individual program of the population had a 
+standardized fitness measure of 1.0 and 7 hits. 
+It was: 
+(AND D0 (AND D0 (OR D2 D1)))
+
+Generation 6:  Average standardized-fitness = 2.59.  
+The best individual program of the population had a 
+standardized fitness measure of 1.0 and 7 hits. 
+It was: 
+(OR (AND D1 D0 D0) (AND (AND D2 (OR D1 D0)) D0 D2))
+
+Generation 7:  Average standardized-fitness = 2.47.  
+The best individual program of the population had a 
+standardized fitness measure of 1.0 and 7 hits. 
+It was: 
+(AND D0 (OR (OR D1 D2) (AND D2 D0 D2)))
+
+Generation 8:  Average standardized-fitness = 2.53.  
+The best individual program of the population had a 
+standardized fitness measure of 1.0 and 7 hits. 
+It was: 
+(OR (AND (AND D2 D2) (AND D2 D1 D1)) (AND (OR D0 D2) D0 D2))
+
+Generation 9:  Average standardized-fitness = 2.26.  
+The best individual program of the population had a 
+standardized fitness measure of 1.0 and 7 hits. 
+It was: 
+(AND D2
+     (AND (OR D1 (OR (OR D0 D1) D0))
+          (OR (OR D2 (OR (OR D2 D2) (OR D2 D1))) D1)))
+
+Generation 10:  Average standardized-fitness = 2.16.  
+The best individual program of the population had a 
+standardized fitness measure of 1.0 and 7 hits. 
+It was: 
+(OR (AND D1 (AND D0 D1 D0)) D2)
+
+Generation 11:  Average standardized-fitness = 1.98.  
+The best individual program of the population had a 
+standardized fitness measure of 0.0 and 8 hits. 
+It was: 
+(OR (AND (OR D1 D1) (OR (AND (AND D2 D1 D1) (OR D2 D2)) (OR D2 D0)))
+    (AND (OR D2 D0) D0 D2))
+
+
+
+
+The best-of-run individual program for this run was found on 
+generation 11 and had a standardized fitness measure of 0.0 and 8 hits.  
+It was:
+(OR (AND (OR D1 D1) (OR (AND (AND D2 D1 D1) (OR D2 D2)) (OR D2 D0)))
+    (AND (OR D2 D0) D0 D2))
+
+Parameters used for this run.
+=============================
+Maximum number of Generations:                    21
+Size of Population:                               100
+Maximum depth of new individuals:                 6
+Maximum depth of new subtrees for mutants:        4
+Maximum depth of individuals after crossover:     17
+Fitness-proportionate reproduction fraction:      0.1
+Crossover at any point fraction:                  0.2
+Crossover at function points fraction:            0.7
+Number of fitness cases:                          4
+Selection method:                                 FITNESS-PROPORTIONATE
+Generation method:                                RAMPED-HALF-AND-HALF
+Randomizer seed:                                  1.0d0
+Fitness cases
+ 1    -5   -5
+ 2    -5   5
+ 3    5   -5
+ 4    5   5
+
+Generation 0:  Average standardized-fitness = 183.01.  
+The best individual program of the population had a 
+standardized fitness measure of 71.0 and 3 hits. 
+It was: 
+(IFX (IFY (GOW) (GOW) (GON)) (IFX (GOW) (GOS) (GOS)) (IFX (GON) (GOW) (GOE)))
+
+Generation 1:  Average standardized-fitness = 171.72.  
+The best individual program of the population had a 
+standardized fitness measure of 34.0 and 4 hits. 
+It was: 
+(IFX (GOW) (IFY (GOW) (GON) (GON))
+     (IFY (IFX (GON) (IFX (GOW) (GOW) (GOW)) (GOS))
+          (IFY (IFX (IFX (GON) (GOS) (GON)) (IFY (GOS) (GOS) (GOE)) (GOE))
+               (IFX (IFY (GOW) (GOE) (GOW)) (IFX (GOE) (GOS) (GOW)) (GOE))
+               (GOW))
+          (IFY (GON) (GOE) (GON))))
+
+Generation 2:  Average standardized-fitness = 161.39.  
+The best individual program of the population had a 
+standardized fitness measure of 34.0 and 4 hits. 
+It was: 
+(IFX (GOW) (IFY (GOW) (GON) (GON))
+     (IFY (IFX (GON) (IFX (GOW) (GOW) (GOW)) (GOS))
+          (IFY (IFX (IFX (GON) (GOS) (GON)) (IFY (GOS) (GOS) (GOE)) (GOE))
+               (IFX (IFY (GOW) (GOE) (GOW)) (IFX (GOE) (GOS) (GOW)) (GOE))
+               (GOW))
+          (IFY (GON) (GOE) (GON))))
+
+Generation 3:  Average standardized-fitness = 123.1.  
+The best individual program of the population had a 
+standardized fitness measure of 34.0 and 4 hits. 
+It was: 
+(IFX (GOW) (IFY (GOW) (GON) (GON))
+     (IFY (IFX (GON) (GON) (GOS))
+          (IFY (IFX (IFX (GON) (GOS) (GON)) (IFY (GOS) (GOS) (GOE)) (GOW))
+               (IFX (IFY (GOW) (GOE) (GOW)) (IFX (GOE) (GOS) (GOW)) (GOE))
+               (GOW))
+          (IFY (GON) (GOE) (GON))))
+
+Generation 4:  Average standardized-fitness = 94.08.  
+The best individual program of the population had a 
+standardized fitness measure of 34.0 and 4 hits. 
+It was: 
+(IFX (GOW) (IFY (GOW) (GON) (GON))
+     (IFY (IFX (GON) (IFX (GOW) (GOW) (GOW)) (GOS))
+          (IFY (IFX (IFX (GON) (GOS) (GOW)) (IFY (GOS) (GOS) (GOE)) (GOE))
+               (IFX (IFY (GOW) (GOE) (GOW)) (IFX (GOE) (GOS) (GOW)) (GOE))
+               (GOW))
+          (IFY (GON) (GOE) (GON))))
+
+Generation 5:  Average standardized-fitness = 60.62.  
+The best individual program of the population had a 
+standardized fitness measure of 34.0 and 4 hits. 
+It was: 
+(IFX (GOW) (IFY (GOW) (GON) (GON))
+     (IFY (IFX (GON) (IFX (GOW) (GOW) (GOW)) (GOS))
+          (IFY (IFX (IFX (GON) (GOS) (GON)) (IFY (GOS) (GOW) (GOE)) (GOE))
+               (IFX (IFY (GOW) (GOE) (GOW)) (IFX (GOE) (GOS) (GOW)) (GOE))
+               (IFY (GON) (GOE) (GOS)))
+          (GON)))
+
+Generation 6:  Average standardized-fitness = 58.91.  
+The best individual program of the population had a 
+standardized fitness measure of 34.0 and 4 hits. 
+It was: 
+(IFX (GOW) (IFY (GOW) (GON) (GON))
+     (IFY (IFX (GON) (GOW) (GOS))
+          (IFY (IFX (IFX (GON) (GOS) (GON)) (IFY (GOS) (GOS) (GOE)) (GOS))
+               (IFX (IFY (GOW) (GOE) (GOW))
+                    (IFX (IFX (GON) (GOE) (GON)) (GOS) (GOW)) (GOE))
+               (GOW))
+          (IFY (GON) (GOE) (GON))))
+
+Generation 7:  Average standardized-fitness = 59.09.  
+The best individual program of the population had a 
+standardized fitness measure of 34.0 and 4 hits. 
+It was: 
+(IFX (GOW) (IFY (GOW) (GON) (GON))
+     (IFY (IFX (GON) (GON) (GOS))
+          (IFY (IFX (IFX (GON) (GOS) (GON)) (GOW) (GOE))
+               (IFX (GOS) (IFX (GOE) (GOS) (GOW)) (GOE))
+               (IFY (GOW) (GOE) (IFY (GOW) (GOE) (GOW))))
+          (IFY (GON) (GOE) (GON))))
+
+Generation 8:  Average standardized-fitness = 53.81.  
+The best individual program of the population had a 
+standardized fitness measure of 34.0 and 4 hits. 
+It was: 
+(IFX (GOW) (IFY (GOW) (GOE) (GON))
+     (IFY (IFX (GON) (IFX (GOW) (GOW) (GOW)) (GOS))
+          (IFY
+           (IFX
+            (IFX (GON) (GOS)
+                 (IFX (GON)
+                      (IFX (IFX (GON) (GOS) (GON)) (IFY (GOS) (GOS) (GOE))
+                           (GOE))
+                      (GOS)))
+            (IFY (GOS) (GOS) (GOE)) (GOE))
+           (IFX
+            (IFY (GOW)
+                 (IFX (IFX (GON) (GOW) (GON)) (IFY (GOS) (GOS) (GOE)) (GOW))
+                 (IFY (IFY (GOE) (GOS) (GOW)) (IFX (GON) (GOS) (GOE))
+                      (IFY (GOW) (GON) (GON))))
+            (IFX (GOE) (GOS) (GOW)) (GOE))
+           (GOW))
+          (GON)))
+
+Generation 9:  Average standardized-fitness = 52.94.  
+The best individual program of the population had a 
+standardized fitness measure of 34.0 and 4 hits. 
+It was: 
+(IFX (GOW) (IFY (GOW) (GON) (GON))
+     (IFY (IFX (GOW) (GOW) (GOS))
+          (IFY (IFX (GON) (IFX (GON) (GOW) (GOW)) (GOS))
+               (IFY (GOW)
+                    (IFX (IFY (GOW) (GOE) (GOW)) (IFX (GOE) (GOS) (GOW)) (GOE))
+                    (GOW))
+               (IFY (GON) (GOE) (GON)))
+          (IFY (GON) (GOE) (GON))))
+
+Generation 10:  Average standardized-fitness = 54.85.  
+The best individual program of the population had a 
+standardized fitness measure of 28.0 and 4 hits. 
+It was: 
+(IFX (GOW) (IFY (IFX (GOW) (IFY (GOS) (GOS) (GOE)) (GOE)) (GON) (GON))
+     (IFY (IFX (GON) (IFX (GON) (IFX (GOW) (GOW) (GOW)) (GOS)) (GOS))
+          (IFY (IFX (IFX (GON) (GOS) (GOS)) (IFY (GOS) (GOS) (GOE)) (GOE))
+               (IFX (GON) (IFX (GOE) (GOS) (GOW)) (GOE)) (GOW))
+          (GON)))
+
+Generation 11:  Average standardized-fitness = 44.83.  
+The best individual program of the population had a 
+standardized fitness measure of 28.0 and 4 hits. 
+It was: 
+(IFX (GOW) (IFY (IFX (GOW) (IFY (GOS) (GOS) (GOE)) (GOE)) (GON) (GON))
+     (IFY (IFX (GON) (IFX (GON) (IFX (GOW) (GOW) (GOW)) (GOS)) (GOS))
+          (IFY
+           (IFX (IFX (GON) (GOS) (GOS))
+                (IFX (GON) (IFX (GOW) (GON) (GOW)) (GOS)) (GOE))
+           (IFX (GON) (IFX (GOE) (GOS) (GOW)) (GOE)) (GOW))
+          (GON)))
+
+Generation 12:  Average standardized-fitness = 45.78.  
+The best individual program of the population had a 
+standardized fitness measure of 28.0 and 4 hits. 
+It was: 
+(IFX (GOW) (IFY (IFX (GOW) (IFY (GOS) (GOS) (GOE)) (GOE)) (GON) (GON))
+     (IFY (IFX (GON) (IFX (GON) (IFX (GOW) (GOW) (GOW)) (GOS)) (GOS))
+          (IFY (IFX (IFX (GON) (GOW) (GOS)) (IFY (GOS) (GOS) (GOE)) (GOE))
+               (IFX (GON) (IFX (GOE) (GOS) (GOW)) (GOE)) (GOW))
+          (GON)))
+
+Generation 13:  Average standardized-fitness = 50.65.  
+The best individual program of the population had a 
+standardized fitness measure of 28.0 and 4 hits. 
+It was: 
+(IFX (GOW) (IFY (IFX (GON) (IFY (GOS) (GOS) (GOE)) (GOE)) (GON) (GON))
+     (IFY (IFX (GON) (IFX (GON) (IFX (GOW) (GOW) (GOW)) (GOS)) (GOE))
+          (IFY
+           (IFX (IFX (GON) (GOS) (GOS))
+                (IFX (GON) (IFX (GOW) (GON) (GOW)) (GOS)) (GOE))
+           (IFX (GON) (IFX (GOE) (GOS) (GOW)) (GOE)) (GOW))
+          (GON)))
+
+Generation 14:  Average standardized-fitness = 52.98.  
+The best individual program of the population had a 
+standardized fitness measure of 28.0 and 4 hits. 
+It was: 
+(IFX (GOW) (IFY (IFX (GOW) (IFY (GOS) (GOS) (GOE)) (GOE)) (GON) (GON))
+     (IFY (GOS)
+          (IFY
+           (IFX (IFX (GON) (GOS) (GOS))
+                (IFX (GON) (IFX (GOW) (GON) (GOW)) (GOS)) (GOE))
+           (IFX (GOW) (IFX (GOE) (GOS) (GOW)) (GOE)) (GOW))
+          (GON)))
+
+Generation 15:  Average standardized-fitness = 52.55.  
+The best individual program of the population had a 
+standardized fitness measure of 28.0 and 4 hits. 
+It was: 
+(IFX (GOW) (IFY (IFX (GOW) (IFY (GOS) (GOS) (GOE)) (GON)) (GON) (GON))
+     (IFY (IFX (GON) (IFX (GON) (IFX (GOW) (GOW) (GOW)) (GOS)) (GOS))
+          (IFY
+           (IFX (IFX (GON) (GOS) (IFX (GOE) (GOS) (GOS)))
+                (IFY (GOS) (GOS) (GOS)) (GOE))
+           (IFX (GOS) (IFX (GON) (GOS) (GOW)) (GOE)) (GOW))
+          (GON)))
+
+Generation 16:  Average standardized-fitness = 45.78.  
+The best individual program of the population had a 
+standardized fitness measure of 28.0 and 4 hits. 
+It was: 
+(IFX (GOW) (IFY (IFX (GOW) (IFY (GOS) (GOS) (GOE)) (GOE)) (GON) (GON))
+     (IFY
+      (IFX (GON)
+           (IFX (GON) (IFX (GOW) (GOW) (GOW))
+                (IFX (GOW) (IFY (GOW) (GON) (GON))
+                     (IFY (IFX (GON) (IFX (GOW) (GON) (GOW)) (GOS))
+                          (IFY (IFX (GOS) (GOW) (GOE))
+                               (IFX (IFY (GOW) (GOE) (GOW)) (GOE) (GOE)) (GOW))
+                          (IFY (GON) (GON) (GON)))))
+           (GOS))
+      (IFY
+       (IFX (IFX (GON) (GOS) (IFY (GOW) (GOE) (GON))) (IFY (GOS) (GOS) (GOS))
+            (GOE))
+       (IFX (GON) (IFX (GOE) (GOS) (GOW)) (GOE)) (GOW))
+      (GON)))
+
+Generation 17:  Average standardized-fitness = 50.77.  
+The best individual program of the population had a 
+standardized fitness measure of 28.0 and 4 hits. 
+It was: 
+(IFX (GOW) (IFY (IFX (GOW) (IFY (GOS) (GOS) (GOE)) (GOE)) (GON) (GON))
+     (IFY
+      (IFX (GON)
+           (IFX (GON) (IFX (GOW) (GOW) (GOW))
+                (IFX (GOW) (GOE)
+                     (IFY (IFX (GON) (IFX (GOW) (GON) (GOW)) (GOS))
+                          (IFY
+                           (IFX
+                            (IFX (GOS)
+                                 (IFX (IFX (GON) (GOS) (GON)) (GOW) (GON))
+                                 (GON))
+                            (GOW) (GOE))
+                           (IFX (IFY (GOW) (GOE) (GOW)) (GOE) (GOE))
+                           (IFX (GOW) (IFY (GOW) (GON) (GON))
+                                (IFY (IFX (GON) (GON) (GOS))
+                                     (IFY (GOW)
+                                          (IFX (IFY (GOW) (GON) (GOW))
+                                               (IFX (GOE) (GON) (GOW)) (GOE))
+                                          (GON))
+                                     (IFY (GON) (GOE) (GON)))))
+                          (IFY (GON) (GON) (GON)))))
+           (GOS))
+      (IFY (IFX (IFX (GON) (GOS) (GOS)) (IFY (GOS) (GOS) (GOS)) (GOE))
+           (IFX (GON) (IFX (GOE) (GOS) (GOW)) (GOE)) (GOW))
+      (GON)))
+
+Generation 18:  Average standardized-fitness = 46.64.  
+The best individual program of the population had a 
+standardized fitness measure of 28.0 and 4 hits. 
+It was: 
+(IFX
+ (IFX (GOW) (IFY (IFX (GOS) (GOW) (GOE)) (GON) (GON))
+      (IFY
+       (IFX (GON)
+            (IFX (IFY (GOW) (GOE) (GOW))
+                 (IFX (GOE) (IFY (GOW) (GOW) (GON)) (GOW)) (GOE))
+            (GOS))
+       (IFY (IFX (IFY (GOW) (GOE) (GOW)) (IFX (GOE) (GOS) (GOW)) (GOE))
+            (IFX (IFY (GOW) (GOE) (GOW)) (IFX (GOE) (GON) (GOW)) (GOE))
+            (IFY (IFX (GON) (IFX (GOW) (GOW) (GOW)) (GOS)) (GOE) (GON)))
+       (GON)))
+ (IFY (IFX (GOW) (IFY (GOS) (GOS) (GOE)) (GON)) (GON) (GON))
+ (IFY (IFX (GON) (IFX (GON) (IFX (GOW) (GOW) (GOE)) (GOS)) (GOS))
+      (IFY
+       (IFX (IFX (GON) (GOS) (IFX (GOE) (GOS) (GOS))) (IFY (GOS) (GOS) (GOS))
+            (GOW))
+       (IFX (GON) (IFX (GOE) (GOS) (GOW)) (GOE)) (GOW))
+      (GON)))
+
+Generation 19:  Average standardized-fitness = 49.01.  
+The best individual program of the population had a 
+standardized fitness measure of 28.0 and 4 hits. 
+It was: 
+(IFX (GOW) (IFY (IFX (GOW) (IFY (GOS) (GOS) (GOE)) (GOE)) (GON) (GON))
+     (IFY
+      (IFX (GON)
+           (IFX (GON) (IFX (GOW) (GOW) (GOW))
+                (IFX (GOW) (IFY (GOW) (GON) (GON))
+                     (IFY (IFX (GON) (IFX (GOW) (GON) (GOW)) (GOS))
+                          (IFY (IFX (GOS) (GOW) (GOE))
+                               (IFX (IFY (GOW) (GOE) (GOW)) (GOE) (GOE)) (GOW))
+                          (IFY (GON) (GON) (GON)))))
+           (GOS))
+      (IFY
+       (IFX (IFX (GON) (GOS) (IFY (GOW) (GON) (GON))) (IFY (GOS) (GOS) (GOS))
+            (GOE))
+       (IFX (GON) (IFX (GOS) (GOS) (GOW)) (GOE)) (GOW))
+      (GON)))
+
+Generation 20:  Average standardized-fitness = 47.74.  
+The best individual program of the population had a 
+standardized fitness measure of 28.0 and 4 hits. 
+It was: 
+(IFX (GOW) (IFY (IFX (GOW) (IFY (GOS) (GOS) (GOE)) (GON)) (GON) (GON))
+     (IFY
+      (IFY (IFX (GOW) (GOS) (GOS))
+           (IFY (IFX (IFX (GON) (GOS) (GON)) (GOW) (GOE))
+                (IFX (IFY (GOW) (GOE) (GOW))
+                     (IFX (IFY (GOW) (GOE) (GON)) (GOS) (GOW)) (GOE))
+                (GOW))
+           (GON))
+      (IFY (IFX (IFY (GOW) (GON) (GON)) (IFY (GOS) (GOS) (GOS)) (GOE))
+           (IFX (GON) (IFX (GOE) (GOE) (GOW)) (GOE)) (GOW))
+      (GON)))
+
+
+
+
+The best-of-run individual program for this run was found on 
+generation 10 and had a standardized fitness measure of 28.0 and 4 hits.  
+It was:
+(IFX (GOW) (IFY (IFX (GOW) (IFY (GOS) (GOS) (GOE)) (GOE)) (GON) (GON))
+     (IFY (IFX (GON) (IFX (GON) (IFX (GOW) (GOW) (GOW)) (GOS)) (GOS))
+          (IFY (IFX (IFX (GON) (GOS) (GOS)) (IFY (GOS) (GOS) (GOE)) (GOE))
+               (IFX (GON) (IFX (GOE) (GOS) (GOW)) (GOE)) (GOW))
+          (GON)))
