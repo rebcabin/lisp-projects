@@ -30,7 +30,7 @@
       (write-string-at-point w thing (point-x dump-p) (point-y dump-p))))
 
 (defun dumpw (thing x y)
-  (dump *standard-window* thing (point x y)))
+  (dump *standard-window* thing (make-point :x x :y y)))
 
 ;;; T I M E R ==================================================================
 
@@ -69,7 +69,7 @@ started, return NIL."
          (bt (box-bottom b))
          (mx (floor (- rt lf) 2))
          (my (floor (- bt tp) 2)))
-    (make-instance 'point :x mx :y my)))
+    (make-point :x mx :y my)))
 
 (defun window-mid-point ()
   (box-midpoint *window-box*))
@@ -185,8 +185,8 @@ started, return NIL."
                   (clear-window *standard-window*)
 
                   (draw-line :bounding-box    *window-box*
-                             :from-point      (make-instance 'point :x 48 :y 12)
-                             :to-point        (make-instance 'point :x  7 :y  7)
+                             :from-point      (make-point :x 48 :y 12)
+                             :to-point        (make-point :x  7 :y  7)
                              :glyph-fn        (basic-glypher #\.)
                              :glyph-writer-fn #'write-glyph)
 
