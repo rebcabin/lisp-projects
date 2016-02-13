@@ -43,7 +43,9 @@
 (defmethod box-bottom-right ((b box))
   (make-instance 'point :x (box-right b) :y (box-bottom b)))
 
-(defmethod displace ((p point) (b box) direction)
+(defmethod displace-confined ((p point) (b box) direction)
+  "Move a point within a box, excluding the inner boundary, but don't let the
+point escape the box."
   (case direction
     ((:left)  (let ((lb (box-left b))
                     (px (point-x  p)))
