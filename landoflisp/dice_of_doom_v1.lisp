@@ -24,13 +24,15 @@
                         do (format t "~a-~a " (player-letter (first hex))
                                               (second hex))))))
 
+;;; A game tree is a list of a player, board, and a list of game trees.
+
 (defun game-tree (board player spare-dice first-move)
   (list player
         board
         (add-passing-move board
-                          player 
-                          spare-dice 
-                          first-move 
+                          player
+                          spare-dice
+                          first-move
                           (attacking-moves board player spare-dice))))
 
 (defun add-passing-move (board player spare-dice first-move moves)
@@ -39,26 +41,25 @@
       (cons (list nil
                   (game-tree (add-new-dice board player (1- spare-dice))
                              (mod (1+ player) *num-players*)
-                             0 
-                             t)) 
+                             0
+                             t))
             moves)))
 
 (defun attacking-moves (board cur-player spare-dice)
-  (labels ((player (pos)
-             (car (aref board pos)))
-           (dice (pos)
-             (cadr (aref board pos))))
+  (labels ((player (pos) (car  (aref board pos)))
+           (dice   (pos) (cadr (aref board pos))))
     (mapcan (lambda (src)
               (when (eq (player src) cur-player)
                 (mapcan (lambda (dst)
                           (when (and (not (eq (player dst) cur-player))
-                                (> (dice src) (dice dst)))
-                          (list 
-     (list (list src dst)
-           (game-tree (board-attack board cur-player src dst (dice src))
-                      cur-player 
-                      (+ spare-dice (dice dst))
-                      nil)))))
+                                     (> (dice src) (dice dst)))
+                            (list
+                             (list
+                              (list src dst)
+                              (game-tree (board-attack board cur-player src dst (dice src))
+                                         cur-player
+                                         (+ spare-dice (dice dst))
+                                         nil)))))
                         (neighbors src))))
             (loop for n below *board-hexnum*
                   collect n))))
@@ -72,7 +73,7 @@
                            (unless (zerop (mod (1+ pos) *board-size*))
                              (list (1+ pos) (1+ down))))
           when (and (>= p 0) (< p *board-hexnum*))
-          collect p)))
+            collect p)))
 
 (defun board-attack (board player src dst dice)
   (board-array (loop for pos from 0
@@ -88,7 +89,7 @@
                (t (let ((cur-player (caar lst))
                         (cur-dice (cadar lst)))
                     (if (and (eq cur-player player) (< cur-dice *max-dice*))
-                        (cons (list cur-player (1+ cur-dice)) 
+                        (cons (list cur-player (1+ cur-dice))
                               (f (cdr lst) (1- n)))
                         (cons (car lst) (f (cdr lst) n))))))))
     (board-array (f (coerce board 'list) spare-dice))))
@@ -210,7 +211,7 @@
                             (cur-dice (cadar lst)))
                         (if (and (eq cur-player player)
                                  (< cur-dice *max-dice*))
-                            (f (cdr lst) 
+                            (f (cdr lst)
                                (1- n)
                                (cons (list cur-player (1+ cur-dice)) acc))
                           (f (cdr lst) n (cons (car lst) acc))))))))
