@@ -1,5 +1,7 @@
 (load "point.lisp")
 
+;; Points are geometrical points, they have no extent.
+
 (quickcheck
 
   (let ((z (zero-point)))
