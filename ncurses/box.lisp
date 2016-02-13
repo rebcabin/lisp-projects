@@ -51,16 +51,16 @@
   (+ (box-left b) (box-width b)))
 
 (defmethod box-top-left ((b box))
-  (make-instance 'point :x (box-left  b) :y (box-top    b)))
+  (make-point :x (box-left  b) :y (box-top    b)))
 
 (defmethod box-top-right ((b box))
-  (make-instance 'point :x (box-right b) :y (box-top    b)))
+  (make-point :x (box-right b) :y (box-top    b)))
 
 (defmethod box-bottom-left ((b box))
-  (make-instance 'point :x (box-left  b) :y (box-bottom b)))
+  (make-point :x (box-left  b) :y (box-bottom b)))
 
 (defmethod box-bottom-right ((b box))
-  (make-instance 'point :x (box-right b) :y (box-bottom b)))
+  (make-point :x (box-right b) :y (box-bottom b)))
 
 (defmethod point-in-box ((p point) (b box) &key (boundary 0))
   (let ((lb (+ (box-left   b) boundary))

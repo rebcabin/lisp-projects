@@ -18,8 +18,8 @@
   (make-instance 'box
                  :left   (funcall an-integer)
                  :top    (funcall an-integer)
-                 :width  (funcall a-positive-index)
-                 :height (funcall a-positive-index)))
+                 :width  #'a-positive-index
+                 :height #'a-positive-index))
 
 (quickcheck
 
