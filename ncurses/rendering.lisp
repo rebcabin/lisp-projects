@@ -1,7 +1,7 @@
 ;;; R E N D E R I N G ======================================================
 
 (defmethod write-clip-char ((bb box)
-                            (c character) (x integer) (y integer)
+                            (x integer) (y integer) (c character)
                             (gw function))
   (when (and (>= x (box-left   bb))
              (<  x (box-right  bb))
@@ -40,8 +40,8 @@
       (loop
         :for x :upfrom x1 :to x2
         :do (if steep
-                (write-clip-char bb (funcall gf x y 'straight) x y gw)
-                (write-clip-char bb (funcall gf x y 'swapped ) y x gw))
+                (write-clip-char bb x y (funcall gf x y 'straight) gw)
+                (write-clip-char bb y x (funcall gf x y 'swapped ) gw))
             (setf erroire (- erroire delta-y))
             ;(setf c (incr c))
             (when (< erroire 0)
