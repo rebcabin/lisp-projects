@@ -10,20 +10,15 @@
 
 (in-package #:charms-storeys)
 
-;;; D E B U G G I N G ==========================================================
-
-(defparameter *dump-all* t)
-
 ;;; L I B R A R I E S ==========================================================
 
 (load "point.lisp")
 (load "box.lisp")
 (load "rendering.lisp")
 
-;;; D I S P L A Y ==============================================================
+;;; D E B U G G I N G ==========================================================
 
-(defconstant regular-wall-char #\#)
-(defconstant regular-me-char   #\@)
+(defparameter *dump-all* t)
 
 (defmethod dump ((w window) (thing string) (dump-p point))
   (if *dump-all*
@@ -31,6 +26,11 @@
 
 (defun dumpw (thing x y)
   (dump *standard-window* thing (make-point :x x :y y)))
+
+;;; D I S P L A Y ==============================================================
+
+(defconstant regular-wall-char #\#)
+(defconstant regular-me-char   #\@)
 
 ;;; T I M E R ==================================================================
 
@@ -57,8 +57,7 @@ started, return NIL."
 (defun window-box ()
   (multiple-value-bind (width height)
       (window-dimensions *standard-window*)
-    (make-instance 'box :top 0 :left 0
-                   :width width :height height)))
+    (make-instance 'box :top 0 :left 0 :width width :height height)))
 
 (defparameter *window-box* nil)
 
@@ -155,7 +154,7 @@ started, return NIL."
   ;; screen. See https://manned.org/mvwaddch: "If scrollok is not enabled,
   ;; writing a character at the lower right margin succeeds. However, an error
   ;; is returned because it is not possible to wrap to a new line.
-  ;; --> ignore errors here <-
+  ;; --> ignore errors here <--
   (charms/ll:mvwaddch (charms::window-pointer *standard-window*)
                       y x
                       (charms::character-to-c-char c)))
@@ -185,9 +184,9 @@ started, return NIL."
                   (clear-window *standard-window*)
 
                   (draw-line :bounding-box    *window-box*
-                             :from-point      (make-point :x 48 :y 12)
+                             :from-point      (make-point :x  7 :y  7)
                              :to-point        (make-point :x  7 :y  7)
-                             :glyph-fn        (basic-glypher #\.)
+                             :glyph-fn        (basic-glypher #\*)
                              :glyph-writer-fn #'write-glyph)
 
                   ;; rooms, items, and characters
