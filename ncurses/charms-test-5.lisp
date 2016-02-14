@@ -168,6 +168,9 @@ produce other characters."
 
 ;;; M A I N ====================================================================
 
+(defun a-sample-box ()
+  (make-instance 'box :left 7 :top 7 :width 20 :height 20))
+
 (defun main ()
   (let ((last-non-nil-c #\-))
     (with-curses ()
@@ -193,7 +196,12 @@ produce other characters."
 
                   ;; rooms, items, and characters
                   (draw :bounding-box    *window-box*
-                        :window-box      *window-box*
+                        :box-to-draw     *window-box*
+                        :glyph-fn        (basic-glypher regular-wall-char)
+                        :glyph-writer-fn #'write-glyph)
+
+                  (draw :bounding-box    *window-box*
+                        :box-to-draw     (a-sample-box)
                         :glyph-fn        (basic-glypher regular-wall-char)
                         :glyph-writer-fn #'write-glyph)
 
