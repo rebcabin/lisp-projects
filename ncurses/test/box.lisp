@@ -45,22 +45,22 @@
 
  (let ((b (make-instance 'box :left 0 :top 0 :width 1 :height 1))
        (p (zero-point)))
-   (test (point-in-boxp p b))
+   (test (point-in-box-p p b))
    (displace-right p)
-   (test (point-in-boxp p b))
+   (test (point-in-box-p p b))
    (displace-down p)
-   (test (point-in-boxp p b))
+   (test (point-in-box-p p b))
    )
 
  ;; A unit box cannot contain a point if the boundary of the box is excluded.
 
  (let ((b (make-instance 'box :left 0 :top 0 :width 1 :height 1))
        (p (zero-point)))
-   (test (not (point-in-boxp p b :boundary 1)))
+   (test (not (point-in-box-p p b :boundary 1)))
    (displace-right p)
-   (test (not (point-in-boxp p b :boundary 1)))
+   (test (not (point-in-box-p p b :boundary 1)))
    (displace-down p)
-   (test (not (point-in-boxp p b :boundary 1)))
+   (test (not (point-in-box-p p b :boundary 1)))
    )
 
  ;; Make sure m-blocks work.

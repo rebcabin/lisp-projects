@@ -3,6 +3,7 @@
 (defmethod write-clip-char ((bb box)
                             (x integer) (y integer) (c character)
                             (gw function))
+  "gw is a glyph-writer, passed in to ease testing."
   (when (and (>= x (box-left   bb))
              (<  x (box-right  bb))
              (>= y (box-top    bb))
@@ -17,7 +18,6 @@
 (defmethod draw-line% ((bb box) (tl point) (br point)
                        (gf function) (gw function))
   "Bresenham's cribbed from http://goo.gl/9ptT1g."
-  (declare (ignorable bb))
   (let* (; (c  #\0) ;debugging
          (x1 (point-y tl))
          (x2 (point-y br))
