@@ -15,6 +15,9 @@
 
 ;;; Internal functions may have variables with short names.
 
+;;; A little pattern, here, is to have methods for dispatch-on-type covered by
+;;; functions with named, keyword parameters to ease the burden on memory.
+
 (defmethod draw-line% ((bb box) (tl point) (br point)
                        (gf function) (gw function))
   "Bresenham's cribbed from http://goo.gl/9ptT1g."
@@ -71,11 +74,11 @@
     (draw-line% wb br tr gl gw)
     (draw-line% wb br bl gl gw)))
 
-(defmethod draw (&key
-                   bounding-box
-                   window-box
-                   glyph-fn
-                   glyph-writer-fn)
+(defun draw (&key
+               bounding-box
+               window-box
+               glyph-fn
+               glyph-writer-fn)
   (draw% bounding-box
          window-box
          glyph-fn

@@ -160,6 +160,8 @@ started, return NIL."
                       (charms::character-to-c-char c)))
 
 (defmethod basic-glypher ((c character))
+  "Given a character, produces a function of position and direction that can
+produce other characters."
   (lambda (x y direction)
     (declare (ignorable x y direction))
     c))
