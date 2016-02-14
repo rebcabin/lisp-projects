@@ -1,0 +1,120 @@
+Here is an amplification of Rainier's example that adds a small twist:
+specialization (subclassing) by constraining slot values, at least at
+construction time. Consider a class, /m-box/, for two-dimensional rectangles:
+
+#+BEGIN_SRC lisp :results none
+(defclass m-box ()
+  ((left   :accessor m-box-left   :initform 0 :type integer :initarg :left  )
+   (top    :accessor m-box-top    :initform 0 :type integer :initarg :top   )
+   (width  :accessor m-box-width  :initform 0 :type integer :initarg :width )
+   (height :accessor m-box-height :initform 0 :type integer :initarg :height)))
+#+END_SRC
+
+We can try it like this:
+
+#+BEGIN_SRC lisp :results output
+(describe (make-instance 'm-box :left 42 :top -39 :width 5 :height  11))
+#+END_SRC
+
+#+BEGIN_EXAMPLE
+: #<M-BOX {10047A8F83}>
+:   [standard-object]
+: 
+: Slots with :INSTANCE allocation:
+:   LEFT    = 42
+:   TOP     = -39
+:   WIDTH   = 5
+:   HEIGHT  = 11
+#+END_EXAMPLE
+
+Now consider a subclass or specialization: let an /m-block/ be an m-box with
+unit width and height. We set the /initialize-instance/ method to pass through
+values for /left/ and /top/, but not /width/ and /height/:
+
+#+BEGIN_SRC lisp :results none
+(defclass m-block (m-box) ())
+(defmethod initialize-instance
+    :around
+    ((mb m-block)
+     &key (left 0) (top 0))
+  (call-next-method mb :left left :top top :width 1 :height 1))
+#+END_SRC
+
+We can make an instance of /m-block/ as follows:
+
+#+BEGIN_SRC lisp :results output
+(describe (make-instance 'm-block :left 17 :top -34 :width 5 :height  11))
+#+END_SRC
+
+#+BEGIN_EXAMPLE
+: #<M-BLOCK {10049C0CC3}>
+:   [standard-object]
+: 
+: Slots with :INSTANCE allocation:
+:   LEFT    = 17
+:   TOP     = -34
+:   WIDTH   = 1
+:   HEIGHT  = 1
+#+END_EXAMPLE
+
+The constructor does not block the user's attempt to set /width/ and /height/,
+as it would do with some non-existent slot:
+
+#+BEGIN_SRC lisp :results output
+(describe (make-instance 'm-block :left 17 :top -34 :plugh 2345))
+#+END_SRC
+
+#+BEGIN_EXAMPLE
+Invalid initialization argument:
+  :PLUGH
+in call for class #<STANDARD-CLASS COMMON-LISP-USER::M-BLOCK>.
+   [Condition of type SB-PCL::INITARG-ERROR]
+#+END_EXAMPLE
+
+but the constructor /does/ overwrite the user's invalid inputs with 1.
+
+You might want to make the model more watertight by calling =error= if the
+user attempts to input /width/ or /height/:
+
+#+BEGIN_SRC lisp :results none
+  (defclass m-block (m-box) ())
+  (defmethod initialize-instance
+    :around
+    ((mb m-block)
+     &key (left 0) (top 0) (width 1) (height 1))
+    (when (or (/= 1 width) (/= 1 height))
+      (error "an m-block must have unit width and height"))
+    (call-next-method mb :left left :top top :width 1 :height 1))
+#+END_SRC
+
+The following attempt by the user is rejected:
+
+#+BEGIN_SRC lisp :results output
+(describe (make-instance 'm-block :left 17 :top -34 :width 5 :height  11))
+#+END_SRC
+
+#+BEGIN_EXAMPLE
+an m-block must have unit width and height
+   [Condition of type SIMPLE-ERROR]
+#+END_EXAMPLE
+
+But this one, which also demonstrates defaulting of /height/, goes through:
+
+#+BEGIN_SRC lisp :results output
+(describe (make-instance 'm-block :left 17 :top -34 :width 1))
+#+END_SRC
+
+#+BEGIN_EXAMPLE
+: #<M-BLOCK {1005377983}>
+:   [standard-object]
+: 
+: Slots with :INSTANCE allocation:
+:   LEFT    = 17
+:   TOP     = -34
+:   WIDTH   = 1
+:   HEIGHT  = 1
+#+END_EXAMPLE
+
+This example allows the user to =setf= the width or height afterwards. I do not
+know how to make the width and height /read-only/ in instances of the subclass
+and not in instances of the superclass. 

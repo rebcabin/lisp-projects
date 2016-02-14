@@ -13,22 +13,10 @@
 ;;; We'll have a world-box that contains a window box that contains room-boxes.
 
 (defclass box ()
-  ((left
-    :accessor box-left
-    :initform 0
-    :initarg  :left)
-   (top
-    :accessor box-top
-    :initform 0
-    :initarg  :top)
-   (width
-    :accessor box-width
-    :initform 0
-    :initarg  :width)
-   (height
-    :accessor box-height
-    :initform 0
-    :initarg  :height)))
+  ((left   :accessor box-left   :initform 0 :initarg :left  )
+   (top    :accessor box-top    :initform 0 :initarg :top   )
+   (width  :accessor box-width  :initform 0 :initarg :width )
+   (height :accessor box-height :initform 0 :initarg :height)))
 
 (defmethod non-negative-p ((b box))
   (and (<= 0 (box-width b))
@@ -74,7 +62,19 @@
          (>= y tb)
          (<= y bb))))
 
-(defmethod box-confined-p ((bi box) (bo box)))
+(defmethod box-in-box-p ((bi box) (bo box) &key (boundary 0))
+  (let ((lb (+ (box-left   bo) boundary))
+        (rb (- (box-right  bo) boundary))
+        (tb (+ (box-top    bo) boundary))
+        (bb (- (box-bottom bo) boundary))
+        (xl (box-left   bi))
+        (xr (box-right  bi))
+        (yt (box-top    bi))
+        (yb (box-bottom bi)))
+    (and (>= xl lb)
+         (<= xr rb)
+         (>= yt tb)
+         (<= yb bb))))
 
 (defmethod displace-confined ((p point) (b box) direction)
   "Move a point within a box, excluding the inner boundary, but don't let the
@@ -94,5 +94,14 @@ point escape the box."
                (when (< py (- bb 2)) (displace-down p))))
     ))
 
-;;; A "block" is a box of unit width and height, a.k.a. "unit box."
+;;; An "m-block" is a box of unit width and height, a.k.a. "unit box" (I can't
+;;; use "block" because it's a reserved symbol, a "special operator.").
+
+(defclass m-block (box) ())
+(defmethod initialize-instance
+    :around
+    ((mb m-block)
+     &key (left 0) (top 0))
+  (call-next-method mb :left left :top top
+                       :width 1 :height 1))
 
