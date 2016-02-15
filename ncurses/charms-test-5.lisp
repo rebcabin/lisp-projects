@@ -29,7 +29,7 @@
 
 ;;; D I S P L A Y ==============================================================
 
-(defconstant regular-wall-char #\#)
+(defconstant regular-wall-char #\%)
 (defconstant regular-me-char   #\@)
 
 ;;; T I M E R ==================================================================
@@ -168,8 +168,17 @@ produce other characters."
 
 ;;; M A I N ====================================================================
 
-(defun a-sample-box ()
-  (make-instance 'box :left 7 :top 7 :width 20 :height 20))
+(defun a-sample-room ()
+  (make-instance 'box :left 7 :top 7 :width 3 :height 3))
+
+(defun a-clipped-room ()
+  (make-instance 'box :left -7 :top -7 :width 20 :height 20))
+
+(defmethod draw-room ((room box))
+  (draw :bounding-box    *window-box*
+        :box-to-draw     room
+        :glyph-fn        (basic-glypher regular-wall-char)
+        :glyph-writer-fn #'write-glyph))
 
 (defun main ()
   (let ((last-non-nil-c #\-))
@@ -195,15 +204,10 @@ produce other characters."
                              :glyph-writer-fn #'write-glyph)
 
                   ;; rooms, items, and characters
-                  (draw :bounding-box    *window-box*
-                        :box-to-draw     *window-box*
-                        :glyph-fn        (basic-glypher regular-wall-char)
-                        :glyph-writer-fn #'write-glyph)
 
-                  (draw :bounding-box    *window-box*
-                        :box-to-draw     (a-sample-box)
-                        :glyph-fn        (basic-glypher regular-wall-char)
-                        :glyph-writer-fn #'write-glyph)
+                  (draw-room (a-clipped-room))
+
+                  (draw-room (a-sample-room))
 
                   (move-character c)
 

@@ -10,4 +10,8 @@
 
   (load "test/point.lisp")
   (load "test/box.lisp")
-  (load "test/rendering.lisp"))
+  (load "test/rendering.lisp")
+  (load "test/world.lisp")
+  (load "test/storey.lisp")
+  (load "test/room.lisp")
+  )

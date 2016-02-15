@@ -1,5 +1,3 @@
-;;; R E N D E R I N G ======================================================
-
 (defmethod write-clip-char ((bb box)
                             (x integer) (y integer) (c character)
                             (gw function))
