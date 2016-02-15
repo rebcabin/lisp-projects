@@ -64,15 +64,6 @@ started, return NIL."
 
 (defparameter *window-box* nil)
 
-(defmethod box-midpoint ((b box))
-  (let* ((lf (box-left   b))
-         (rt (box-right  b))
-         (tp (box-top    b))
-         (bt (box-bottom b))
-         (mx (floor (- rt lf) 2))
-         (my (floor (- bt tp) 2)))
-    (make-point :x mx :y my)))
-
 (defun window-mid-point ()
   (box-midpoint *window-box*))
 
@@ -145,12 +136,6 @@ started, return NIL."
 
 ;;; R E N D E R I N G ==========================================================
 
-(defun paint-screen ()
-  (let* ((me-x (point-x *me-point*))
-         (me-y (point-y *me-point*)))
-    (write-char-at-point *standard-window*
-                         regular-me-char me-x me-y)))
-
 (defun write-glyph (x y c)
   '(write-char-at-point *standard-window* c x y)
   ;; Must use low-level mvwaddch so we can write to the last position in the
@@ -168,6 +153,11 @@ produce other characters."
   (lambda (x y direction)
     (declare (ignorable x y direction))
     c))
+
+(defun render-me ()
+  (write-glyph (point-x *me-point*)
+               (point-y *me-point*)
+               regular-me-char))
 
 ;;; M A I N ====================================================================
 
@@ -192,12 +182,12 @@ produce other characters."
       (set-up-characters)
       (loop :named driver-loop
             :for c := (get-char *standard-window* :ignore-error t)
-            ;; Because we're in non-blocking mode, get-char returns constantly,
-            ;; even when no key has been pressed. Must always check
-            ;; last-non-nil-c instead of the return value of get-char.
             :do (progn
+                  ;; Because we're in non-blocking mode, get-char returns constantly,
+                  ;; even when no key has been pressed. Must always check
+                  ;; last-non-nil-c instead of the return value of get-char.
                   (setf last-non-nil-c (or c last-non-nil-c))
-
+                  ;; Would be nice to have a "with-window" macro for this pattern.
                   (clear-window *standard-window*)
 
                   (draw-line :bounding-box    *window-box*
@@ -225,7 +215,8 @@ produce other characters."
                                  (point-y *me-point*)
                                  (box-bottom *window-box*)) 2 4)
 
-                  (paint-screen)
+                  (render-me)
+
                   (refresh-window *standard-window*)
 
                   (when (control-process c)

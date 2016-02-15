@@ -50,6 +50,15 @@
 (defmethod box-bottom-right ((b box))
   (make-point :x (box-right b) :y (box-bottom b)))
 
+(defmethod box-midpoint ((b box))
+  (let* ((lf (box-left   b))
+         (rt (box-right  b))
+         (tp (box-top    b))
+         (bt (box-bottom b))
+         (mx (floor (- rt lf) 2))
+         (my (floor (- bt tp) 2)))
+    (make-point :x mx :y my)))
+
 (defmethod boxes-equal ((b1 box) (b2 box))
   (and (= (box-left   b1) (box-left   b2))
        (= (box-top    b1) (box-top    b2))
@@ -82,22 +91,22 @@
          (>= yt tb)
          (<= yb bb))))
 
-(defmethod displace-confined ((p point) (b box) direction)
+(defmethod displace-confined ((p point) (b box) direction &key (boundary 0))
   "Move a point within a box, excluding the inner boundary, but don't let the
 point escape the box."
   (case direction
     ((:left)  (let ((lb (box-left b))
                     (px (point-x  p)))
-                (when (> (- px 1) lb) (displace-left p))))
+                (when (> (- px boundary) lb) (displace-left p))))
     ((:up)    (let ((tb (box-top b))
                     (py (point-y  p)))
-                (when (> (- py 1) tb) (displace-up p))))
+                (when (> (- py boundary) tb) (displace-up p))))
     ((:right) (let ((rb (box-right b))
                     (px (point-x   p)))
-                (when (< px (- rb 2)) (displace-right p))))
+                (when (< px (- rb boundary 1)) (displace-right p))))
     ((:down)  (let ((bb (box-bottom b))
-                   (py (point-y   p)))
-               (when (< py (- bb 2)) (displace-down p))))
+                    (py (point-y   p)))
+                (when (< py (- bb boundary 1)) (displace-down p))))
     ))
 
 ;;; An "m-block" is a box of unit width and height, a.k.a. "unit box" (I can't
