@@ -1,5 +1,7 @@
 (load "point.lisp")
 (load "box.lisp")
+(load "world.lisp")
+(load "storey.lisp")
 (load "room.lisp")
 
 (defun a-positive-box ()

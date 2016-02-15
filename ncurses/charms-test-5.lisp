@@ -14,6 +14,9 @@
 
 (load "point.lisp")
 (load "box.lisp")
+(load "world.lisp")
+(load "storey.lisp")
+(load "room.lisp")
 (load "rendering.lisp")
 
 ;;; D E B U G G I N G ==========================================================
@@ -168,17 +171,17 @@ produce other characters."
 
 ;;; M A I N ====================================================================
 
-(defun a-sample-room ()
+(defun a-sample-m-room ()
   (make-instance 'box :left 7 :top 7 :width 3 :height 3))
 
-(defun a-clipped-room ()
+(defun a-clipped-m-room ()
   (make-instance 'box :left -7 :top -7 :width 20 :height 20))
 
-(defmethod draw-room ((room box))
-  (draw :bounding-box    *window-box*
-        :box-to-draw     room
-        :glyph-fn        (basic-glypher regular-wall-char)
-        :glyph-writer-fn #'write-glyph))
+(defmethod draw-m-room ((room box))
+  (draw-box :bounding-box    *window-box*
+            :box-to-draw     room
+            :glyph-fn        (basic-glypher regular-wall-char)
+            :glyph-writer-fn #'write-glyph))
 
 (defun main ()
   (let ((last-non-nil-c #\-))
@@ -205,9 +208,9 @@ produce other characters."
 
                   ;; rooms, items, and characters
 
-                  (draw-room (a-clipped-room))
+                  (draw-m-room (a-clipped-m-room))
 
-                  (draw-room (a-sample-room))
+                  (draw-m-room (a-sample-m-room))
 
                   (move-character c)
 

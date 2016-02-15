@@ -62,7 +62,7 @@
               glyph-writer-fn))
 
 
-(defmethod draw% ((bb box) (bd box) (gl function) (gw function))
+(defmethod draw-box% ((bb box) (bd box) (gl function) (gw function))
   (let ((tl (box-top-left                     bd))
         (tr (decr-x (box-top-right            bd)))
         (bl (decr-y (box-bottom-left          bd)))
@@ -72,15 +72,15 @@
     (draw-line% bb br tr gl gw)
     (draw-line% bb br bl gl gw)))
 
-(defun draw (&key
-               bounding-box
-               box-to-draw
-               glyph-fn
-               glyph-writer-fn)
-  (draw% bounding-box
-         box-to-draw
-         glyph-fn
-         glyph-writer-fn))
+(defun draw-box (&key
+                   bounding-box
+                   box-to-draw
+                   glyph-fn
+                   glyph-writer-fn)
+  (draw-box% bounding-box
+             box-to-draw
+             glyph-fn
+             glyph-writer-fn))
 
 
 

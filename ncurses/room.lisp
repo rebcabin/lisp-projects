@@ -8,3 +8,6 @@
 
 (defmethod create-m-room ((bb box))
   (make-m-room :its-box bb))
+
+(defmethod put-room ((r m-room)))
+

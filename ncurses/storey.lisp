@@ -4,8 +4,7 @@
 (defconstant +storey-height+ 256)
 
 (defun make-storey ()
-  (make-array `(,+world-width+
-                ,+world-height+)
+  (make-array `(,+storey-width+
+                ,+storey-height+)
               :element-type '(signed-byte 16)))
 
-(defmethod put-room ((r room)))
