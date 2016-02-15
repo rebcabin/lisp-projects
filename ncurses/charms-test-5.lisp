@@ -173,6 +173,18 @@ produce other characters."
             :glyph-fn        (basic-glypher regular-wall-char)
             :glyph-writer-fn #'write-glyph))
 
+(defmacro with-loop-frame (loop-name &rest body)
+  `(progn
+     ;; Because we're in non-blocking mode, get-char returns constantly,
+     ;; even when no key has been pressed. Must always check
+     ;; last-non-nil-c instead of the return value of get-char.
+     (setf last-non-nil-c (or c last-non-nil-c))
+     (clear-window *standard-window*)
+     ,@body
+     (refresh-window *standard-window*)
+     (when (control-process c)
+       (return-from ,loop-name driver-loop))     ))
+
 (defun main ()
   (let ((last-non-nil-c #\-))
     (with-curses ()
@@ -182,14 +194,7 @@ produce other characters."
       (set-up-characters)
       (loop :named driver-loop
             :for c := (get-char *standard-window* :ignore-error t)
-            :do (progn
-                  ;; Because we're in non-blocking mode, get-char returns constantly,
-                  ;; even when no key has been pressed. Must always check
-                  ;; last-non-nil-c instead of the return value of get-char.
-                  (setf last-non-nil-c (or c last-non-nil-c))
-                  ;; Would be nice to have a "with-window" macro for this pattern.
-                  (clear-window *standard-window*)
-
+            :do (with-loop-frame driver-loop
                   (draw-line :bounding-box    *window-box*
                              :from-point      (make-point :x  7 :y  7)
                              :to-point        (make-point :x  7 :y  7)
@@ -215,11 +220,6 @@ produce other characters."
                                  (point-y *me-point*)
                                  (box-bottom *window-box*)) 2 4)
 
-                  (render-me)
-
-                  (refresh-window *standard-window*)
-
-                  (when (control-process c)
-                    (return-from driver-loop)) )))))
+                  (render-me))))))
 
 (main)
