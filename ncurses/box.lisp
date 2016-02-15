@@ -50,6 +50,12 @@
 (defmethod box-bottom-right ((b box))
   (make-point :x (box-right b) :y (box-bottom b)))
 
+(defmethod boxes-equal ((b1 box) (b2 box))
+  (and (= (box-left   b1) (box-left   b2))
+       (= (box-top    b1) (box-top    b2))
+       (= (box-width  b1) (box-width  b2))
+       (= (box-height b1) (box-height b2))))
+
 (defmethod point-in-box-p ((p point) (b box) &key (boundary 0))
   (let ((lb (+ (box-left   b) boundary))
         (rb (- (box-right  b) boundary))
