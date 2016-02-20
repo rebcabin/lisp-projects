@@ -1,0 +1,291 @@
+#+TITLE: Storeys
+#+AUTHOR: Brian Beckman
+#+EMAIL: bbeckman@34363bc84acc.ant.amazon.com
+#+OPTIONS: ':t *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline author:t c:nil
+#+OPTIONS: creator:comment d:(not "LOGBOOK") date:t e:t email:nil f:t inline:t
+#+OPTIONS: num:t p:nil pri:nil stat:t tags:t tasks:t tex:t timestamp:t toc:t
+#+OPTIONS: todo:t |:t
+#+CREATOR: Emacs 24.5.1 (Org mode 8.2.10)
+#+SELECT_TAGS: export
+#+STARTUP: indent
+#+LaTeX_CLASS_OPTIONS: [10pt,oneside,x11names]
+#+LaTeX_HEADER: \usepackage{geometry}
+#+LaTeX_HEADER: \usepackage{palatino}
+#+LaTeX_HEADER: \usepackage{siunitx}
+#+LaTeX_HEADER: \usepackage{braket}
+#+LaTeX_HEADER: \usepackage[euler-digits,euler-hat-accent]{eulervm}
+#+OPTIONS: toc:2
+
+* Prelude
+
+#+NAME: copyright
+#+BEGIN_SRC lisp :eval never
+  ;; Copyright (c) 2016 Brian Beckman
+#+END_SRC
+
+* COMMENT How to Work with This File
+
+** Emacs + VIM == Spacemacs
+
+You must use Emacs, org-mode, and org-babel to work with this file. If you
+prefer VIM, I have a solution for you.
+
+** Spacemacs
+
+Spacemacs[fn:spacemacs] is a good set of packages for Emacs even if you're not
+going to use its perfect VIM emulation. I recommend it. If you're a VIM user,
+you will probably need it because the default Emacs keymaps will drive you
+batty.
+
+You can definitely do everything here using just plain-ol'-Emacs, though you may
+have to load some packages. If you're using plain-ol'-Emacs, you'll have to
+figure that all out on your own; if you're using Spacemacs, almost all the
+packages are pre-installed. I won't say any more about it, because I don't want
+this to become a paper about Emacs.
+
+** Interactively
+
+Assuming you're visiting this =.org= file in Spacemacs, go to each code block,
+read it (you, as a human, read it, input it /via/ your eyeballs into your
+brain). Then type =C-c C-c= to /evaluate/ the block.
+
+Most of the code blocks contain just definitions and do not produce results;
+such block are marked =:results none=.  Some blocks produce results and Emacs
+puts the results into the file you're looking at now.
+
+The first time through, evaluate the blocks in order of appearance so that you
+evaluate definition blocks before blocks that use the definitions. This builds
+up session state. After that, you should be able to repeatedly evaluate
+blocks and get the same results (the code is supposed to be /idempotent/ and
+/commutative/ except for def-ref-order dependency).
+
+If you do not get repeatable results, the code is either not idempotent or not
+commutative (or both). That's a bug, and here is how to diagnose it: quit the
+Inferior Lisp Process (switch to its buffer named something-=*repl*=.)
+
+Repeatedly: track down causes of non-repeatable behavior and fix them. Rarely,
+Spacemacs gets confused and you must quit it altogether and restart. Do that if
+your results persistently don't make sense.
+
+** TODO Batch
+1. Tangle the embedded source out to external files (=C-c C-v t=)
+2. Open a terminal window and type =sbcl --script storeys.lisp= or =sbcl
+   --script test.lisp=.
+
+** Typesetting 
+
+Export and typeset the PDF file (=M-x org-latex-export-to-pdf=). That
+automatically runs all the code again, stressing idempotency.
+
+* COMMENT Preliminaries
+
+This section is just about setting up org-mode. It shouldn't export to the
+typeset PDF and HTML.
+
+#+BEGIN_SRC emacs-lisp :exports results :results none
+  (defun update-equation-tag ()
+    (interactive)
+    (save-excursion
+      (goto-char (point-min))
+      (let ((count 1))
+        (while (re-search-forward "\\tag{\\([0-9]+\\)}" nil t)
+          (replace-match (format "%d" count) nil nil nil 1)
+          (setq count (1+ count))))))
+  (update-equation-tag)
+  (setq org-confirm-babel-evaluate nil)
+  (org-babel-map-src-blocks nil (org-babel-remove-result))
+  (slime)
+#+END_SRC
+
+#+BEGIN_SRC lisp
+(load "~/quicklisp/setup.lisp")
+#+END_SRC
+
+#+RESULTS:
+: T
+
+#+BEGIN_SRC lisp
+(ql:quickload :cl-quickcheck)
+#+END_SRC
+
+#+RESULTS:
+| :CL-QUICKCHECK |
+
+#+BEGIN_SRC lisp :results output
+(let ((*random-state* (make-random-state t))
+      (*print-length* 6)
+      (*load-verbose* t))
+
+  (shadow 'cl-quickcheck:report '#:cl-user)
+  (use-package :cl-quickcheck)
+
+  (load "test/point.lisp")
+  (load "test/box.lisp")
+  (load "test/world.lisp")
+  (load "test/storey.lisp")
+  (load "test/room.lisp")
+  (load "test/rendering.lisp")
+  )
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/test/point.lisp"
+;; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/point.lisp"
+Starting tests with seed #S(RANDOM-STATE :STATE #.(MAKE-ARRAY 627 :ELEMENT-TYPE
+                                                              '(UNSIGNED-BYTE
+                                                                32)
+                                                              :INITIAL-CONTENTS
+                                                              '(0 2567483615
+                                                                624 2147483648
+                                                                665912608
+                                                                307990047 ...)))
+..........................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
+12 tests submitted; all passed.
+; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/test/box.lisp"
+;; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/point.lisp"
+;; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/box.lisp"
+Starting tests with seed #S(RANDOM-STATE :STATE #.(MAKE-ARRAY 627 :ELEMENT-TYPE
+                                                              '(UNSIGNED-BYTE
+                                                                32)
+                                                              :INITIAL-CONTENTS
+                                                              '(0 2567483615
+                                                                322 1961923724
+                                                                3147835991
+                                                                3777472516 ...)))
+........................................................................................................................................................................................................................................................................................................................................................................................................................
+8 tests submitted; all passed.
+; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/test/world.lisp"
+;; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/world.lisp"
+Starting tests with seed #S(RANDOM-STATE :STATE #.(MAKE-ARRAY 627 :ELEMENT-TYPE
+                                                              '(UNSIGNED-BYTE
+                                                                32)
+                                                              :INITIAL-CONTENTS
+                                                              '(0 2567483615
+                                                                149 1208283923
+                                                                1483272256
+                                                                1761411848 ...)))
+.
+1 test submitted; all passed.
+; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/test/storey.lisp"
+; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/test/room.lisp"
+;; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/point.lisp"
+;; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/box.lisp"
+;; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/world.lisp"
+;; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/storey.lisp"
+;; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/room.lisp"
+Starting tests with seed #S(RANDOM-STATE :STATE #.(MAKE-ARRAY 627 :ELEMENT-TYPE
+                                                              '(UNSIGNED-BYTE
+                                                                32)
+                                                              :INITIAL-CONTENTS
+                                                              '(0 2567483615
+                                                                149 1208283923
+                                                                1483272256
+                                                                1761411848 ...)))
+....................................................................................................
+1 test submitted; all passed.
+; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/test/rendering.lisp"
+;; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/point.lisp"
+;; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/box.lisp"
+;; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/rendering.lisp"
+Starting tests with seed #S(RANDOM-STATE :STATE #.(MAKE-ARRAY 627 :ELEMENT-TYPE
+                                                              '(UNSIGNED-BYTE
+                                                                32)
+                                                              :INITIAL-CONTENTS
+                                                              '(0 2567483615
+                                                                191 1070026045
+                                                                3116916164
+                                                                1415903226 ...)))
+.......................................................................................................
+((8 -1 #\LATIN_SMALL_LETTER_THORN) (-11 -7 #\C) (-9 14 #\Page)) ........................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
+3 tests submitted; all passed.
+#+end_example
+
+* Storeys
+
+** World
+
+The world has a sequence of /storeys/. There is a first one, but not a last one.
+
+#+BEGIN_SRC lisp :tangle world.lisp
+(defclass world ()
+  ((storeys :accessor world-storeys :initform () :initarg :storeys)))
+#+END_SRC
+
+#+RESULTS:
+: #<STANDARD-CLASS COMMON-LISP-USER::WORLD>
+
+** Storey
+
+A storey has a matrix of /tiles/. Each tile contains exactly one (possible nil)
+/geo/, zero or one /critters/, and a bag of /treasures/. We allow nil geos
+because most tiles will have nothing interesting in them.
+
+** Tile
+
+#+BEGIN_SRC lisp :tangle tile.lisp
+(defclass tile ()
+  ((geo       :accessor tile-geo       :initform nil :initarg :geo)
+   (critter   :accessor tile-critter   :initform nil :initarg :critter)
+   (treasures :accessor tile-treasures :initform nil :initarg :treasures)
+   (lighted   :accessor tile-lighted   :initform nil :initarg :lighted
+  )))
+#+END_SRC
+
+#+RESULTS:
+: #<STANDARD-CLASS COMMON-LISP-USER::TILE>
+
+** Geo
+
+A geo could be nil, meaning ``nothing interesting here,'' or a wall, door, rock, or trap.
+
+#+BEGIN_SRC lisp :tangle geo.lisp
+(defclass geo ()
+  ((kind :accessor geo-kind :initform nil :initarg :kind)))
+#+END_SRC
+
+#+RESULTS:
+: #<STANDARD-CLASS COMMON-LISP-USER::GEO>
+
+*** Wall
+**** Inscribed
+*** Door
+**** Open
+**** Closed
+**** Locked
+**** Spiked
+**** Broken
+*** Rock
+**** Granite
+**** Quartz
+**** Magma
+**** Lava
+*** Trap
+**** Gas
+***** Poison
+***** Drug
+***** Blindness
+***** Fear
+**** DimMak
+**** Dart
+***** Poison
+***** Drug
+**** Fire
+**** Boulder
+**** Flood
+**** Curse
+**** Ice
+**** Immoblization
+**** Lightning
+**** Pit
+**** Hole
+**** Teleport
+** Critter
+*** Me
+*** Monster
+** Treasure
+*** Potion
+*** Scroll
+*** Armor
+*** Weapon
+
