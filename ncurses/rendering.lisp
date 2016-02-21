@@ -8,6 +8,8 @@
              (<  y (box-bottom bb)))
     (funcall gw x y c)))
 
+;;; Cycles a character to show streams running across a screen.
+
 (defmethod incr ((c character))
   (code-char (1+ (char-code c))))
 
@@ -41,8 +43,8 @@
       (loop
         :for x :upfrom x1 :to x2
         :do (if steep
-                (write-clip-char bb x y (funcall gf x y 'straight) gw)
-                (write-clip-char bb y x (funcall gf x y 'swapped ) gw))
+                (write-clip-char bb x y (funcall gf x y :straight) gw)
+                (write-clip-char bb y x (funcall gf x y :swapped ) gw))
             (setf erroire (- erroire delta-y))
             ;(setf c (incr c))
             (when (< erroire 0)

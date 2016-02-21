@@ -1,7 +1,7 @@
 (load "point.lisp")
 (load "box.lisp")
 
-;;; Just making sure that quickcheck generators work:
+;;; Example quickcheck generator (mnemonic illustration)
 
 (defun a-color ()
   (pick-weighted
