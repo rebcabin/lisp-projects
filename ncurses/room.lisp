@@ -4,10 +4,12 @@
 ;;; the cl package).
 
 (defstruct m-room
+  its-storey
   its-box)
 
-(defmethod create-m-room ((bb box))
-  (make-m-room :its-box bb))
+(defmethod create-m-room ((bb box) (st storey))
+  (make-m-room :its-box    bb
+               :its-storey st))
 
 (defmethod put-room ((r m-room)))
 

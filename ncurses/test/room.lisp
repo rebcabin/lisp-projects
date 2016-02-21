@@ -11,10 +11,16 @@
                  :width  (a-positive-index)
                  :height (a-positive-index)))
 
+(defun a-positive-storey ()
+  (make-instance 'storey
+                 :width  (a-positive-index)
+                 :height (a-positive-index)))
+
 (quickcheck
 
- (for-all ((b #'a-positive-box))
-          (let ((r (create-m-room b)))
+ (for-all ((b #'a-positive-box)
+           (s #'a-positive-storey))
+          (let ((r (create-m-room b s)))
             (test (boxes-equal b (m-room-its-box r))))
           )
 

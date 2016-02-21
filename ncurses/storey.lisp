@@ -1,4 +1,4 @@
-;;; A storey has a matrix of /tiles/.
+;;; A storey has a matrix of /tiles/. 
 
 (defconstant +storey-width+  256)
 (defconstant +storey-height+ 256)
