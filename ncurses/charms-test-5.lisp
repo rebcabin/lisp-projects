@@ -161,17 +161,11 @@ reversed. Some algorithms, like Bresenham's, like to swap x and y."
                (point-y *me-point*)
                regular-me-char))
 
-(defun a-sample-m-room ()
+(defun a-sample-box-to-draw ()
   (make-instance 'box :left 7 :top 7 :width 3 :height 3))
 
-(defun a-clipped-m-room ()
+(defun a-clipped-box-to-draw ()
   (make-instance 'box :left -7 :top -7 :width 20 :height 20))
-
-(defmethod draw-m-room ((room box))
-  (draw-box :bounding-box    *window-box*
-            :box-to-draw     room
-            :glyph-fn        (basic-glypher regular-wall-char)
-            :glyph-writer-fn #'write-glyph))
 
 (defmethod render-room ((r m-room))
   (let ((b (m-room-its-box r)))
@@ -192,43 +186,45 @@ reversed. Some algorithms, like Bresenham's, like to swap x and y."
      ,@body
      (refresh-window *standard-window*)
      (when (control-process c)
-       (return-from ,loop-name driver-loop))     ))
+       (return-from ,loop-name driver-loop)) ))
 
-(defun main ()
-  (let ((last-non-nil-c #\-))
-    (with-curses ()
-      (setf *window-box* (window-box))
-      (set-up-colors)
-      (set-up-input)
-      (set-up-characters)
-      (loop :named driver-loop
-            :for c := (get-char *standard-window* :ignore-error t)
-            :do (with-loop-frame driver-loop
-                  ;; rooms, items, and characters
+(let* ((s  (make-instance 'storey))
+       (r1 (create-m-room (a-sample-box-to-draw)  s))
+       (r2 (create-m-room (a-clipped-box-to-draw) s)))
+  (defun main ()
+    (let ((last-non-nil-c #\-))
+      (with-curses ()
+        (setf *window-box* (window-box))
+        (set-up-colors)
+        (set-up-input)
+        (set-up-characters)
+        (loop :named driver-loop
+              :for c := (get-char *standard-window* :ignore-error t)
+              :do (with-loop-frame driver-loop
+                    ;; rooms, items, and characters
 
-                  (draw-m-room (a-clipped-m-room))
+                    (render-room r1)
+                    (render-room r2)
 
-                  (draw-m-room (a-sample-m-room))
+                    (draw-line :bounding-box    *window-box*
+                               :from-point      (make-point :x  7 :y  7)
+                               :to-point        (make-point :x  7 :y  7)
+                               :glyph-fn        (basic-glypher #\*)
+                               :glyph-writer-fn #'write-glyph)
 
-                  (draw-line :bounding-box    *window-box*
-                             :from-point      (make-point :x  7 :y  7)
-                             :to-point        (make-point :x  7 :y  7)
-                             :glyph-fn        (basic-glypher #\*)
-                             :glyph-writer-fn #'write-glyph)
+                    (move-character c)
 
-                  (move-character c)
+                    ;; debugging and HUD
+                    (dumpw (format nil "~A" (char-command last-non-nil-c)) 2 3)
+                    (dumpw (format nil "~A" last-non-nil-c)                2 2)
+                    (dumpw (format nil "[~A|~A|~A] [~A|~A|~A]"
+                                   (box-left *window-box*)
+                                   (point-x *me-point*)
+                                   (box-right *window-box*)
+                                   (box-top *window-box*)
+                                   (point-y *me-point*)
+                                   (box-bottom *window-box*)) 2 4)
 
-                  ;; debugging and HUD
-                  (dumpw (format nil "~A" (char-command last-non-nil-c)) 2 3)
-                  (dumpw (format nil "~A" last-non-nil-c)                2 2)
-                  (dumpw (format nil "[~A|~A|~A] [~A|~A|~A]"
-                                 (box-left *window-box*)
-                                 (point-x *me-point*)
-                                 (box-right *window-box*)
-                                 (box-top *window-box*)
-                                 (point-y *me-point*)
-                                 (box-bottom *window-box*)) 2 4)
-
-                  (render-me))))))
+                    (render-me)))))))
 
 (main)
