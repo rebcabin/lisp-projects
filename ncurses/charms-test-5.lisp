@@ -1,12 +1,14 @@
 (load "~/quicklisp/setup.lisp")
 (ql:quickload :cl-charms)
+(ql:quickload :defenum)
 
 ;;; "Storeys" is a pun on "story" and the levels of a dungeon. We avoid the word
 ;;; "level" because it's ambiguous between the level of advancement of a
 ;;; character and the storey of the dungeon.
 
 (defpackage #:charms-storeys
-  (:use #:cl #:charms))
+  (:shadow "defenum:enum")
+  (:use #:cl #:charms #:defenum))
 
 (in-package #:charms-storeys)
 
@@ -186,7 +188,7 @@ reversed. Some algorithms, like Bresenham's, like to swap x and y."
      ,@body
      (refresh-window *standard-window*)
      (when (control-process c)
-       (return-from ,loop-name driver-loop)) ))
+       (return-from ,loop-name)) ))
 
 (let* ((s  (make-instance 'storey))
        (r1 (create-m-room (a-sample-box-to-draw)  s))
@@ -202,16 +204,13 @@ reversed. Some algorithms, like Bresenham's, like to swap x and y."
               :for c := (get-char *standard-window* :ignore-error t)
               :do (with-loop-frame driver-loop
                     ;; rooms, items, and characters
-
                     (render-room r1)
                     (render-room r2)
-
                     (draw-line :bounding-box    *window-box*
                                :from-point      (make-point :x  7 :y  7)
                                :to-point        (make-point :x  7 :y  7)
                                :glyph-fn        (basic-glypher #\*)
                                :glyph-writer-fn #'write-glyph)
-
                     (move-character c)
 
                     ;; debugging and HUD
@@ -225,6 +224,7 @@ reversed. Some algorithms, like Bresenham's, like to swap x and y."
                                    (point-y *me-point*)
                                    (box-bottom *window-box*)) 2 4)
 
-                    (render-me)))))))
+                    (render-me)
+                    ))))))
 
 (main)
