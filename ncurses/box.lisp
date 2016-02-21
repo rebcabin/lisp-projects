@@ -1,5 +1,5 @@
 ;;; Boxes of non-positive width: Imagine that l >= r (left is greater than or
-;;; equal to r). A point can only be inside such a box if the boxe's width is
+;;; equal to r). A point can only be inside such a box if the box's width is
 ;;; exactly zero because "inside" is defined by the condition that x >= l and x
 ;;; <= r. Boxes of negative width are "safe" in the sense that nothing is inside
 ;;; them. It's an open question whether such boxes have any sensible
@@ -9,8 +9,6 @@
 ;;; A "positive" box is one with positive width and positive height. A "zero"
 ;;; box is one where at least one of its width or height is zero. A "negative"
 ;;; box has a negative width, negative height, or both.
-
-;;; We'll have a world-box that contains a window box that contains room-boxes.
 
 (defclass box ()
   ((left   :accessor box-left   :initform 0 :initarg :left  )
@@ -120,3 +118,4 @@ point escape the box."
   (call-next-method mb :left left :top top
                        :width 1 :height 1))
 
+;;; A 

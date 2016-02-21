@@ -101,15 +101,9 @@ typeset PDF and HTML.
 (load "~/quicklisp/setup.lisp")
 #+END_SRC
 
-#+RESULTS:
-: T
-
 #+BEGIN_SRC lisp
 (ql:quickload :cl-quickcheck)
 #+END_SRC
-
-#+RESULTS:
-| :CL-QUICKCHECK |
 
 #+BEGIN_SRC lisp :results output
 (let ((*random-state* (make-random-state t))
@@ -128,79 +122,6 @@ typeset PDF and HTML.
   )
 #+END_SRC
 
-#+RESULTS:
-#+begin_example
-; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/test/point.lisp"
-;; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/point.lisp"
-Starting tests with seed #S(RANDOM-STATE :STATE #.(MAKE-ARRAY 627 :ELEMENT-TYPE
-                                                              '(UNSIGNED-BYTE
-                                                                32)
-                                                              :INITIAL-CONTENTS
-                                                              '(0 2567483615
-                                                                624 2147483648
-                                                                665912608
-                                                                307990047 ...)))
-..........................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
-12 tests submitted; all passed.
-; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/test/box.lisp"
-;; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/point.lisp"
-;; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/box.lisp"
-Starting tests with seed #S(RANDOM-STATE :STATE #.(MAKE-ARRAY 627 :ELEMENT-TYPE
-                                                              '(UNSIGNED-BYTE
-                                                                32)
-                                                              :INITIAL-CONTENTS
-                                                              '(0 2567483615
-                                                                322 1961923724
-                                                                3147835991
-                                                                3777472516 ...)))
-........................................................................................................................................................................................................................................................................................................................................................................................................................
-8 tests submitted; all passed.
-; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/test/world.lisp"
-;; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/world.lisp"
-Starting tests with seed #S(RANDOM-STATE :STATE #.(MAKE-ARRAY 627 :ELEMENT-TYPE
-                                                              '(UNSIGNED-BYTE
-                                                                32)
-                                                              :INITIAL-CONTENTS
-                                                              '(0 2567483615
-                                                                149 1208283923
-                                                                1483272256
-                                                                1761411848 ...)))
-.
-1 test submitted; all passed.
-; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/test/storey.lisp"
-; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/test/room.lisp"
-;; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/point.lisp"
-;; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/box.lisp"
-;; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/world.lisp"
-;; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/storey.lisp"
-;; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/room.lisp"
-Starting tests with seed #S(RANDOM-STATE :STATE #.(MAKE-ARRAY 627 :ELEMENT-TYPE
-                                                              '(UNSIGNED-BYTE
-                                                                32)
-                                                              :INITIAL-CONTENTS
-                                                              '(0 2567483615
-                                                                149 1208283923
-                                                                1483272256
-                                                                1761411848 ...)))
-....................................................................................................
-1 test submitted; all passed.
-; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/test/rendering.lisp"
-;; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/point.lisp"
-;; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/box.lisp"
-;; loading #P"/Users/rebcabin/Documents/lisp-projects/ncurses/rendering.lisp"
-Starting tests with seed #S(RANDOM-STATE :STATE #.(MAKE-ARRAY 627 :ELEMENT-TYPE
-                                                              '(UNSIGNED-BYTE
-                                                                32)
-                                                              :INITIAL-CONTENTS
-                                                              '(0 2567483615
-                                                                191 1070026045
-                                                                3116916164
-                                                                1415903226 ...)))
-.......................................................................................................
-((8 -1 #\LATIN_SMALL_LETTER_THORN) (-11 -7 #\C) (-9 14 #\Page)) ........................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
-3 tests submitted; all passed.
-#+end_example
-
 * Storeys
 
 ** World
@@ -212,28 +133,73 @@ The world has a sequence of /storeys/. There is a first one, but not a last one.
   ((storeys :accessor world-storeys :initform () :initarg :storeys)))
 #+END_SRC
 
-#+RESULTS:
-: #<STANDARD-CLASS COMMON-LISP-USER::WORLD>
-
 ** Storey
 
-A storey has a matrix of /tiles/. Each tile contains exactly one (possible nil)
-/geo/, zero or one /critters/, and a bag of /treasures/. We allow nil geos
-because most tiles will have nothing interesting in them.
+A storey has a matrix of /tiles/. 
+It's likely that we will change the representation of a story to 
+a sparse matrix in the future, so abstracting its representation
+is worthwhile prophylaxis (future-proofing).
 
-** Tile
+#+BEGIN_SRC lisp :tangle storey.lisp
+  (defconstant +storey-width+  256)
+  (defconstant +storey-height+ 256)
 
-#+BEGIN_SRC lisp :tangle tile.lisp
-(defclass tile ()
-  ((geo       :accessor tile-geo       :initform nil :initarg :geo)
-   (critter   :accessor tile-critter   :initform nil :initarg :critter)
-   (treasures :accessor tile-treasures :initform nil :initarg :treasures)
-   (lighted   :accessor tile-lighted   :initform nil :initarg :lighted
-  )))
+  (defun make-storey (&key (width +storey-width+)
+                        (height +storey-height+))
+    (make-array `(,height ,width)
+                :initial-element nil))
+
+  (let ((m (make-storey :width 10 :height 6)))
+    (setf (aref m 2 1) :hi)
+    m)
 #+END_SRC
 
 #+RESULTS:
-: #<STANDARD-CLASS COMMON-LISP-USER::TILE>
+: #2A((NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL)
+:     (NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL)
+:     (NIL :HI NIL NIL NIL NIL NIL NIL NIL NIL)
+:     (NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL)
+:     (NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL)
+:     (NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL))
+
+** Tile
+
+Each tile contains exactly one (possible nil)
+/geo/, zero or one /critters/, and a bag of /treasures/. We allow nil geos
+because most tiles will have nothing interesting in them. A nil tile means the
+same as a nil geo in a non-nil tile.
+
+#+BEGIN_SRC lisp :tangle tile.lisp
+  (defclass tile ()
+    ((geo       :accessor tile-geo       :initform nil :initarg :geo)
+     (critter   :accessor tile-critter   :initform nil :initarg :critter)
+     (treasures :accessor tile-treasures :initform nil :initarg :treasures)
+     (lighted   :accessor tile-lighted   :initform nil :initarg :lighted
+    )))
+
+    (let ((m (make-storey :width 10 :height 6)))
+      (setf (aref m 2 1)
+            (make-instance 'tile))
+      m)
+#+END_SRC
+
+#+RESULTS:
+: #2A((NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL)
+:     (NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL)
+:     (NIL #<TILE {1002B2EE93}> NIL NIL NIL NIL NIL NIL NIL NIL)
+:     (NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL)
+:     (NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL)
+:     (NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL))
+
+** Tilebox
+
+A /tilebox/ is a rectangular region of tiles in a storey. It has a reference to
+its storey, the top and left coordinates wrt the storey's origin $(0,0)$, and a
+width and height.
+
+#+BEGIN_SRC lisp :tangle geobox.lisp
+
+#+END_SRC
 
 ** Geo
 
@@ -243,9 +209,6 @@ A geo could be nil, meaning ``nothing interesting here,'' or a wall, door, rock,
 (defclass geo ()
   ((kind :accessor geo-kind :initform nil :initarg :kind)))
 #+END_SRC
-
-#+RESULTS:
-: #<STANDARD-CLASS COMMON-LISP-USER::GEO>
 
 *** Wall
 **** Inscribed
