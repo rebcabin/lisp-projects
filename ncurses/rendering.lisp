@@ -63,7 +63,6 @@
               glyph-fn
               glyph-writer-fn))
 
-
 (defmethod draw-box% ((bb box) (bd box) (gl function) (gw function))
   (let ((tl (box-top-left                     bd))
         (tr (decr-x (box-top-right            bd)))

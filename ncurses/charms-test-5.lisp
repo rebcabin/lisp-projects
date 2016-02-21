@@ -161,8 +161,6 @@ reversed. Some algorithms, like Bresenham's, like to swap x and y."
                (point-y *me-point*)
                regular-me-char))
 
-;;; M A I N ====================================================================
-
 (defun a-sample-m-room ()
   (make-instance 'box :left 7 :top 7 :width 3 :height 3))
 
@@ -174,6 +172,15 @@ reversed. Some algorithms, like Bresenham's, like to swap x and y."
             :box-to-draw     room
             :glyph-fn        (basic-glypher regular-wall-char)
             :glyph-writer-fn #'write-glyph))
+
+(defmethod render-room ((r m-room))
+  (let ((b (m-room-its-box r)))
+    (draw-box :bounding-box    *window-box*
+              :box-to-draw     b
+              :glyph-fn        (basic-glypher regular-wall-char)
+              :glyph-writer-fn #'write-glyph)))
+
+;;; M A I N ====================================================================
 
 (defmacro with-loop-frame (loop-name &rest body)
   `(progn
@@ -197,17 +204,17 @@ reversed. Some algorithms, like Bresenham's, like to swap x and y."
       (loop :named driver-loop
             :for c := (get-char *standard-window* :ignore-error t)
             :do (with-loop-frame driver-loop
-                  (draw-line :bounding-box    *window-box*
-                             :from-point      (make-point :x  7 :y  7)
-                             :to-point        (make-point :x  7 :y  7)
-                             :glyph-fn        (basic-glypher #\*)
-                             :glyph-writer-fn #'write-glyph)
-
                   ;; rooms, items, and characters
 
                   (draw-m-room (a-clipped-m-room))
 
                   (draw-m-room (a-sample-m-room))
+
+                  (draw-line :bounding-box    *window-box*
+                             :from-point      (make-point :x  7 :y  7)
+                             :to-point        (make-point :x  7 :y  7)
+                             :glyph-fn        (basic-glypher #\*)
+                             :glyph-writer-fn #'write-glyph)
 
                   (move-character c)
 

@@ -19,7 +19,7 @@
 (defmethod initialize-instance
     :around
     ((s storey)
-     &key (width 0) (height 0))
+     &key (width +storey-width+) (height +storey-height+))
   (call-next-method s :width width :height height)
   (setf (slot-value s 'matrix)
         (make-storey-matrix :width width :height height)))

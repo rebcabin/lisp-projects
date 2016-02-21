@@ -23,6 +23,10 @@
   ;; Copyright (c) 2016 Brian Beckman
 #+END_SRC
 
+``Storeys'' is a pun on ``story'' and the levels of a dungeon. We avoid the word
+``level'' because it's ambiguous between the level of advancement of a character
+and the level or storey of the dungeon.
+
 * COMMENT How to Work with This File
 
 ** Emacs + VIM == Spacemacs
@@ -122,6 +126,9 @@ typeset PDF and HTML.
   )
 #+END_SRC
 
+* Basics
+** Point
+** Box
 * Storeys
 
 ** World
@@ -139,6 +146,9 @@ A storey has a matrix of /tiles/.
 It's likely that we will change the representation of a story to 
 a sparse matrix in the future, so abstracting its representation
 is worthwhile prophylaxis (future-proofing).
+
+The coordinate system of any storey has origin $(0, 0)$ so that array indices
+and tile coordinates are always identical.
 
 #+BEGIN_SRC lisp :tangle storey.lisp
   (defconstant +storey-width+  256)
@@ -191,11 +201,11 @@ same as a nil geo in a non-nil tile.
 :     (NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL)
 :     (NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL))
 
-** Tilebox
+** Room
 
-A /tilebox/ is a rectangular region of tiles in a storey. It has a reference to
-its storey, the top and left coordinates wrt the storey's origin $(0,0)$, and a
-width and height.
+A /room/ is a rectangular region of tiles in a storey. It has a reference to its
+storey and a reference to a box specifying the top and left coordinates of the
+room with respect to the storey's origin $(0,0)$, and a width and height.
 
 #+BEGIN_SRC lisp :tangle geobox.lisp
 
@@ -252,3 +262,8 @@ A geo could be nil, meaning ``nothing interesting here,'' or a wall, door, rock,
 *** Armor
 *** Weapon
 
+* Rendering
+
+** Screen
+** Window
+** Scroll-state

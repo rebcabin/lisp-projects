@@ -2,6 +2,7 @@
 (load "storey.lisp")
 
 (quickcheck
+
  (let ((m (make-storey-matrix :width 10 :height 6)))
    (setf (aref m 2 1)
          (make-instance 'tile))
@@ -17,4 +18,16 @@
    (is equal cl 'simple-array)
    (is equal et t)
    (is equal ds '(7 11)))
-)
+
+ (let* ((ss (make-instance 'storey))
+        (t0 (type-of (storey-matrix ss)))
+        (cl (first t0))
+        (et (second t0))
+        (ds (third t0)))
+   (print t0)
+   (describe ss)
+   (is equal cl 'simple-array)
+   (is equal et t)
+   (is equal ds `(,+storey-height+ ,+storey-width+)))
+
+ )
