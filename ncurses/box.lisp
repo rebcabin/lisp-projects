@@ -118,4 +118,3 @@ point escape the box."
   (call-next-method mb :left left :top top
                        :width 1 :height 1))
 
-;;; A 

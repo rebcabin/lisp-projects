@@ -3,12 +3,23 @@
 (defconstant +storey-width+  256)
 (defconstant +storey-height+ 256)
 
-(defun make-storey-matrix (&key
-                             (width +storey-width+)
-                             (height +storey-height+))
+(defun make-storey-matrix
+    (&key
+       (width +storey-width+)
+       (height +storey-height+))
   (make-array `(,height ,width)
               :initial-element nil))
 
-(defstruct storey
-  (matrix))
+(defclass storey ()
+  ((matrix :accessor storey-matrix :initform nil)
+   (width  :accessor storey-width  :type integer :initform 0 :initarg :width)
+   (height :accessor storey-height :type integer :initform 0 :initarg :width)
+   ))
 
+(defmethod initialize-instance
+    :around
+    ((s storey)
+     &key (width 0) (height 0))
+  (call-next-method s :width width :height height)
+  (setf (slot-value s 'matrix)
+        (make-storey-matrix :width width :height height)))
