@@ -13,7 +13,7 @@
 (defclass storey ()
   ((matrix :accessor storey-matrix :initform nil)
    (width  :accessor storey-width  :type integer :initform 0 :initarg :width)
-   (height :accessor storey-height :type integer :initform 0 :initarg :width)
+   (height :accessor storey-height :type integer :initform 0 :initarg :height)
    ))
 
 (defmethod initialize-instance

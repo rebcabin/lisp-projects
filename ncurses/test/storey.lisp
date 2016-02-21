@@ -12,6 +12,7 @@
         (cl (first t0))
         (et (second t0))
         (ds (third t0)))
+   (print t0)
    (describe ss)
    (is equal cl 'simple-array)
    (is equal et t)
