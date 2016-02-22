@@ -24,8 +24,18 @@
             (test (boxes-equal b (m-room-its-box r))))
           )
  (let* ((s (a-positive-storey))
-        (bb (storey-bounding-box s)))
+        (bb (storey-bounding-box s))
+        ;; Is it ok for this room to have a non-positive bounding box?
+        (rb (make-instance 'box
+                           :left 3
+                           :top 2
+                           :width (- (box-width bb) 2)
+                           :height (- (box-height bb) 3)))
+        (rm (create-m-room rb s)))
+   (describe rb)
    (describe s)
+   (put-room rm)
+   (print (storey-matrix s))
    )
  )
 
