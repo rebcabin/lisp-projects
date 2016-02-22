@@ -1,5 +1,6 @@
-(defconstant +regular-wall-glyph+ #\%)
-(defconstant +regular-me-glyph+   #\@)
+(defconstant +regular-wall-glyph+  #\%)
+(defconstant +regular-me-glyph+    #\@)
+(defconstant +regular-floor-glyph+ #\.)
 
 (defmethod basic-glypher ((c character))
   "Given a character, produces a function of position and direction that can

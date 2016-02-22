@@ -1,6 +1,8 @@
 (load "~/quicklisp/setup.lisp")
 (ql:quickload :cl-charms)
 (ql:quickload :defenum)
+(ql:quickload :alexandria)
+(ql:quickload :hash-set)
 
 ;;; "Storeys" is a pun on "story" and the levels of a dungeon. We avoid the word
 ;;; "level" because it's ambiguous between the level of advancement of a
