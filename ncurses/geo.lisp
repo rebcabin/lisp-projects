@@ -1,2 +1,6 @@
-(defenum geo
-    (wall door rock trap))
+(defclass geo () ())
+
+(defclass wall (geo) ())
+(defclass door (geo) ())
+(defclass rock (geo) ())
+(defclass trap (geo) ())
