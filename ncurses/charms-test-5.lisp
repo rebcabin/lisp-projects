@@ -16,6 +16,7 @@
 
 (load "point.lisp")
 (load "box.lisp")
+(load "glyph.lisp")
 (load "world.lisp")
 (load "storey.lisp")
 (load "room.lisp")
@@ -31,11 +32,6 @@
 
 (defun dumpw (thing x y)
   (dump *standard-window* thing (make-point :x x :y y)))
-
-;;; D I S P L A Y ==============================================================
-
-(defconstant regular-wall-char #\%)
-(defconstant regular-me-char   #\@)
 
 ;;; T I M E R ==================================================================
 
@@ -149,19 +145,10 @@ started, return NIL."
                       y x
                       (charms::character-to-c-char c)))
 
-(defmethod basic-glypher ((c character))
-  "Given a character, produces a function of position and direction that can
-produce other characters. Direction will be :straight or :swapped. If :straight,
-then the caller has given x and y in order. If :swapped, caller has given x and y
-reversed. Some algorithms, like Bresenham's, like to swap x and y."
-  (lambda (x y direction)
-    (declare (ignorable x y direction))
-    c))
-
 (defun render-me ()
   (write-glyph (point-x *me-point*)
                (point-y *me-point*)
-               regular-me-char))
+               +regular-me-glyph+))
 
 (defun a-sample-box-to-draw ()
   (make-instance 'box :left 7 :top 7 :width 3 :height 3))
@@ -173,7 +160,7 @@ reversed. Some algorithms, like Bresenham's, like to swap x and y."
   (let ((b (m-room-its-box r)))
     (draw-box :bounding-box    *window-box*
               :box-to-draw     b
-              :glyph-fn        (basic-glypher regular-wall-char)
+              :glyph-fn        (basic-glypher +regular-wall-glyph+)
               :glyph-writer-fn #'write-glyph)))
 
 ;;; M A I N ====================================================================

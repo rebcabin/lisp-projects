@@ -129,6 +129,7 @@ typeset PDF and HTML.
 * Basics
 ** Point
 ** Box
+** Glyph
 * Storeys
 
 ** World
@@ -268,7 +269,7 @@ A geo could be nil, meaning ``nothing interesting here,'' or a wall, door, rock,
 ** Window
 ** Scroll-state
 
-* Characters
+* Me
 
 ** Attributes
 *** Dynamic
