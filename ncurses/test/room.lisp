@@ -23,6 +23,9 @@
           (let ((r (create-m-room b s)))
             (test (boxes-equal b (m-room-its-box r))))
           )
-
-  )
+ (let* ((s (a-positive-storey))
+        (bb (storey-bounding-box s)))
+   (describe s)
+   )
+ )
 

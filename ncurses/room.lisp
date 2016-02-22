@@ -21,8 +21,10 @@
 
 (defmethod put-room ((r m-room))
   (let* ((f (room-box-to-its-storey-writer-maker r))
-         (b (m-room-its-box r)))
-    
-    )
-  )
+         (bw (m-room-its-box r))
+         (bb (storey-bounding-box (m-room-its-storey r))))
+    (draw-box :bounding-box bb
+              :box-to-draw  bw
+              :glyph-fn (basic-glypher +regular-wall-glyph+)
+              :glyph-writer-fn f)))
 
