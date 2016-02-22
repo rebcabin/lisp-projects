@@ -1,4 +1,4 @@
-% Created 2016-02-20 Sat 09:03
+% Created 2016-02-21 Sun 20:31
 \documentclass[10pt,oneside,x11names]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -20,7 +20,7 @@
 \usepackage{braket}
 \usepackage[euler-digits,euler-hat-accent]{eulervm}
 \author{Brian Beckman}
-\date{\today}
+\date{\textit{<2016-02-21 Sun>}}
 \title{Storeys}
 \hypersetup{
  pdfauthor={Brian Beckman},
@@ -40,7 +40,433 @@
 \label{sec:orgheadline1}
 
 \begin{verbatim}
-;; Copyright (c) Brian Beckman, 2016
+;; Copyright (c) 2016 Brian Beckman
 \end{verbatim}
+
+``Storeys'' is a pun on ``story'' and the levels of a dungeon. We avoid the word
+``level'' because it's ambiguous between the level of advancement of a character
+and the level or storey of the dungeon.
+
+\section{Project Structure}
+\label{sec:orgheadline4}
+
+\subsection{Brute-Force Loads}
+\label{sec:orgheadline2}
+
+The current system structure is just a sequence of load commands. Dependencies
+of one facility on another is expressed only implicitly by the sequence of those
+loads, and only in top-level, runnable lisp files. For example, \emph{box} depends on
+\emph{point}, but \texttt{box.lisp} doesn't load \texttt{point.lisp}. Instead, any file that wants
+to use \emph{box} must load \texttt{point.lisp} before loading \texttt{box.lisp}. \texttt{box.lisp}
+\emph{could} load \texttt{point.lisp}, but then \texttt{point.lisp} would be loaded more than once.
+Harmless but inefficient. If \texttt{box.lisp} doesn't load \texttt{point.lisp}, then
+\texttt{box.lisp} can't stand alone. That's the decision we made:
+
+\textbf{\emph{Facilities are not typically standalone, and their dependencies are implicit in the sequence of load commands.}}
+
+Currently, there are two contexts in which this brute-force loading goes on:
+\begin{enumerate}
+\item any main code, such as \texttt{charms-test-5.lisp}
+\item quickcheck code, like \texttt{test.lisp}
+\end{enumerate}
+
+For example, in one intermediate version, \texttt{charms-test-5.lisp} loaded files in
+this order:
+\begin{verbatim}
+(load "point.lisp")
+(load "box.lisp")
+(load "glyph.lisp")
+(load "world.lisp")
+(load "storey.lisp")
+(load "room.lisp")
+(load "rendering.lisp")
+\end{verbatim}
+
+The convention for quickcheck code is a little more subtle: it will load
+unit-test files out of the \texttt{test} directory in the same order as a main file
+does. For instance, the version of \texttt{test.lisp} corresponding to the version of
+\texttt{charms-test-5.lisp} noted above looks like this:
+
+\begin{verbatim}
+(load "~/quicklisp/setup.lisp")
+\end{verbatim}
+
+\begin{verbatim}
+(ql:quickload :cl-quickcheck)
+(ql:quickload :defenum)
+(ql:quickload :alexandria)
+(ql:quickload :hash-set)
+\end{verbatim}
+
+\begin{verbatim}
+(let ((*random-state* (make-random-state t))
+      (*print-length* 6)
+      (*load-verbose* t))
+
+  (shadow 'cl-quickcheck:report '#:cl-user)
+  (shadow 'defenum:enum         '#:cl-user)
+  (use-package :cl-quickcheck)
+  (use-package :defenum)
+
+  ;; This sequence of 'load' expressions should parallel the 'load's at the head
+  ;; of any main like 'charms-test-5.lisp'.
+
+  (load "test/point.lisp")
+  (load "test/box.lisp")
+  (load "test/glyph.lisp")
+  (load "test/geo.lisp")
+  (load "test/world.lisp")
+  (load "test/storey.lisp")
+  (load "test/room.lisp")
+  (load "test/rendering.lisp")
+  )
+\end{verbatim}
+
+No doubt, you've deduced that main codes and test codes --- anything that runs
+facilityy code --- must also load \emph{quickload} and any quickload dependencies
+like \emph{alexandria}.  Just as with our own facilities, you must do this by brute
+force. 
+
+Each file in the test directory must load its brother from the top-level
+directory. For example, \texttt{test/glyph.lisp} looks like this:
+
+\begin{verbatim}
+(load "glyph.lisp")
+
+(quickcheck
+ (is= 42 42))
+\end{verbatim}
+
+Because we run \texttt{test.lisp} from the top level, \texttt{test/glyph.lisp} will load the
+top-level \texttt{glyph.lisp}. Of course, \texttt{test/glyph.lisp} must load any of its
+dependencies. It doesn't have any in the version we're talking about, so
+everything is fine. But \texttt{test/box.lisp} needs top-level \texttt{point.lisp}. So
+\texttt{test/box.lisp} looks like this:
+
+\begin{verbatim}
+(load "point.lisp")
+(load "box.lisp")
+
+;;; blah blah blah
+
+(quickcheck
+ (is= 42 42))
+\end{verbatim}
+
+All this is cumbersome and brittle, so we will fix it with something like ASDF
+later.
+
+\subsection{{\bfseries\sffamily TODO} ASDF}
+\label{sec:orgheadline3}
+
+\section{Basics}
+\label{sec:orgheadline8}
+\subsection{Point}
+\label{sec:orgheadline5}
+\subsection{Box}
+\label{sec:orgheadline6}
+\subsection{Glyph}
+\label{sec:orgheadline7}
+\section{Storeys}
+\label{sec:orgheadline55}
+
+\subsection{World}
+\label{sec:orgheadline9}
+
+The world has a sequence of \emph{storeys}. There is a first one, but not a last one.
+
+\begin{verbatim}
+(defclass world ()
+  ((storeys :accessor world-storeys :initform () :initarg :storeys)))
+\end{verbatim}
+
+\subsection{Storey}
+\label{sec:orgheadline10}
+
+A storey has a matrix of \emph{tiles}. 
+It's likely that we will change the representation of a story to 
+a sparse matrix in the future, so abstracting its representation
+is worthwhile prophylaxis (future-proofing).
+
+The coordinate system of any storey has origin \((0, 0)\) so that array indices
+and tile coordinates are always identical.
+
+\begin{verbatim}
+(defconstant +storey-width+  256)
+(defconstant +storey-height+ 256)
+
+(defun make-storey (&key (width +storey-width+)
+                      (height +storey-height+))
+  (make-array `(,height ,width)
+              :initial-element nil))
+
+(let ((m (make-storey :width 10 :height 6)))
+  (setf (aref m 2 1) :hi)
+  m)
+\end{verbatim}
+
+\subsection{Tile}
+\label{sec:orgheadline11}
+
+Each tile contains exactly one (possible nil)
+\emph{geo}, zero or one \emph{critters}, and a bag of \emph{treasures}. We allow nil geos
+because most tiles will have nothing interesting in them. A nil tile means the
+same as a nil geo in a non-nil tile.
+
+\begin{verbatim}
+(defclass tile ()
+  ((geo       :accessor tile-geo       :initform nil :initarg :geo)
+   (critter   :accessor tile-critter   :initform nil :initarg :critter)
+   (treasures :accessor tile-treasures :initform nil :initarg :treasures)
+   (lighted   :accessor tile-lighted   :initform nil :initarg :lighted
+  )))
+
+  (let ((m (make-storey :width 10 :height 6)))
+    (setf (aref m 2 1)
+          (make-instance 'tile))
+    m)
+\end{verbatim}
+
+\subsection{Room}
+\label{sec:orgheadline12}
+
+A \emph{room} is a rectangular region of tiles in a storey. It has a reference to its
+storey and a reference to a box specifying the top and left coordinates of the
+room with respect to the storey's origin \((0,0)\), and a width and height.
+
+\subsection{Geo}
+\label{sec:orgheadline46}
+
+A geo could be nil, meaning ``nothing interesting here,'' or a wall, door, rock, or trap.
+
+\begin{verbatim}
+(defclass geo ()
+  ((kind :accessor geo-kind :initform nil :initarg :kind)))
+\end{verbatim}
+
+\subsubsection{Wall}
+\label{sec:orgheadline14}
+\begin{enumerate}
+\item Inscribed
+\label{sec:orgheadline13}
+\end{enumerate}
+\subsubsection{Door}
+\label{sec:orgheadline20}
+\begin{enumerate}
+\item Open
+\label{sec:orgheadline15}
+\item Closed
+\label{sec:orgheadline16}
+\item Locked
+\label{sec:orgheadline17}
+\item Spiked
+\label{sec:orgheadline18}
+\item Broken
+\label{sec:orgheadline19}
+\end{enumerate}
+\subsubsection{Rock}
+\label{sec:orgheadline25}
+\begin{enumerate}
+\item Granite
+\label{sec:orgheadline21}
+\item Quartz
+\label{sec:orgheadline22}
+\item Magma
+\label{sec:orgheadline23}
+\item Lava
+\label{sec:orgheadline24}
+\end{enumerate}
+\subsubsection{Trap}
+\label{sec:orgheadline45}
+\begin{enumerate}
+\item Gas
+\label{sec:orgheadline30}
+\begin{enumerate}
+\item Poison
+\label{sec:orgheadline26}
+\item Drug
+\label{sec:orgheadline27}
+\item Blindness
+\label{sec:orgheadline28}
+\item Fear
+\label{sec:orgheadline29}
+\end{enumerate}
+\item DimMak
+\label{sec:orgheadline31}
+\item Dart
+\label{sec:orgheadline34}
+\begin{enumerate}
+\item Poison
+\label{sec:orgheadline32}
+\item Drug
+\label{sec:orgheadline33}
+\end{enumerate}
+\item Fire
+\label{sec:orgheadline35}
+\item Boulder
+\label{sec:orgheadline36}
+\item Flood
+\label{sec:orgheadline37}
+\item Curse
+\label{sec:orgheadline38}
+\item Ice
+\label{sec:orgheadline39}
+\item Immoblization
+\label{sec:orgheadline40}
+\item Lightning
+\label{sec:orgheadline41}
+\item Pit
+\label{sec:orgheadline42}
+\item Hole
+\label{sec:orgheadline43}
+\item Teleport
+\label{sec:orgheadline44}
+\end{enumerate}
+\subsection{Critter}
+\label{sec:orgheadline49}
+\subsubsection{Me}
+\label{sec:orgheadline47}
+\subsubsection{Monster}
+\label{sec:orgheadline48}
+\subsection{Treasure}
+\label{sec:orgheadline54}
+\subsubsection{Potion}
+\label{sec:orgheadline50}
+\subsubsection{Scroll}
+\label{sec:orgheadline51}
+\subsubsection{Armor}
+\label{sec:orgheadline52}
+\subsubsection{Weapon}
+\label{sec:orgheadline53}
+
+\section{Rendering}
+\label{sec:orgheadline59}
+
+\subsection{Screen}
+\label{sec:orgheadline56}
+\subsection{Window}
+\label{sec:orgheadline57}
+\subsection{Scroll-state}
+\label{sec:orgheadline58}
+
+\section{Me}
+\label{sec:orgheadline80}
+
+\subsection{Attributes}
+\label{sec:orgheadline77}
+\subsubsection{Dynamic}
+\label{sec:orgheadline65}
+\begin{enumerate}
+\item HitPoints
+\label{sec:orgheadline60}
+\item Mana
+\label{sec:orgheadline61}
+\item Energy
+\label{sec:orgheadline62}
+\item Rage
+\label{sec:orgheadline63}
+\item Focus
+\label{sec:orgheadline64}
+\end{enumerate}
+\subsubsection{Static}
+\label{sec:orgheadline76}
+\begin{enumerate}
+\item Strength
+\label{sec:orgheadline66}
+\item Wisdom
+\label{sec:orgheadline67}
+\item Constitution
+\label{sec:orgheadline68}
+\item Stamina
+\label{sec:orgheadline69}
+\item Intellect
+\label{sec:orgheadline70}
+\item Charisma
+\label{sec:orgheadline71}
+\item Agility
+\label{sec:orgheadline72}
+\item Dexterity
+\label{sec:orgheadline73}
+\item Versatility
+\label{sec:orgheadline74}
+\item Mastery
+\label{sec:orgheadline75}
+\end{enumerate}
+\subsection{Classes}
+\label{sec:orgheadline78}
+\subsection{Races}
+\label{sec:orgheadline79}
+\section{Treasures}
+\label{sec:orgheadline110}
+\subsection{Armor}
+\label{sec:orgheadline92}
+\subsubsection{Head}
+\label{sec:orgheadline81}
+\subsubsection{Shoulders}
+\label{sec:orgheadline82}
+\subsubsection{Chest}
+\label{sec:orgheadline83}
+\subsubsection{Arms}
+\label{sec:orgheadline84}
+\subsubsection{Wrists}
+\label{sec:orgheadline85}
+\subsubsection{Hands}
+\label{sec:orgheadline86}
+\subsubsection{Pants}
+\label{sec:orgheadline87}
+\subsubsection{Feet}
+\label{sec:orgheadline88}
+\subsubsection{Neck}
+\label{sec:orgheadline89}
+\subsubsection{Trinkets}
+\label{sec:orgheadline90}
+\subsubsection{Rings}
+\label{sec:orgheadline91}
+\subsection{Weapons}
+\label{sec:orgheadline108}
+\subsubsection{One-Handers}
+\label{sec:orgheadline98}
+\begin{enumerate}
+\item Swords
+\label{sec:orgheadline93}
+\item Daggers
+\label{sec:orgheadline94}
+\item Maces
+\label{sec:orgheadline95}
+\item Clubs
+\label{sec:orgheadline96}
+\item Fists
+\label{sec:orgheadline97}
+\end{enumerate}
+\subsubsection{Two-Handers}
+\label{sec:orgheadline103}
+\begin{enumerate}
+\item Staves
+\label{sec:orgheadline99}
+\item Swords
+\label{sec:orgheadline100}
+\item Maces
+\label{sec:orgheadline101}
+\item Clubs
+\label{sec:orgheadline102}
+\end{enumerate}
+\subsubsection{Ranged}
+\label{sec:orgheadline107}
+\begin{enumerate}
+\item Guns
+\label{sec:orgheadline104}
+\item Bows
+\label{sec:orgheadline105}
+\item Crossbows
+\label{sec:orgheadline106}
+\end{enumerate}
+\subsection{}
+\label{sec:orgheadline109}
+\section{Players}
+\label{sec:orgheadline113}
+\subsection{AI}
+\label{sec:orgheadline111}
+\subsection{Bots}
+\label{sec:orgheadline112}
 Emacs 24.5.1 (Org mode 8.2.10)
 \end{document}

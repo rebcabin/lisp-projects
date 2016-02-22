@@ -1,7 +1,7 @@
 
 
 (defclass geo ()
-  ((render-char :initform #\. :initarg :render-char)))
+  ((render-char :initform +regular-floor-glyph+ :initarg :render-char)))
 
 (defclass wall (geo) ())
 (defclass door (geo) ())

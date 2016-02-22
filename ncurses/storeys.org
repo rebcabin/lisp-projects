@@ -1,5 +1,6 @@
 #+TITLE: Storeys
 #+AUTHOR: Brian Beckman
+#+DATE: <2016-02-21 Sun>
 #+EMAIL: bbeckman@34363bc84acc.ant.amazon.com
 #+OPTIONS: ':t *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline author:t c:nil
 #+OPTIONS: creator:comment d:(not "LOGBOOK") date:t e:t email:nil f:t inline:t
@@ -125,6 +126,131 @@ typeset PDF and HTML.
   (load "test/rendering.lisp")
   )
 #+END_SRC
+
+* Project Structure
+
+** Brute-Force Loads
+
+The current system structure is just a sequence of load commands. Dependencies
+of one facility on another is expressed only implicitly by the sequence of those
+loads, and only in top-level, runnable lisp files. For example, /box/ depends on
+/point/, but =box.lisp= doesn't load =point.lisp=. Instead, any file that wants
+to use /box/ must load =point.lisp= before loading =box.lisp=. =box.lisp=
+/could/ load =point.lisp=, but then =point.lisp= would be loaded more than once.
+Harmless but inefficient. If =box.lisp= doesn't load =point.lisp=, then
+=box.lisp= can't stand alone. That's the decision we made:
+
+*/Facilities are not typically standalone, and their dependencies are implicit in the sequence of load commands./*
+
+Currently, there are two contexts in which this brute-force loading goes on:
+1. any main code, such as =charms-test-5.lisp=
+2. quickcheck code, like =test.lisp=
+
+For example, in one intermediate version, =charms-test-5.lisp= loaded files in
+this order:
+#+BEGIN_SRC lisp 
+(load "point.lisp")
+(load "box.lisp")
+(load "glyph.lisp")
+(load "world.lisp")
+(load "storey.lisp")
+(load "room.lisp")
+(load "rendering.lisp")
+#+END_SRC
+
+#+RESULTS:
+: T
+
+The convention for quickcheck code is a little more subtle: it will load
+unit-test files out of the =test= directory in the same order as a main file
+does. For instance, the version of =test.lisp= corresponding to the version of
+=charms-test-5.lisp= noted above looks like this:
+
+#+BEGIN_SRC lisp
+(load "~/quicklisp/setup.lisp")
+#+END_SRC
+
+#+RESULTS:
+: T
+
+#+BEGIN_SRC lisp
+(ql:quickload :cl-quickcheck)
+(ql:quickload :defenum)
+(ql:quickload :alexandria)
+(ql:quickload :hash-set)
+#+END_SRC
+
+#+RESULTS:
+| :HASH-SET |
+
+#+BEGIN_SRC lisp
+(let ((*random-state* (make-random-state t))
+      (*print-length* 6)
+      (*load-verbose* t))
+
+  (shadow 'cl-quickcheck:report '#:cl-user)
+  (shadow 'defenum:enum         '#:cl-user)
+  (use-package :cl-quickcheck)
+  (use-package :defenum)
+
+  ;; This sequence of 'load' expressions should parallel the 'load's at the head
+  ;; of any main like 'charms-test-5.lisp'.
+
+  (load "test/point.lisp")
+  (load "test/box.lisp")
+  (load "test/glyph.lisp")
+  (load "test/geo.lisp")
+  (load "test/world.lisp")
+  (load "test/storey.lisp")
+  (load "test/room.lisp")
+  (load "test/rendering.lisp")
+  )
+#+END_SRC
+
+#+RESULTS:
+: T
+
+No doubt, you've deduced that main codes and test codes --- anything that runs
+facilityy code --- must also load /quickload/ and any quickload dependencies
+like /alexandria/.  Just as with our own facilities, you must do this by brute
+force. 
+
+Each file in the test directory must load its brother from the top-level
+directory. For example, =test/glyph.lisp= looks like this:
+
+#+BEGIN_SRC lisp
+(load "glyph.lisp")
+
+(quickcheck
+ (is= 42 42))
+#+END_SRC
+
+#+RESULTS:
+: T
+
+Because we run =test.lisp= from the top level, =test/glyph.lisp= will load the
+top-level =glyph.lisp=. Of course, =test/glyph.lisp= must load any of its
+dependencies. It doesn't have any in the version we're talking about, so
+everything is fine. But =test/box.lisp= needs top-level =point.lisp=. So
+=test/box.lisp= looks like this:
+
+#+BEGIN_SRC lisp
+(load "point.lisp")
+(load "box.lisp")
+
+;;; blah blah blah
+
+(quickcheck
+ (is= 42 42))
+#+END_SRC
+
+#+RESULTS:
+: T
+
+All this is cumbersome and brittle, so we will fix it with something like ASDF
+later.
+
+** TODO ASDF
 
 * Basics
 ** Point
