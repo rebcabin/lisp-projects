@@ -7,7 +7,7 @@
 ;;; character and the storey of the dungeon.
 
 (defpackage #:charms-storeys
-  (:shadow "defenum:enum")
+  (:shadow "enum")
   (:use #:cl #:charms #:defenum))
 
 (in-package #:charms-storeys)
