@@ -21,8 +21,8 @@
 (load "glyph.lisp")
 (load "world.lisp")
 (load "storey.lisp")
-(load "room.lisp")
 (load "rendering.lisp")
+(load "room.lisp")
 
 ;;; D E B U G G I N G ==========================================================
 

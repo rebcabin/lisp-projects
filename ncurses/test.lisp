@@ -22,6 +22,6 @@
   (load "test/geo.lisp")
   (load "test/world.lisp")
   (load "test/storey.lisp")
-  (load "test/room.lisp")
   (load "test/rendering.lisp")
+  (load "test/room.lisp")
   )

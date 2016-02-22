@@ -11,5 +11,18 @@
   (make-m-room :its-box    bb
                :its-storey st))
 
-(defmethod put-room ((r m-room)))
+(defmethod room-box-to-its-storey-writer-maker ((r m-room))
+  (let* ((b (m-room-its-box    r))
+         (s (m-room-its-storey r))
+         (m (storey-matrix s)))
+    (lambda (x y c)
+      (setf (aref m x y) c)
+      )))
+
+(defmethod put-room ((r m-room))
+  (let* ((f (room-box-to-its-storey-writer-maker r))
+         (b (m-room-its-box r)))
+    
+    )
+  )
 
