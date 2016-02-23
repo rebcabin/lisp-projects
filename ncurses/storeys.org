@@ -446,7 +446,11 @@ A geo could be nil, meaning ``nothing interesting here,'' or a wall, door, rock,
 **** Guns
 **** Bows
 **** Crossbows
-** 
+** Scrolls
+** Potions
+** Gold
+** Gems
+** Chests & Boxes
 * Players
 ** AI
 ** Bots
