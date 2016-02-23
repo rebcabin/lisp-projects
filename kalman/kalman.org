@@ -1,0 +1,670 @@
+#+TITLE: Kalman Demystified
+#+AUTHOR: Brian Beckman
+#+DATE: <2016-02-21 Sun>
+#+EMAIL: bbeckman@34363bc84acc.ant.amazon.com
+#+OPTIONS: ':t *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline author:t c:nil
+#+OPTIONS: creator:comment d:(not "LOGBOOK") date:t e:t email:nil f:t inline:t
+#+OPTIONS: num:t p:nil pri:nil stat:t tags:t tasks:t tex:t timestamp:t toc:t
+#+OPTIONS: todo:t |:t
+#+CREATOR: Emacs 24.5.1 (Org mode 8.2.10)
+#+SELECT_TAGS: export
+#+STARTUP: indent
+#+LaTeX_CLASS_OPTIONS: [10pt,oneside,x11names]
+#+LaTeX_HEADER: \usepackage{geometry}
+#+LaTeX_HEADER: \usepackage{palatino}
+#+LaTeX_HEADER: \usepackage{siunitx}
+#+LaTeX_HEADER: \usepackage{braket}
+#+LaTeX_HEADER: \usepackage[euler-digits,euler-hat-accent]{eulervm}
+#+OPTIONS: toc:2
+
+* Prelude
+
+#+NAME: copyright
+#+BEGIN_SRC lisp :eval never
+  ;; Copyright (c) 2016 Brian Beckman #+END_SRC
+
+``Storeys'' is a pun on ``story'' and the levels of a dungeon. We avoid the word
+``level'' because it's ambiguous between the level of advancement of a character
+and the level or storey of the dungeon.
+
+* COMMENT How to Work with This File
+
+** Emacs + VIM == Spacemacs
+
+You must use Emacs, org-mode, and org-babel to work with this file. If you
+prefer VIM, I have a solution for you.
+
+** Spacemacs
+
+Spacemacs[fn:spacemacs] is a good set of packages for Emacs even if you're not
+going to use its perfect VIM emulation. I recommend it. If you're a VIM user,
+you will probably need it because the default Emacs keymaps will drive you
+batty.
+
+You can definitely do everything here using just plain-ol'-Emacs, though you may
+have to load some packages. If you're using plain-ol'-Emacs, you'll have to
+figure that all out on your own; if you're using Spacemacs, almost all the
+packages are pre-installed. I won't say any more about it, because I don't want
+this to become a paper about Emacs.
+
+** Interactively
+
+Assuming you're visiting this =.org= file in Spacemacs, go to each code block,
+read it (you, as a human, read it, input it /via/ your eyeballs into your
+brain). Then type =C-c C-c= to /evaluate/ the block.
+
+Most of the code blocks contain just definitions and do not produce results;
+such block are marked =:results none=. Some blocks produce results and Emacs
+puts the results into the file you're looking at now.
+
+The first time through, evaluate the blocks in order of appearance so that you
+evaluate definition blocks before blocks that use the definitions. This builds
+up session state. After that, you should be able to repeatedly evaluate blocks
+and get the same results (the code is supposed to be /idempotent/ and
+/commutative/ except for def-ref-order dependency).
+
+If you do not get repeatable results, the code is either not idempotent or not
+commutative (or both). That's a bug, and here is how to diagnose it: quit the
+Inferior Lisp Process (switch to its buffer named something-=*repl*=.)
+
+Repeatedly: track down causes of non-repeatable behavior and fix them. Rarely,
+Spacemacs gets confused and you must quit it altogether and restart. Do that if
+your results persistently don't make sense.
+
+** TODO Batch
+1. Tangle the embedded source out to external files (=C-c C-v t=)
+2. Open a terminal window and type =sbcl --script storeys.lisp= or =sbcl
+   --script test.lisp=.
+
+** Typesetting 
+
+Export and typeset the PDF file (=M-x org-latex-export-to-pdf=). That
+automatically runs all the code again, stressing idempotency.
+
+* COMMENT Preliminaries
+
+This section is just about setting up org-mode. It shouldn't export to the
+typeset PDF and HTML.
+
+#+BEGIN_SRC emacs-lisp :exports results :results none
+  (defun update-equation-tag () (interactive) (save-excursion (goto-char
+    (point-min)) (let ((count 1)) (while (re-search-forward
+    "\\tag{\\([0-9]+\\)}" nil t) (replace-match (format "%d" count) nil nil
+    nil 1) (setq count (1+ count)))))) (update-equation-tag) (setq
+    org-confirm-babel-evaluate nil) (org-babel-map-src-blocks nil
+    (org-babel-remove-result)) (slime) #+END_SRC
+
+#+BEGIN_SRC lisp
+(load "~/quicklisp/setup.lisp") #+END_SRC
+
+#+BEGIN_SRC lisp
+(ql:quickload :cl-quickcheck) #+END_SRC
+
+#+BEGIN_SRC lisp :results output
+(let ((*random-state* (make-random-state t)) (*print-length* 6) (*load-verbose*
+      t))
+
+  (shadow 'cl-quickcheck:report '#:cl-user) (use-package :cl-quickcheck)
+
+  (load "test/point.lisp") (load "test/box.lisp") (load "test/world.lisp") (load
+  "test/storey.lisp") (load "test/room.lisp") (load "test/rendering.lisp") )
+  #+END_SRC
+
+
+
+     1 Aliquam erat volutpat. Nunc eleifend leo vitae magna. In id erat non orci
+     commodo lobortis. Proin neque massa, cursus ut, gravida ut, lobortis eget,
+     lacus. Sed diam. Praesent fermentum tempor tellus. Nullam tempus. Mauris ac
+     felis vel velit tristique imperdiet. Donec at pede. Etiam vel neque nec dui
+     dignissim bibendum. Vivamus id enim. Phasellus neque orci, porta a, aliquet
+     quis, semper a, massa. Phasellus purus. Pellentesque tristique imperdiet
+     tortor. Nam euismod tellus id erat.
+
+     2 Pellentesque dapibus suscipit ligula. Donec posuere augue in quam. Etiam
+     vel tortor sodales tellus ultricies commodo. Suspendisse potenti. Aenean in
+     sem ac leo mollis blandit. Donec neque quam, dignissim in, mollis nec,
+     sagittis eu, wisi. Phasellus lacus. Etiam laoreet quam sed arcu. Phasellus
+     at dui in ligula mollis ultricies. Integer placerat tristique nisl.
+     Praesent augue. Fusce commodo. Vestibulum convallis, lorem a tempus semper,
+     dui dui euismod elit, vitae placerat urna tortor vitae lacus. Nullam libero
+     mauris, consequat quis, varius et, dictum id, arcu. Mauris mollis tincidunt
+     felis. Aliquam feugiat tellus ut neque. Nulla facilisis, risus a rhoncus
+     fermentum, tellus tellus lacinia purus, et dictum nunc justo sit amet elit.
+
+     3 Nullam eu ante vel est convallis dignissim. Fusce suscipit, wisi nec
+     facilisis facilisis, est dui fermentum leo, quis tempor ligula erat quis
+     odio. Nunc porta vulputate tellus. Nunc rutrum turpis sed pede. Sed
+     bibendum. Aliquam posuere. Nunc aliquet, augue nec adipiscing interdum,
+     lacus tellus malesuada massa, quis varius mi purus non odio. Pellentesque
+     condimentum, magna ut suscipit hendrerit, ipsum augue ornare nulla, non
+     luctus diam neque sit amet urna. Curabitur vulputate vestibulum lorem.
+     Fusce sagittis, libero non molestie mollis, magna orci ultrices dolor, at
+     vulputate neque nulla lacinia eros. Sed id ligula quis est convallis
+     tempor. Curabitur lacinia pulvinar nibh. Nam a sapien.
+
+     4 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec hendrerit
+     tempor tellus. Donec pretium posuere tellus. Proin quam nisl, tincidunt et,
+     mattis eget, convallis nec, purus. Cum sociis natoque penatibus et magnis
+     dis parturient montes, nascetur ridiculus mus. Nulla posuere. Donec vitae
+     dolor. Nullam tristique diam non turpis. Cras placerat accumsan nulla.
+     Nullam rutrum. Nam vestibulum accumsan nisl.
+
+     5 Nullam eu ante vel est convallis dignissim. Fusce suscipit, wisi nec
+     facilisis facilisis, est dui fermentum leo, quis tempor ligula erat quis
+     odio. Nunc porta vulputate tellus. Nunc rutrum turpis sed pede. Sed
+     bibendum. Aliquam posuere. Nunc aliquet, augue nec adipiscing interdum,
+     lacus tellus malesuada massa, quis varius mi purus non odio. Pellentesque
+     condimentum, magna ut suscipit hendrerit, ipsum augue ornare nulla, non
+     luctus diam neque sit amet urna. Curabitur vulputate vestibulum lorem.
+     Fusce sagittis, libero non molestie mollis, magna orci ultrices dolor, at
+     vulputate neque nulla lacinia eros. Sed id ligula quis est convallis
+     tempor. Curabitur lacinia pulvinar nibh. Nam a sapien.
+
+     6 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec hendrerit
+     tempor tellus. Donec pretium posuere tellus. Proin quam nisl, tincidunt et,
+     mattis eget, convallis nec, purus. Cum sociis natoque penatibus et magnis
+     dis parturient montes, nascetur ridiculus mus. Nulla posuere. Donec vitae
+     dolor. Nullam tristique diam non turpis. Cras placerat accumsan nulla.
+     Nullam rutrum. Nam vestibulum accumsan nisl.
+
+     7 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec hendrerit
+     tempor tellus. Donec pretium posuere tellus. Proin quam nisl, tincidunt et,
+     mattis eget, convallis nec, purus. Cum sociis natoque penatibus et magnis
+     dis parturient montes, nascetur ridiculus mus. Nulla posuere. Donec vitae
+     dolor. Nullam tristique diam non turpis. Cras placerat accumsan nulla.
+     Nullam rutrum. Nam vestibulum accumsan nisl.
+
+     8 Aliquam erat volutpat. Nunc eleifend leo vitae magna. In id erat non orci
+     commodo lobortis. Proin neque massa, cursus ut, gravida ut, lobortis eget,
+     lacus. Sed diam. Praesent fermentum tempor tellus. Nullam tempus. Mauris ac
+     felis vel velit tristique imperdiet. Donec at pede. Etiam vel neque nec dui
+     dignissim bibendum. Vivamus id enim. Phasellus neque orci, porta a, aliquet
+     quis, semper a, massa. Phasellus purus. Pellentesque tristique imperdiet
+     tortor. Nam euismod tellus id erat.
+
+     9 Nullam eu ante vel est convallis dignissim. Fusce suscipit, wisi nec
+     facilisis facilisis, est dui fermentum leo, quis tempor ligula erat quis
+     odio. Nunc porta vulputate tellus. Nunc rutrum turpis sed pede. Sed
+     bibendum. Aliquam posuere. Nunc aliquet, augue nec adipiscing interdum,
+     lacus tellus malesuada massa, quis varius mi purus non odio. Pellentesque
+     condimentum, magna ut suscipit hendrerit, ipsum augue ornare nulla, non
+     luctus diam neque sit amet urna. Curabitur vulputate vestibulum lorem.
+     Fusce sagittis, libero non molestie mollis, magna orci ultrices dolor, at
+     vulputate neque nulla lacinia eros. Sed id ligula quis est convallis
+     tempor. Curabitur lacinia pulvinar nibh. Nam a sapien.
+
+    10 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec hendrerit
+    tempor tellus. Donec pretium posuere tellus. Proin quam nisl, tincidunt et,
+    mattis eget, convallis nec, purus. Cum sociis natoque penatibus et magnis
+    dis parturient montes, nascetur ridiculus mus. Nulla posuere. Donec vitae
+    dolor. Nullam tristique diam non turpis. Cras placerat accumsan nulla.
+    Nullam rutrum. Nam vestibulum accumsan nisl.
+
+    11 Nullam eu ante vel est convallis dignissim. Fusce suscipit, wisi nec
+    facilisis facilisis, est dui fermentum leo, quis tempor ligula erat quis
+    odio. Nunc porta vulputate tellus. Nunc rutrum turpis sed pede. Sed
+    bibendum. Aliquam posuere. Nunc aliquet, augue nec adipiscing interdum,
+    lacus tellus malesuada massa, quis varius mi purus non odio. Pellentesque
+    condimentum, magna ut suscipit hendrerit, ipsum augue ornare nulla, non
+    luctus diam neque sit amet urna. Curabitur vulputate vestibulum lorem. Fusce
+    sagittis, libero non molestie mollis, magna orci ultrices dolor, at
+    vulputate neque nulla lacinia eros. Sed id ligula quis est convallis tempor.
+    Curabitur lacinia pulvinar nibh. Nam a sapien.
+
+    12 Nullam eu ante vel est convallis dignissim. Fusce suscipit, wisi nec
+    facilisis facilisis, est dui fermentum leo, quis tempor ligula erat quis
+    odio. Nunc porta vulputate tellus. Nunc rutrum turpis sed pede. Sed
+    bibendum. Aliquam posuere. Nunc aliquet, augue nec adipiscing interdum,
+    lacus tellus malesuada massa, quis varius mi purus non odio. Pellentesque
+    condimentum, magna ut suscipit hendrerit, ipsum augue ornare nulla, non
+    luctus diam neque sit amet urna. Curabitur vulputate vestibulum lorem. Fusce
+    sagittis, libero non molestie mollis, magna orci ultrices dolor, at
+    vulputate neque nulla lacinia eros. Sed id ligula quis est convallis tempor.
+    Curabitur lacinia pulvinar nibh. Nam a sapien.
+
+    13 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec hendrerit
+    tempor tellus. Donec pretium posuere tellus. Proin quam nisl, tincidunt et,
+    mattis eget, convallis nec, purus. Cum sociis natoque penatibus et magnis
+    dis parturient montes, nascetur ridiculus mus. Nulla posuere. Donec vitae
+    dolor. Nullam tristique diam non turpis. Cras placerat accumsan nulla.
+    Nullam rutrum. Nam vestibulum accumsan nisl.
+
+    14 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec hendrerit
+    tempor tellus. Donec pretium posuere tellus. Proin quam nisl, tincidunt et,
+    mattis eget, convallis nec, purus. Cum sociis natoque penatibus et magnis
+    dis parturient montes, nascetur ridiculus mus. Nulla posuere. Donec vitae
+    dolor. Nullam tristique diam non turpis. Cras placerat accumsan nulla.
+    Nullam rutrum. Nam vestibulum accumsan nisl.
+
+    15 Nullam eu ante vel est convallis dignissim. Fusce suscipit, wisi nec
+    facilisis facilisis, est dui fermentum leo, quis tempor ligula erat quis
+    odio. Nunc porta vulputate tellus. Nunc rutrum turpis sed pede. Sed
+    bibendum. Aliquam posuere. Nunc aliquet, augue nec adipiscing interdum,
+    lacus tellus malesuada massa, quis varius mi purus non odio. Pellentesque
+    condimentum, magna ut suscipit hendrerit, ipsum augue ornare nulla, non
+    luctus diam neque sit amet urna. Curabitur vulputate vestibulum lorem. Fusce
+    sagittis, libero non molestie mollis, magna orci ultrices dolor, at
+    vulputate neque nulla lacinia eros. Sed id ligula quis est convallis tempor.
+    Curabitur lacinia pulvinar nibh. Nam a sapien.
+
+    16 Nullam eu ante vel est convallis dignissim. Fusce suscipit, wisi nec
+    facilisis facilisis, est dui fermentum leo, quis tempor ligula erat quis
+    odio. Nunc porta vulputate tellus. Nunc rutrum turpis sed pede. Sed
+    bibendum. Aliquam posuere. Nunc aliquet, augue nec adipiscing interdum,
+    lacus tellus malesuada massa, quis varius mi purus non odio. Pellentesque
+    condimentum, magna ut suscipit hendrerit, ipsum augue ornare nulla, non
+    luctus diam neque sit amet urna. Curabitur vulputate vestibulum lorem. Fusce
+    sagittis, libero non molestie mollis, magna orci ultrices dolor, at
+    vulputate neque nulla lacinia eros. Sed id ligula quis est convallis tempor.
+    Curabitur lacinia pulvinar nibh. Nam a sapien.
+
+    17 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec hendrerit
+    tempor tellus. Donec pretium posuere tellus. Proin quam nisl, tincidunt et,
+    mattis eget, convallis nec, purus. Cum sociis natoque penatibus et magnis
+    dis parturient montes, nascetur ridiculus mus. Nulla posuere. Donec vitae
+    dolor. Nullam tristique diam non turpis. Cras placerat accumsan nulla.
+    Nullam rutrum. Nam vestibulum accumsan nisl.
+
+    18 Pellentesque dapibus suscipit ligula. Donec posuere augue in quam. Etiam
+    vel tortor sodales tellus ultricies commodo. Suspendisse potenti. Aenean in
+    sem ac leo mollis blandit. Donec neque quam, dignissim in, mollis nec,
+    sagittis eu, wisi. Phasellus lacus. Etiam laoreet quam sed arcu. Phasellus
+    at dui in ligula mollis ultricies. Integer placerat tristique nisl. Praesent
+    augue. Fusce commodo. Vestibulum convallis, lorem a tempus semper, dui dui
+    euismod elit, vitae placerat urna tortor vitae lacus. Nullam libero mauris,
+    consequat quis, varius et, dictum id, arcu. Mauris mollis tincidunt felis.
+    Aliquam feugiat tellus ut neque. Nulla facilisis, risus a rhoncus fermentum,
+    tellus tellus lacinia purus, et dictum nunc justo sit amet elit.
+
+    19 Aliquam erat volutpat. Nunc eleifend leo vitae magna. In id erat non orci
+    commodo lobortis. Proin neque massa, cursus ut, gravida ut, lobortis eget,
+    lacus. Sed diam. Praesent fermentum tempor tellus. Nullam tempus. Mauris ac
+    felis vel velit tristique imperdiet. Donec at pede. Etiam vel neque nec dui
+    dignissim bibendum. Vivamus id enim. Phasellus neque orci, porta a, aliquet
+    quis, semper a, massa. Phasellus purus. Pellentesque tristique imperdiet
+    tortor. Nam euismod tellus id erat.
+
+    20 Nullam eu ante vel est convallis dignissim. Fusce suscipit, wisi nec
+    facilisis facilisis, est dui fermentum leo, quis tempor ligula erat quis
+    odio. Nunc porta vulputate tellus. Nunc rutrum turpis sed pede. Sed
+    bibendum. Aliquam posuere. Nunc aliquet, augue nec adipiscing interdum,
+    lacus tellus malesuada massa, quis varius mi purus non odio. Pellentesque
+    condimentum, magna ut suscipit hendrerit, ipsum augue ornare nulla, non
+    luctus diam neque sit amet urna. Curabitur vulputate vestibulum lorem. Fusce
+    sagittis, libero non molestie mollis, magna orci ultrices dolor, at
+    vulputate neque nulla lacinia eros. Sed id ligula quis est convallis tempor.
+    Curabitur lacinia pulvinar nibh. Nam a sapien.
+
+    21 Aliquam erat volutpat. Nunc eleifend leo vitae magna. In id erat non orci
+    commodo lobortis. Proin neque massa, cursus ut, gravida ut, lobortis eget,
+    lacus. Sed diam. Praesent fermentum tempor tellus. Nullam tempus. Mauris ac
+    felis vel velit tristique imperdiet. Donec at pede. Etiam vel neque nec dui
+    dignissim bibendum. Vivamus id enim. Phasellus neque orci, porta a, aliquet
+    quis, semper a, massa. Phasellus purus. Pellentesque tristique imperdiet
+    tortor. Nam euismod tellus id erat.
+
+    22 Nullam eu ante vel est convallis dignissim. Fusce suscipit, wisi nec
+    facilisis facilisis, est dui fermentum leo, quis tempor ligula erat quis
+    odio. Nunc porta vulputate tellus. Nunc rutrum turpis sed pede. Sed
+    bibendum. Aliquam posuere. Nunc aliquet, augue nec adipiscing interdum,
+    lacus tellus malesuada massa, quis varius mi purus non odio. Pellentesque
+    condimentum, magna ut suscipit hendrerit, ipsum augue ornare nulla, non
+    luctus diam neque sit amet urna. Curabitur vulputate vestibulum lorem. Fusce
+    sagittis, libero non molestie mollis, magna orci ultrices dolor, at
+    vulputate neque nulla lacinia eros. Sed id ligula quis est convallis tempor.
+    Curabitur lacinia pulvinar nibh. Nam a sapien.
+
+    23 Aliquam erat volutpat. Nunc eleifend leo vitae magna. In id erat non orci
+    commodo lobortis. Proin neque massa, cursus ut, gravida ut, lobortis eget,
+    lacus. Sed diam. Praesent fermentum tempor tellus. Nullam tempus. Mauris ac
+    felis vel velit tristique imperdiet. Donec at pede. Etiam vel neque nec dui
+    dignissim bibendum. Vivamus id enim. Phasellus neque orci, porta a, aliquet
+    quis, semper a, massa. Phasellus purus. Pellentesque tristique imperdiet
+    tortor. Nam euismod tellus id erat.
+
+    24 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec hendrerit
+    tempor tellus. Donec pretium posuere tellus. Proin quam nisl, tincidunt et,
+    mattis eget, convallis nec, purus. Cum sociis natoque penatibus et magnis
+    dis parturient montes, nascetur ridiculus mus. Nulla posuere. Donec vitae
+    dolor. Nullam tristique diam non turpis. Cras placerat accumsan nulla.
+    Nullam rutrum. Nam vestibulum accumsan nisl.
+
+    25 Pellentesque dapibus suscipit ligula. Donec posuere augue in quam. Etiam
+    vel tortor sodales tellus ultricies commodo. Suspendisse potenti. Aenean in
+    sem ac leo mollis blandit. Donec neque quam, dignissim in, mollis nec,
+    sagittis eu, wisi. Phasellus lacus. Etiam laoreet quam sed arcu. Phasellus
+    at dui in ligula mollis ultricies. Integer placerat tristique nisl. Praesent
+    augue. Fusce commodo. Vestibulum convallis, lorem a tempus semper, dui dui
+    euismod elit, vitae placerat urna tortor vitae lacus. Nullam libero mauris,
+    consequat quis, varius et, dictum id, arcu. Mauris mollis tincidunt felis.
+    Aliquam feugiat tellus ut neque. Nulla facilisis, risus a rhoncus fermentum,
+    tellus tellus lacinia purus, et dictum nunc justo sit amet elit.
+
+    26 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec hendrerit
+    tempor tellus. Donec pretium posuere tellus. Proin quam nisl, tincidunt et,
+    mattis eget, convallis nec, purus. Cum sociis natoque penatibus et magnis
+    dis parturient montes, nascetur ridiculus mus. Nulla posuere. Donec vitae
+    dolor. Nullam tristique diam non turpis. Cras placerat accumsan nulla.
+    Nullam rutrum. Nam vestibulum accumsan nisl.
+
+    27 Nullam eu ante vel est convallis dignissim. Fusce suscipit, wisi nec
+    facilisis facilisis, est dui fermentum leo, quis tempor ligula erat quis
+    odio. Nunc porta vulputate tellus. Nunc rutrum turpis sed pede. Sed
+    bibendum. Aliquam posuere. Nunc aliquet, augue nec adipiscing interdum,
+    lacus tellus malesuada massa, quis varius mi purus non odio. Pellentesque
+    condimentum, magna ut suscipit hendrerit, ipsum augue ornare nulla, non
+    luctus diam neque sit amet urna. Curabitur vulputate vestibulum lorem. Fusce
+    sagittis, libero non molestie mollis, magna orci ultrices dolor, at
+    vulputate neque nulla lacinia eros. Sed id ligula quis est convallis tempor.
+    Curabitur lacinia pulvinar nibh. Nam a sapien.
+
+    28 Aliquam erat volutpat. Nunc eleifend leo vitae magna. In id erat non orci
+    commodo lobortis. Proin neque massa, cursus ut, gravida ut, lobortis eget,
+    lacus. Sed diam. Praesent fermentum tempor tellus. Nullam tempus. Mauris ac
+    felis vel velit tristique imperdiet. Donec at pede. Etiam vel neque nec dui
+    dignissim bibendum. Vivamus id enim. Phasellus neque orci, porta a, aliquet
+    quis, semper a, massa. Phasellus purus. Pellentesque tristique imperdiet
+    tortor. Nam euismod tellus id erat.
+
+    29 Pellentesque dapibus suscipit ligula. Donec posuere augue in quam. Etiam
+    vel tortor sodales tellus ultricies commodo. Suspendisse potenti. Aenean in
+    sem ac leo mollis blandit. Donec neque quam, dignissim in, mollis nec,
+    sagittis eu, wisi. Phasellus lacus. Etiam laoreet quam sed arcu. Phasellus
+    at dui in ligula mollis ultricies. Integer placerat tristique nisl. Praesent
+    augue. Fusce commodo. Vestibulum convallis, lorem a tempus semper, dui dui
+    euismod elit, vitae placerat urna tortor vitae lacus. Nullam libero mauris,
+    consequat quis, varius et, dictum id, arcu. Mauris mollis tincidunt felis.
+    Aliquam feugiat tellus ut neque. Nulla facilisis, risus a rhoncus fermentum,
+    tellus tellus lacinia purus, et dictum nunc justo sit amet elit.
+
+    30 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec hendrerit
+    tempor tellus. Donec pretium posuere tellus. Proin quam nisl, tincidunt et,
+    mattis eget, convallis nec, purus. Cum sociis natoque penatibus et magnis
+    dis parturient montes, nascetur ridiculus mus. Nulla posuere. Donec vitae
+    dolor. Nullam tristique diam non turpis. Cras placerat accumsan nulla.
+    Nullam rutrum. Nam vestibulum accumsan nisl.
+
+    31 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec hendrerit
+    tempor tellus. Donec pretium posuere tellus. Proin quam nisl, tincidunt et,
+    mattis eget, convallis nec, purus. Cum sociis natoque penatibus et magnis
+    dis parturient montes, nascetur ridiculus mus. Nulla posuere. Donec vitae
+    dolor. Nullam tristique diam non turpis. Cras placerat accumsan nulla.
+    Nullam rutrum. Nam vestibulum accumsan nisl.
+
+    32 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec hendrerit
+    tempor tellus. Donec pretium posuere tellus. Proin quam nisl, tincidunt et,
+    mattis eget, convallis nec, purus. Cum sociis natoque penatibus et magnis
+    dis parturient montes, nascetur ridiculus mus. Nulla posuere. Donec vitae
+    dolor. Nullam tristique diam non turpis. Cras placerat accumsan nulla.
+    Nullam rutrum. Nam vestibulum accumsan nisl.
+
+    33 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec hendrerit
+    tempor tellus. Donec pretium posuere tellus. Proin quam nisl, tincidunt et,
+    mattis eget, convallis nec, purus. Cum sociis natoque penatibus et magnis
+    dis parturient montes, nascetur ridiculus mus. Nulla posuere. Donec vitae
+    dolor. Nullam tristique diam non turpis. Cras placerat accumsan nulla.
+    Nullam rutrum. Nam vestibulum accumsan nisl.
+
+    34 Pellentesque dapibus suscipit ligula. Donec posuere augue in quam. Etiam
+    vel tortor sodales tellus ultricies commodo. Suspendisse potenti. Aenean in
+    sem ac leo mollis blandit. Donec neque quam, dignissim in, mollis nec,
+    sagittis eu, wisi. Phasellus lacus. Etiam laoreet quam sed arcu. Phasellus
+    at dui in ligula mollis ultricies. Integer placerat tristique nisl. Praesent
+    augue. Fusce commodo. Vestibulum convallis, lorem a tempus semper, dui dui
+    euismod elit, vitae placerat urna tortor vitae lacus. Nullam libero mauris,
+    consequat quis, varius et, dictum id, arcu. Mauris mollis tincidunt felis.
+    Aliquam feugiat tellus ut neque. Nulla facilisis, risus a rhoncus fermentum,
+    tellus tellus lacinia purus, et dictum nunc justo sit amet elit.
+
+    35 Nullam eu ante vel est convallis dignissim. Fusce suscipit, wisi nec
+    facilisis facilisis, est dui fermentum leo, quis tempor ligula erat quis
+    odio. Nunc porta vulputate tellus. Nunc rutrum turpis sed pede. Sed
+    bibendum. Aliquam posuere. Nunc aliquet, augue nec adipiscing interdum,
+    lacus tellus malesuada massa, quis varius mi purus non odio. Pellentesque
+    condimentum, magna ut suscipit hendrerit, ipsum augue ornare nulla, non
+    luctus diam neque sit amet urna. Curabitur vulputate vestibulum lorem. Fusce
+    sagittis, libero non molestie mollis, magna orci ultrices dolor, at
+    vulputate neque nulla lacinia eros. Sed id ligula quis est convallis tempor.
+    Curabitur lacinia pulvinar nibh. Nam a sapien.
+
+    36 Aliquam erat volutpat. Nunc eleifend leo vitae magna. In id erat non orci
+    commodo lobortis. Proin neque massa, cursus ut, gravida ut, lobortis eget,
+    lacus. Sed diam. Praesent fermentum tempor tellus. Nullam tempus. Mauris ac
+    felis vel velit tristique imperdiet. Donec at pede. Etiam vel neque nec dui
+    dignissim bibendum. Vivamus id enim. Phasellus neque orci, porta a, aliquet
+    quis, semper a, massa. Phasellus purus. Pellentesque tristique imperdiet
+    tortor. Nam euismod tellus id erat.
+
+    37 Aliquam erat volutpat. Nunc eleifend leo vitae magna. In id erat non orci
+    commodo lobortis. Proin neque massa, cursus ut, gravida ut, lobortis eget,
+    lacus. Sed diam. Praesent fermentum tempor tellus. Nullam tempus. Mauris ac
+    felis vel velit tristique imperdiet. Donec at pede. Etiam vel neque nec dui
+    dignissim bibendum. Vivamus id enim. Phasellus neque orci, porta a, aliquet
+    quis, semper a, massa. Phasellus purus. Pellentesque tristique imperdiet
+    tortor. Nam euismod tellus id erat.
+
+    38 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec hendrerit
+    tempor tellus. Donec pretium posuere tellus. Proin quam nisl, tincidunt et,
+    mattis eget, convallis nec, purus. Cum sociis natoque penatibus et magnis
+    dis parturient montes, nascetur ridiculus mus. Nulla posuere. Donec vitae
+    dolor. Nullam tristique diam non turpis. Cras placerat accumsan nulla.
+    Nullam rutrum. Nam vestibulum accumsan nisl.
+
+    39 Aliquam erat volutpat. Nunc eleifend leo vitae magna. In id erat non orci
+    commodo lobortis. Proin neque massa, cursus ut, gravida ut, lobortis eget,
+    lacus. Sed diam. Praesent fermentum tempor tellus. Nullam tempus. Mauris ac
+    felis vel velit tristique imperdiet. Donec at pede. Etiam vel neque nec dui
+    dignissim bibendum. Vivamus id enim. Phasellus neque orci, porta a, aliquet
+    quis, semper a, massa. Phasellus purus. Pellentesque tristique imperdiet
+    tortor. Nam euismod tellus id erat.
+
+    40 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec hendrerit
+    tempor tellus. Donec pretium posuere tellus. Proin quam nisl, tincidunt et,
+    mattis eget, convallis nec, purus. Cum sociis natoque penatibus et magnis
+    dis parturient montes, nascetur ridiculus mus. Nulla posuere. Donec vitae
+    dolor. Nullam tristique diam non turpis. Cras placerat accumsan nulla.
+    Nullam rutrum. Nam vestibulum accumsan nisl.
+
+    41 Nullam eu ante vel est convallis dignissim. Fusce suscipit, wisi nec
+    facilisis facilisis, est dui fermentum leo, quis tempor ligula erat quis
+    odio. Nunc porta vulputate tellus. Nunc rutrum turpis sed pede. Sed
+    bibendum. Aliquam posuere. Nunc aliquet, augue nec adipiscing interdum,
+    lacus tellus malesuada massa, quis varius mi purus non odio. Pellentesque
+    condimentum, magna ut suscipit hendrerit, ipsum augue ornare nulla, non
+    luctus diam neque sit amet urna. Curabitur vulputate vestibulum lorem. Fusce
+    sagittis, libero non molestie mollis, magna orci ultrices dolor, at
+    vulputate neque nulla lacinia eros. Sed id ligula quis est convallis tempor.
+    Curabitur lacinia pulvinar nibh. Nam a sapien.
+
+    42 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec hendrerit
+    tempor tellus. Donec pretium posuere tellus. Proin quam nisl, tincidunt et,
+    mattis eget, convallis nec, purus. Cum sociis natoque penatibus et magnis
+    dis parturient montes, nascetur ridiculus mus. Nulla posuere. Donec vitae
+    dolor. Nullam tristique diam non turpis. Cras placerat accumsan nulla.
+    Nullam rutrum. Nam vestibulum accumsan nisl.
+
+    43 Pellentesque dapibus suscipit ligula. Donec posuere augue in quam. Etiam
+    vel tortor sodales tellus ultricies commodo. Suspendisse potenti. Aenean in
+    sem ac leo mollis blandit. Donec neque quam, dignissim in, mollis nec,
+    sagittis eu, wisi. Phasellus lacus. Etiam laoreet quam sed arcu. Phasellus
+    at dui in ligula mollis ultricies. Integer placerat tristique nisl. Praesent
+    augue. Fusce commodo. Vestibulum convallis, lorem a tempus semper, dui dui
+    euismod elit, vitae placerat urna tortor vitae lacus. Nullam libero mauris,
+    consequat quis, varius et, dictum id, arcu. Mauris mollis tincidunt felis.
+    Aliquam feugiat tellus ut neque. Nulla facilisis, risus a rhoncus fermentum,
+    tellus tellus lacinia purus, et dictum nunc justo sit amet elit.
+
+    44 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec hendrerit
+    tempor tellus. Donec pretium posuere tellus. Proin quam nisl, tincidunt et,
+    mattis eget, convallis nec, purus. Cum sociis natoque penatibus et magnis
+    dis parturient montes, nascetur ridiculus mus. Nulla posuere. Donec vitae
+    dolor. Nullam tristique diam non turpis. Cras placerat accumsan nulla.
+    Nullam rutrum. Nam vestibulum accumsan nisl.
+
+    45 Aliquam erat volutpat. Nunc eleifend leo vitae magna. In id erat non orci
+    commodo lobortis. Proin neque massa, cursus ut, gravida ut, lobortis eget,
+    lacus. Sed diam. Praesent fermentum tempor tellus. Nullam tempus. Mauris ac
+    felis vel velit tristique imperdiet. Donec at pede. Etiam vel neque nec dui
+    dignissim bibendum. Vivamus id enim. Phasellus neque orci, porta a, aliquet
+    quis, semper a, massa. Phasellus purus. Pellentesque tristique imperdiet
+    tortor. Nam euismod tellus id erat.
+
+    46 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec hendrerit
+    tempor tellus. Donec pretium posuere tellus. Proin quam nisl, tincidunt et,
+    mattis eget, convallis nec, purus. Cum sociis natoque penatibus et magnis
+    dis parturient montes, nascetur ridiculus mus. Nulla posuere. Donec vitae
+    dolor. Nullam tristique diam non turpis. Cras placerat accumsan nulla.
+    Nullam rutrum. Nam vestibulum accumsan nisl.
+
+    47 Aliquam erat volutpat. Nunc eleifend leo vitae magna. In id erat non orci
+    commodo lobortis. Proin neque massa, cursus ut, gravida ut, lobortis eget,
+    lacus. Sed diam. Praesent fermentum tempor tellus. Nullam tempus. Mauris ac
+    felis vel velit tristique imperdiet. Donec at pede. Etiam vel neque nec dui
+    dignissim bibendum. Vivamus id enim. Phasellus neque orci, porta a, aliquet
+    quis, semper a, massa. Phasellus purus. Pellentesque tristique imperdiet
+    tortor. Nam euismod tellus id erat.
+
+    48 Pellentesque dapibus suscipit ligula. Donec posuere augue in quam. Etiam
+    vel tortor sodales tellus ultricies commodo. Suspendisse potenti. Aenean in
+    sem ac leo mollis blandit. Donec neque quam, dignissim in, mollis nec,
+    sagittis eu, wisi. Phasellus lacus. Etiam laoreet quam sed arcu. Phasellus
+    at dui in ligula mollis ultricies. Integer placerat tristique nisl. Praesent
+    augue. Fusce commodo. Vestibulum convallis, lorem a tempus semper, dui dui
+    euismod elit, vitae placerat urna tortor vitae lacus. Nullam libero mauris,
+    consequat quis, varius et, dictum id, arcu. Mauris mollis tincidunt felis.
+    Aliquam feugiat tellus ut neque. Nulla facilisis, risus a rhoncus fermentum,
+    tellus tellus lacinia purus, et dictum nunc justo sit amet elit.
+
+    49 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec hendrerit
+    tempor tellus. Donec pretium posuere tellus. Proin quam nisl, tincidunt et,
+    mattis eget, convallis nec, purus. Cum sociis natoque penatibus et magnis
+    dis parturient montes, nascetur ridiculus mus. Nulla posuere. Donec vitae
+    dolor. Nullam tristique diam non turpis. Cras placerat accumsan nulla.
+    Nullam rutrum. Nam vestibulum accumsan nisl.
+
+    50 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec hendrerit
+    tempor tellus. Donec pretium posuere tellus. Proin quam nisl, tincidunt et,
+    mattis eget, convallis nec, purus. Cum sociis natoque penatibus et magnis
+    dis parturient montes, nascetur ridiculus mus. Nulla posuere. Donec vitae
+    dolor. Nullam tristique diam non turpis. Cras placerat accumsan nulla.
+    Nullam rutrum. Nam vestibulum accumsan nisl.
+
+    51 Pellentesque dapibus suscipit ligula. Donec posuere augue in quam. Etiam
+    vel tortor sodales tellus ultricies commodo. Suspendisse potenti. Aenean in
+    sem ac leo mollis blandit. Donec neque quam, dignissim in, mollis nec,
+    sagittis eu, wisi. Phasellus lacus. Etiam laoreet quam sed arcu. Phasellus
+    at dui in ligula mollis ultricies. Integer placerat tristique nisl. Praesent
+    augue. Fusce commodo. Vestibulum convallis, lorem a tempus semper, dui dui
+    euismod elit, vitae placerat urna tortor vitae lacus. Nullam libero mauris,
+    consequat quis, varius et, dictum id, arcu. Mauris mollis tincidunt felis.
+    Aliquam feugiat tellus ut neque. Nulla facilisis, risus a rhoncus fermentum,
+    tellus tellus lacinia purus, et dictum nunc justo sit amet elit.
+
+    52 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec hendrerit
+    tempor tellus. Donec pretium posuere tellus. Proin quam nisl, tincidunt et,
+    mattis eget, convallis nec, purus. Cum sociis natoque penatibus et magnis
+    dis parturient montes, nascetur ridiculus mus. Nulla posuere. Donec vitae
+    dolor. Nullam tristique diam non turpis. Cras placerat accumsan nulla.
+    Nullam rutrum. Nam vestibulum accumsan nisl.
+
+    53 Aliquam erat volutpat. Nunc eleifend leo vitae magna. In id erat non orci
+    commodo lobortis. Proin neque massa, cursus ut, gravida ut, lobortis eget,
+    lacus. Sed diam. Praesent fermentum tempor tellus. Nullam tempus. Mauris ac
+    felis vel velit tristique imperdiet. Donec at pede. Etiam vel neque nec dui
+    dignissim bibendum. Vivamus id enim. Phasellus neque orci, porta a, aliquet
+    quis, semper a, massa. Phasellus purus. Pellentesque tristique imperdiet
+    tortor. Nam euismod tellus id erat.
+
+    54 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec hendrerit
+    tempor tellus. Donec pretium posuere tellus. Proin quam nisl, tincidunt et,
+    mattis eget, convallis nec, purus. Cum sociis natoque penatibus et magnis
+    dis parturient montes, nascetur ridiculus mus. Nulla posuere. Donec vitae
+    dolor. Nullam tristique diam non turpis. Cras placerat accumsan nulla.
+    Nullam rutrum. Nam vestibulum accumsan nisl.
+
+    55 Aliquam erat volutpat. Nunc eleifend leo vitae magna. In id erat non orci
+    commodo lobortis. Proin neque massa, cursus ut, gravida ut, lobortis eget,
+    lacus. Sed diam. Praesent fermentum tempor tellus. Nullam tempus. Mauris ac
+    felis vel velit tristique imperdiet. Donec at pede. Etiam vel neque nec dui
+    dignissim bibendum. Vivamus id enim. Phasellus neque orci, porta a, aliquet
+    quis, semper a, massa. Phasellus purus. Pellentesque tristique imperdiet
+    tortor. Nam euismod tellus id erat.
+
+    56 Pellentesque dapibus suscipit ligula. Donec posuere augue in quam. Etiam
+    vel tortor sodales tellus ultricies commodo. Suspendisse potenti. Aenean in
+    sem ac leo mollis blandit. Donec neque quam, dignissim in, mollis nec,
+    sagittis eu, wisi. Phasellus lacus. Etiam laoreet quam sed arcu. Phasellus
+    at dui in ligula mollis ultricies. Integer placerat tristique nisl. Praesent
+    augue. Fusce commodo. Vestibulum convallis, lorem a tempus semper, dui dui
+    euismod elit, vitae placerat urna tortor vitae lacus. Nullam libero mauris,
+    consequat quis, varius et, dictum id, arcu. Mauris mollis tincidunt felis.
+    Aliquam feugiat tellus ut neque. Nulla facilisis, risus a rhoncus fermentum,
+    tellus tellus lacinia purus, et dictum nunc justo sit amet elit.
+
+    57 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec hendrerit
+    tempor tellus. Donec pretium posuere tellus. Proin quam nisl, tincidunt et,
+    mattis eget, convallis nec, purus. Cum sociis natoque penatibus et magnis
+    dis parturient montes, nascetur ridiculus mus. Nulla posuere. Donec vitae
+    dolor. Nullam tristique diam non turpis. Cras placerat accumsan nulla.
+    Nullam rutrum. Nam vestibulum accumsan nisl.
+
+    58 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec hendrerit
+    tempor tellus. Donec pretium posuere tellus. Proin quam nisl, tincidunt et,
+    mattis eget, convallis nec, purus. Cum sociis natoque penatibus et magnis
+    dis parturient montes, nascetur ridiculus mus. Nulla posuere. Donec vitae
+    dolor. Nullam tristique diam non turpis. Cras placerat accumsan nulla.
+    Nullam rutrum. Nam vestibulum accumsan nisl.
+
+    59 Aliquam erat volutpat. Nunc eleifend leo vitae magna. In id erat non orci
+    commodo lobortis. Proin neque massa, cursus ut, gravida ut, lobortis eget,
+    lacus. Sed diam. Praesent fermentum tempor tellus. Nullam tempus. Mauris ac
+    felis vel velit tristique imperdiet. Donec at pede. Etiam vel neque nec dui
+    dignissim bibendum. Vivamus id enim. Phasellus neque orci, porta a, aliquet
+    quis, semper a, massa. Phasellus purus. Pellentesque tristique imperdiet
+    tortor. Nam euismod tellus id erat.
+
+    60 Pellentesque dapibus suscipit ligula. Donec posuere augue in quam. Etiam
+    vel tortor sodales tellus ultricies commodo. Suspendisse potenti. Aenean in
+    sem ac leo mollis blandit. Donec neque quam, dignissim in, mollis nec,
+    sagittis eu, wisi. Phasellus lacus. Etiam laoreet quam sed arcu. Phasellus
+    at dui in ligula mollis ultricies. Integer placerat tristique nisl. Praesent
+    augue. Fusce commodo. Vestibulum convallis, lorem a tempus semper, dui dui
+    euismod elit, vitae placerat urna tortor vitae lacus. Nullam libero mauris,
+    consequat quis, varius et, dictum id, arcu. Mauris mollis tincidunt felis.
+    Aliquam feugiat tellus ut neque. Nulla facilisis, risus a rhoncus fermentum,
+    tellus tellus lacinia purus, et dictum nunc justo sit amet elit.
+
+    61 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec hendrerit
+    tempor tellus. Donec pretium posuere tellus. Proin quam nisl, tincidunt et,
+    mattis eget, convallis nec, purus. Cum sociis natoque penatibus et magnis
+    dis parturient montes, nascetur ridiculus mus. Nulla posuere. Donec vitae
+    dolor. Nullam tristique diam non turpis. Cras placerat accumsan nulla.
+    Nullam rutrum. Nam vestibulum accumsan nisl.
+
+    62 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec hendrerit
+    tempor tellus. Donec pretium posuere tellus. Proin quam nisl, tincidunt et,
+    mattis eget, convallis nec, purus. Cum sociis natoque penatibus et magnis
+    dis parturient montes, nascetur ridiculus mus. Nulla posuere. Donec vitae
+    dolor. Nullam tristique diam non turpis. Cras placerat accumsan nulla.
+    Nullam rutrum. Nam vestibulum accumsan nisl.
+
+    63 Aliquam erat volutpat. Nunc eleifend leo vitae magna. In id erat non orci
+    commodo lobortis. Proin neque massa, cursus ut, gravida ut, lobortis eget,
+    lacus. Sed diam. Praesent fermentum tempor tellus. Nullam tempus. Mauris ac
+    felis vel velit tristique imperdiet. Donec at pede. Etiam vel neque nec dui
+    dignissim bibendum. Vivamus id enim. Phasellus neque orci, porta a, aliquet
+    quis, semper a, massa. Phasellus purus. Pellentesque tristique imperdiet
+    tortor. Nam euismod tellus id erat.
+
+    64 Pellentesque dapibus suscipit ligula. Donec posuere augue in quam. Etiam
+    vel tortor sodales tellus ultricies commodo. Suspendisse potenti. Aenean in
+    sem ac leo mollis blandit. Donec neque quam, dignissim in, mollis nec,
+    sagittis eu, wisi. Phasellus lacus. Etiam laoreet quam sed arcu. Phasellus
+    at dui in ligula mollis ultricies. Integer placerat tristique nisl. Praesent
+    augue. Fusce commodo. Vestibulum convallis, lorem a tempus semper, dui dui
+    euismod elit, vitae placerat urna tortor vitae lacus. Nullam libero mauris,
+    consequat quis, varius et, dictum id, arcu. Mauris mollis tincidunt felis.
+    Aliquam feugiat tellus ut neque. Nulla facilisis, risus a rhoncus fermentum,
+    tellus tellus lacinia purus, et dictum nunc justo sit amet elit.
+
+
