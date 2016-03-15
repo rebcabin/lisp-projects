@@ -16,6 +16,32 @@
 (defparameter *suits* #(:S :H :D :C))
 (defparameter *pips*  #(:A :2 :3 :4 :5 :6 :7 :8 :9 :T :J :Q :K))
 
+(defstruct cardkey peg num pip npeg nato heb monday)
+
+(defun flatten (tree)
+  (let ((result '()))
+    (labels ((scan (item)
+               (if (listp item)
+                   (map nil #'scan item)
+                   (push item result))))
+      (scan tree))
+    (nreverse result)))
+
+(defun append-nulls (lst n)
+  (if (< (length lst) n)
+      (dotimes (i (- n (length lst)))
+        (setq lst (append lst (list 'null)))))
+  lst)
+
+(defun riffle-lists (lst1 lst2)
+  (let ((m (max (length lst1) (length lst2))))
+    (flatten (mapcar (lambda (a b) (list a b))
+                     (append-nulls lst1 m)
+                     (append-nulls lst2 m)))))
+
+(defun create-cardkey (lyst)
+  (apply make-cardkey lyst))
+
 (defparameter *keys*
   #(("jail"         1 "SA" "TEA"    "ALPHA"    "ARYEH"   "JAN 01")
     ("judge"        2 "S2" "NOAH"   "BAKER"    "BAYIT"   "JAN 08")
