@@ -18,16 +18,16 @@
     (equal '(1 2 3)   (map1-n #'identity 3))
 
     (equal '(0 1 2 3) (map0-n #'identity 3))
-    
+
     (equal '(2 4 6)   (mapcar #'+ '(1 2 3) (range 3)))
-    
+
     (equal (mapcar (lambda (x) (* x x)) (range 6))
            (mapcars (lambda (x) (* x x)) (range 3) (range-a-b 4 6)))
-    
+
     (flet ((square (x) (* x x)))
       (equal (mapcar #'square (range 6))
              (mapcars #'square (range 3) (range-a-b 4 6))))
-    
+
     (flet ((square (x) (* x x)))
       (equal '(1 4 (9 16 (25) 36) 49 (64 81))
              (rmapcar #'square '(1 2 (3 4 (5) 6) 7 (8 9)))))
@@ -39,7 +39,7 @@
            (rmapcar #'*
                     '(1 2 (3 4 (5   ) 6) 7 (8 9   )   )
                     '(1 2 (3 4 (5 11) 6) 7 (8 9 10) 12)))
-    
+
     (equal '(1 4 2 5 3 6) (mappend #'list '(1 2 3) '(4 5 6)))
 
     (equal '(4 3 2 1) (->> () (cons 1) (cons 2) (cons 3) (cons 4)))
@@ -76,7 +76,7 @@
   (check
     (equal "3.141592653589793d0 pieces of PI"
            (mkstr pi " pieces of " 'pi))
-    
+
     (eq    '|ARMadiLL0|
            (symb 'ar "Madi" #\L #\L 0))
 
@@ -98,34 +98,34 @@
        (funcall (compose (lambda (x) (+ 2 x))
                          (lambda (x) (* 5 x)))
                 8))
-    
+
     (let ((a 2) (b 5) (c 8))
       (= 42
          (funcall (compose (lambda (x) (+ a x))
                            (lambda (x) (* b x)))
                   c)))
-    
+
     (equal (mklist 42)
            (funcall (compose #'list #'1+) 41))
 
     (funcall (alrec (and (oddp it) rec) t)
              '(1 3 5))
-    
+
     (equal (mklist  4)
            (funcall (fn (compose list 1+ truncate)) pi))
-    
+
     (equal 6
            (funcall (fn (compose (lambda (x) (+ x 3)) truncate))
                     pi))
-    
+
     (equal '(nil t nil nil)
            (mapcar (fn (and integerp oddp))
                    '(c 3 p 0)))
-    
+
     (equal '(t t t nil)
            (mapcar (fn (or integerp symbolp))
                    '(c 3 p 0.2)))
-    
+
     (equal '(2 2 4 4 6 6)
            (map1-n (fn (if oddp 1+ identity)) 6))
 
@@ -161,7 +161,7 @@
     (equal "Hello, World!"
            (with-open-file (in "foobar.txt")
              (read-line in)))
-    
+
     (equal "Hello, World!"
            (let ((in (open "foobar.txt")))
              (let ((val (read-line in)))
@@ -174,7 +174,7 @@
                (format t "~a~%" (read-line in))
                (close in))
              in))
-    
+
     (equal 42
            (let ((in (open "foobar.txt" :if-does-not-exist nil)))
              (when in
@@ -205,7 +205,7 @@
 (=defun baz ()
   (=bind (m n) (message)
     (=values (list m n))))
-            
+
 (deftest test-continuations ()
   (check
     (= 42 (=values (1+ 41)))
