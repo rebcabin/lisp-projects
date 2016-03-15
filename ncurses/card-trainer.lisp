@@ -18,13 +18,13 @@
 
 (defstruct cardkey peg num pip npeg nato heb monday)
 
-(defun flatten (tree)
+(defun flatten (tree &key (levels 1000000000000))
   (let ((result '()))
-    (labels ((scan (item)
-               (if (listp item)
-                   (map nil #'scan item)
+    (labels ((scan (item l)
+               (if (and (> l 0) (listp item))
+                   (map nil (lambda (i) (scan i (- l 1))) item)
                    (push item result))))
-      (scan tree))
+      (scan tree (+ 1 levels)))
     (nreverse result)))
 
 (defun append-nulls (lst n)
