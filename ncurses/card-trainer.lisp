@@ -38,9 +38,17 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 (defun riffle-lists (l1 l2)
   (flatten (map 'list #'list l1 l2) :levels 1))
 
+;;                 _ _
+;;  __ __ _ _ _ __| | |_____ _  _
+;; / _/ _` | '_/ _` | / / -_) || |
+;; \__\__,_|_| \__,_|_\_\___|\_, |
+;;                           |__/
+
 (defstruct cardkey peg oldpeg num pip npeg nato heb monday)
+
 (defparameter *cardkey-column-names*
   (mapcar #'string-upcase '("peg" "oldpeg" "num" "pip" "npeg" "nato" "heb" "monday")))
+
 (defparameter *cardkey-column-keywords*
   (mapcar #'alexandria:make-keyword *cardkey-column-names*))
 
@@ -109,6 +117,11 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 (defparameter *cardkeys*
   (map 'list #'create-cardkey *keys*))
 
+;;                 _     _            _
+;;  __ __ _ _ _ __| |___| |_  __ _ __| |_
+;; / _/ _` | '_/ _` |___| ' \/ _` (_-< ' \
+;; \__\__,_|_| \__,_|   |_||_\__,_/__/_||_|
+
 (defparameter *cardhash*
   (make-hash-table :test #'equal))
 
@@ -118,6 +131,11 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
         ck))
 
 (map nil #'install-cardkey *cardkeys*)
+
+;;     _        _
+;;  __| |___ __| |__
+;; / _` / -_) _| / /
+;; \__,_\___\__|_\_\
 
 (defparameter *deck*
   (let ((d (make-array (* +nsuits+ +npips+) :element-type 'string)))
@@ -142,51 +160,65 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 (print *deck*)
 (print (nshuffle-array *deck*)) ;; *deck* is modified in-place
 
+;;     _       _
+;;  __| |_ _ _(_)_ _  __ _ ___
+;; (_-<  _| '_| | ' \/ _` (_-<
+;; /__/\__|_| |_|_||_\__, /__/
+;;                   |___/
+
 (defun string-builder ()
   (make-array '(0) :element-type 'base-char
                    :fill-pointer 0 :adjustable t))
 
-(print
- (with-output-to-string (sb nil)
-   (do ((s 0 (1+ s)))
-       ((<= +nsuits+ s))
-     (format sb "~&")
-     (do ((p 0 (1+ p)))
-         ((<= +npips+ p))
-       (format sb "~A~A " (aref *suits* s) (aref *pips* p))))))
+;; (print
+;;  (with-output-to-string (sb nil)
+;;    (do ((s 0 (1+ s)))
+;;        ((<= +nsuits+ s))
+;;      (format sb "~&")
+;;      (do ((p 0 (1+ p)))
+;;          ((<= +npips+ p))
+;;        (format sb "~A~A " (aref *suits* s) (aref *pips* p))))))
 
-(print
- (let ((str (string-builder)))
-   (with-output-to-string (sb str)
-     (do ((s 0 (1+ s)))
-         ((<= +nsuits+ s))
-       (format sb "~&")
-       (do ((p 0 (1+ p)))
-           ((<= +npips+ p))
-         (format sb "~A~A " (aref *suits* s) (aref *pips* p))))
-     str)))
+;; (print
+;;  (let ((str (string-builder)))
+;;    (with-output-to-string (sb str)
+;;      (do ((s 0 (1+ s)))
+;;          ((<= +nsuits+ s))
+;;        (format sb "~&")
+;;        (do ((p 0 (1+ p)))
+;;            ((<= +npips+ p))
+;;          (format sb "~A~A " (aref *suits* s) (aref *pips* p))))
+;;      str)))
 
-(print
- (let ((sb (make-string-output-stream)))
-   (do ((s 0 (1+ s)))
-       ((<= +nsuits+ s))
-     (format sb "~&")
-     (do ((p 0 (1+ p)))
-         ((<= +npips+ p))
-       (format sb "~A~A " (aref *suits* s) (aref *pips* p))))
-   (get-output-stream-string sb)))
+;; (print
+;;  (let ((sb (make-string-output-stream)))
+;;    (do ((s 0 (1+ s)))
+;;        ((<= +nsuits+ s))
+;;      (format sb "~&")
+;;      (do ((p 0 (1+ p)))
+;;          ((<= +npips+ p))
+;;        (format sb "~A~A " (aref *suits* s) (aref *pips* p))))
+;;    (get-output-stream-string sb)))
 
-(defun set-up-input ()
-  (disable-echoing)
-  (charms/ll:curs-set 0)
-  (enable-extra-keys *standard-window*)
-  (enable-raw-input :interpret-control-characters t)
-  (enable-non-blocking-mode *standard-window*))
+;;  _ _ _   _   _          __
+;; | (_) |_| |_| |___ ___ / _|____ __
+;; | | |  _|  _| / -_)___|  _(_-< '  \
+;; |_|_|\__|\__|_\___|   |_| /__/_|_|_|
+
+(defstruct fsm-state nym action)
+
+(defparameter *current-state* :deal-card)
+
+;;                     _     _            __
+;;  _  _ ___ ___ _ _  (_)_ _| |_ ___ _ _ / _|__ _ __ ___
+;; | || (_-</ -_) '_| | | ' \  _/ -_) '_|  _/ _` / _/ -_)
+;;  \_,_/__/\___|_|   |_|_||_\__\___|_| |_| \__,_\__\___|
 
 (defun control-process (c)
   (case c
     ((nil) nil)
-    ((#\q #\Q (code-char 27)) t)))
+    ((#\c)           t)
+    ((#\q #\Q #\Esc) t)))
 
 (defmacro with-loop-frame (loop-name &rest body)
   `(progn
@@ -203,8 +235,15 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 (defmethod dump ((w window) (thing string) x y)
   (write-string-at-point w thing x y))
 
-(defun dumpw (thing x y)
-  (dump *standard-window* (format nil "~A" thing) x y))
+(defun dumpc (thing x y)
+  (dump *standard-window* (format nil "~A ~A" thing (char-code thing)) x y))
+
+(defun set-up-input ()
+  (disable-echoing)
+  (charms/ll:curs-set 0)
+  (enable-extra-keys *standard-window*)
+  (enable-raw-input :interpret-control-characters t)
+  (enable-non-blocking-mode *standard-window*))
 
 (defun main ()
   (let ((last-non-nil-c #\-))
@@ -213,6 +252,6 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
       (loop :named driver-loop
             :for c := (get-char *standard-window* :ignore-error t)
             :do (with-loop-frame driver-loop
-                  (dumpw last-non-nil-c 2 5))))))
+                  (dumpc last-non-nil-c 2 5))))))
 
 (main)
