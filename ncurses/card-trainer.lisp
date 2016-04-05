@@ -10,8 +10,9 @@
 
 (in-package #:card-trainer)
 
-(defconstant +nsuits+ 4)
-(defconstant +npips+ 13)
+(defconstant +nsuits+  4)
+(defconstant +npips+  13)
+(defconstant +ncards+ 52)
 
 (defparameter *suits* #(:S :H :D :C))
 (defparameter *pips*  #(:A :2 :3 :4 :5 :6 :7 :8 :9 :T :J :Q :K))
@@ -122,6 +123,8 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 ;; / _/ _` | '_/ _` |___| ' \/ _` (_-< ' \
 ;; \__\__,_|_| \__,_|   |_||_\__,_/__/_||_|
 
+;; Look up a cardkey by its two-character pip string, e.g., D9 or C3.
+
 (defparameter *cardhash*
   (make-hash-table :test #'equal))
 
@@ -136,6 +139,8 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 ;;  __| |___ __| |__
 ;; / _` / -_) _| / /
 ;; \__,_\___\__|_\_\
+
+;; The deck is a scrambled array of pip strings.
 
 (defparameter *deck*
   (let ((d (make-array (* +nsuits+ +npips+) :element-type 'string)))
@@ -165,6 +170,8 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 ;; (_-<  _| '_| | ' \/ _` (_-<
 ;; /__/\__|_| |_|_||_\__, /__/
 ;;                   |___/
+
+;; TODO: Deprecate.
 
 (defun string-builder ()
   (make-array '(0) :element-type 'base-char
@@ -205,9 +212,39 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 ;; | | |  _|  _| / -_)___|  _(_-< '  \
 ;; |_|_|\__|\__|_\___|   |_| /__/_|_|_|
 
-(defstruct fsm-state nym action)
+;; This little fsm toggles me back and forth between randomly getting a card
+;; and revealing that card. This helps me test my memory.
 
+(defstruct fsm-state action out-edges)
+
+(defparameter *current-output-string* "")
+
+(defparameter *current-card*  0)
+(defparameter *state-nyms*    '(:deal-card :reveal-card))
+(defparameter *states*        `((:deal-card . ,(make-fsm-state
+                                                :action (lambda ()
+                                                          (setf *current-card* (random +ncards+))
+                                                          (setf
+                                                           *current-output-string*
+                                                           (format nil "~A"
+                                                                   (aref *deck* *current-card*))))
+                                                :out-edges `((#\c . :reveal-card))))
+                                (:reveal-card . ,(make-fsm-state
+                                                  :action (lambda ()
+                                                            (setf
+                                                             *current-output-string*
+                                                             (format nil "~A"
+                                                                     (gethash
+                                                                      (aref *deck* *current-card*)
+                                                                      *cardhash*))))
+                                                  :out-edges `((#\c . :deal-card))))))
 (defparameter *current-state* :deal-card)
+(defun react (a-char)
+  (let ((the-state (cdr (assoc *current-state* *states*))))
+    (funcall (fsm-state-action the-state))
+    (let ((next-state (cdr (assoc a-char (fsm-state-out-edges the-state)))))
+      (setf *current-state* next-state)))
+  nil)
 
 ;;                     _     _            __
 ;;  _  _ ___ ___ _ _  (_)_ _| |_ ___ _ _ / _|__ _ __ ___
@@ -216,8 +253,8 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 
 (defun control-process (c)
   (case c
-    ((nil) nil)
-    ((#\c)           t)
+    ((nil)           nil)
+    ((#\c)           (react c))
     ((#\q #\Q #\Esc) t)))
 
 (defmacro with-loop-frame (loop-name &rest body)
@@ -234,6 +271,9 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 
 (defmethod dump ((w window) (thing string) x y)
   (write-string-at-point w thing x y))
+
+(defun dumpw (thing x y)
+  (dump *standard-window* (format nil "~A" thing) x y))
 
 (defun dumpc (thing x y)
   (dump *standard-window* (format nil "~A ~A" thing (char-code thing)) x y))
@@ -252,6 +292,8 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
       (loop :named driver-loop
             :for c := (get-char *standard-window* :ignore-error t)
             :do (with-loop-frame driver-loop
-                  (dumpc last-non-nil-c 2 5))))))
+                  (dumpw *current-state* 2 1)
+                  (dumpc last-non-nil-c 2 2)
+                  (dumpw *current-output-string* 2 3))))))
 
 (main)
