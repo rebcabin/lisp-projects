@@ -283,7 +283,8 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
   (charms/ll:curs-set 0)
   (enable-extra-keys *standard-window*)
   (enable-raw-input :interpret-control-characters t)
-  (enable-non-blocking-mode *standard-window*))
+  ; (enable-non-blocking-mode *standard-window*)
+  )
 
 (defun main ()
   (let ((last-non-nil-c #\-))
