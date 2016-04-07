@@ -140,7 +140,7 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 ;; / _` / -_) _| / /
 ;; \__,_\___\__|_\_\
 
-;; The deck is a scrambled array of pip strings.
+;; The deck is a potentially scrambled array of pip strings.
 
 (defparameter *deck*
   (let ((d (make-array (* +nsuits+ +npips+) :element-type 'string)))
