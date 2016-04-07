@@ -29,9 +29,9 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
       ;; Must add one level to the input levels because the recursive map strips
       ;; off one level of list-ness. Consider (flatten '((1)) :levels 1). "Item"
       ;; is '((1)) in the body of "scan." The branch executed is "(map nil
-      ;; (lambda (i) (scan i (- level 1))) item)," so the first thing handed to
-      ;; the lambda is the car of item, namely '(1). If "level" were 1, we would
-      ;; execute the other branch of the scan in the next level down and would
+      ;; (lambda (i) (scan i (- level 1))) item)." The first thing handed to the
+      ;; lambda is the car of item, namely '(1). If "level" were 1, we would
+      ;; execute the other branch of the scan in the recursive call and would
       ;; push '(1) into the result instead of pushing 1.
       (scan tree (+ 1 levels)))
     (nreverse result)))
@@ -149,18 +149,20 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
       (do ((p 0 (1+ p)))
           ((<= +npips+ p))
         (setf (aref d (+ p (* s +npips+)))
-              (concatenate 'string
-                           (format nil "~A" (aref *suits* s))
-                           (format nil "~A" (aref *pips*  p))))))
+              (format nil "~A~A"
+                      (aref *suits* s)
+                      (aref *pips*  p)))))
     d))
 
 ;;; From https://goo.gl/8fCKZL
 (defun nshuffle-array (array)
   (let ((*random-state* (make-random-state t)))
-   (loop for i from (length array) downto 2
-         do (rotatef (aref array (random i))
-                     (aref array (1- i)))
-         finally (return array))))
+    (loop for i from (length array) downto 2
+          ;; 'random' returns an integer in [0..i)
+          do (rotatef (aref array (random i))
+                      ;; the last element of the array is i - 1
+                      (aref array (1- i)))
+          finally (return array))))
 
 (print *deck*)
 (print (nshuffle-array *deck*)) ;; *deck* is modified in-place
@@ -171,7 +173,8 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 ;; /__/\__|_| |_|_||_\__, /__/
 ;;                   |___/
 
-;; TODO: Deprecate.
+;; TODO: Deprecate. This is here just to reminde me of some unpleasant discovery
+;; process.
 
 (defun string-builder ()
   (make-array '(0) :element-type 'base-char
@@ -212,8 +215,7 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 ;; | | |  _|  _| / -_)___|  _(_-< '  \
 ;; |_|_|\__|\__|_\___|   |_| /__/_|_|_|
 
-;; This little fsm toggles me back and forth between randomly getting a card
-;; and revealing that card. This helps me test my memory.
+;; This little fsm implements my user interface.
 
 (defstruct fsm-state action out-edges)
 
@@ -221,28 +223,33 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 
 (defparameter *current-card*  0)
 (defparameter *state-nyms*    '(:deal-card :reveal-card))
-(defparameter *states*        `((:deal-card . ,(make-fsm-state
-                                                :action (lambda ()
-                                                          (setf *current-card* (random +ncards+))
-                                                          (setf
-                                                           *current-output-string*
-                                                           (format nil "~A"
-                                                                   (aref *deck* *current-card*))))
-                                                :out-edges `((#\c . :reveal-card))))
-                                (:reveal-card . ,(make-fsm-state
-                                                  :action (lambda ()
-                                                            (setf
-                                                             *current-output-string*
-                                                             (format nil "~A"
-                                                                     (gethash
-                                                                      (aref *deck* *current-card*)
-                                                                      *cardhash*))))
-                                                  :out-edges `((#\c . :deal-card))))))
+(defparameter *states*
+  `((:deal-card . ,(make-fsm-state
+                    :action (lambda ()
+                              (setf *current-card* (random +ncards+))
+                              (setf
+                               *current-output-string*
+                               (format nil "~A"
+                                       (aref *deck* *current-card*))))
+                    :out-edges `((#\c . :reveal-card))))
+    (:reveal-card . ,(make-fsm-state
+                      :action (lambda ()
+                                (setf
+                                 *current-output-string*
+                                 (format nil "~A"
+                                         (gethash
+                                          (aref *deck* *current-card*)
+                                          *cardhash*))))
+                      :out-edges `((#\c . :deal-card))))))
+
 (defparameter *current-state* :deal-card)
+
 (defun react (a-char)
-  (let ((the-state (cdr (assoc *current-state* *states*))))
+  (let ((the-state
+          (cdr (assoc *current-state* *states*))))
     (funcall (fsm-state-action the-state))
-    (let ((next-state (cdr (assoc a-char (fsm-state-out-edges the-state)))))
+    (let ((next-state
+            (cdr (assoc a-char (fsm-state-out-edges the-state)))))
       (setf *current-state* next-state)))
   nil)
 
@@ -259,9 +266,9 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 
 (defmacro with-loop-frame (loop-name &rest body)
   `(progn
-     ;; Because we're in non-blocking mode, get-char returns constantly,
-     ;; even when no key has been pressed. Must always check
-     ;; last-non-nil-c instead of the return value of get-char.
+     ;; If in non-blocking mode, get-char returns constantly, even when no key
+     ;; has been pressed. Always check last-non-nil-c instead of the return
+     ;; value of get-char.
      (setf last-non-nil-c (or c last-non-nil-c))
      (clear-window *standard-window*)
      ,@body
@@ -286,15 +293,20 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
   ; (enable-non-blocking-mode *standard-window*)
   )
 
+(defun paint (a-char)
+  (dumpw *current-state* 2 1)
+  (dumpc a-char 2 2)
+  (dumpw *current-output-string* 2 3))
+
 (defun main ()
   (let ((last-non-nil-c #\-))
     (with-curses ()
       (set-up-input)
+      (paint last-non-nil-c)
       (loop :named driver-loop
             :for c := (get-char *standard-window* :ignore-error t)
             :do (with-loop-frame driver-loop
-                  (dumpw *current-state* 2 1)
-                  (dumpc last-non-nil-c 2 2)
-                  (dumpw *current-output-string* 2 3))))))
+                  (paint last-non-nil-c)
+                  )))))
 
 (main)
