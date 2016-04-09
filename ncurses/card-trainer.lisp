@@ -256,7 +256,8 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 (defun react (a-char)
   (let ((the-state (lookup *current-state-nym* *states*)))
     (setf *current-state-nym*
-          (lookup a-char (fsm-state-out-edges the-state)))
+          (or (fsm-state-unconditional the-state)
+              (lookup a-char (fsm-state-out-edges the-state))))
     (funcall (fsm-state-entry the-state)))
   ;; Return nil so that loop does not exit (TODO: fix).
   nil)
