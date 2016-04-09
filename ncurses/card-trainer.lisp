@@ -219,14 +219,18 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 
 ;; This little fsm implements my user interface.
 
-(defstruct fsm-state entry out-edges)
+(defstruct fsm-state entry out-edges unconditional)
 
 (defparameter *current-output-string* "")
 (defparameter *current-debug-string*  "")
 
 (defparameter *current-card*  0)
 (defparameter *states*
-  `((:deal-card . ,(make-fsm-state
+  `((:order-deck . ,(make-fsm-state
+                     :entry (lambda ())
+                     :unconditional :deal-card
+                     ))
+    (:deal-card . ,(make-fsm-state
                     :entry (lambda ()
                              (setf *current-card* (random +ncards+))
                              (setf
