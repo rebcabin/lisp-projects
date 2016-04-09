@@ -225,7 +225,6 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 (defparameter *current-debug-string*  "")
 
 (defparameter *current-card*  0)
-(defparameter *state-nyms*    '(:deal-card :reveal-card))
 (defparameter *states*
   `((:deal-card . ,(make-fsm-state
                     :action (lambda ()
@@ -248,6 +247,7 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
                                           (aref *deck* *current-card*)
                                           *cardhash*))))
                       :out-edges `((#\c . :deal-card))))))
+(defparameter *state-nyms* (mapcar #'car *states*))
 
 (defparameter *current-state* :deal-card)
 (defun lookup (key dict) (cdr (assoc key dict)))
@@ -270,12 +270,12 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
   "Return t when you want to exit the process."
   (case c
     ((nil)
-     (setf *current-debug-string*
-           (format nil "d: controlling nil, char: ~A" c))
+     ;; (setf *current-debug-string*
+     ;;       (format nil "d: controlling nil, char: ~A" c))
      nil)
     ((#\c)
-     (setf *current-debug-string*
-           (format nil "d: controlling a char, char: ~A" c))
+     ;; (setf *current-debug-string*
+     ;;       (format nil "d: controlling a char, char: ~A" c))
      (react c))
     ((#\q #\Q #\Esc)
      t)))
