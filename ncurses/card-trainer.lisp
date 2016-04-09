@@ -142,7 +142,7 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 
 ;; The deck is a potentially scrambled array of pip strings.
 
-(defparameter *deck*
+(defun ordered-deck ()
   (let ((d (make-array (* +nsuits+ +npips+) :element-type 'string)))
     (do ((s 0 (1+ s)))
         ((<= +nsuits+ s))
@@ -153,6 +153,8 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
                       (aref *suits* s)
                       (aref *pips*  p)))))
     d))
+
+(defparameter *deck* (ordered-deck))
 
 ;;; From https://goo.gl/8fCKZL
 (defun nshuffle-array (array)
