@@ -219,7 +219,7 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 
 ;; This little fsm implements my user interface.
 
-(defstruct fsm-state action out-edges)
+(defstruct fsm-state entry out-edges)
 
 (defparameter *current-output-string* "")
 (defparameter *current-debug-string*  "")
@@ -227,19 +227,15 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 (defparameter *current-card*  0)
 (defparameter *states*
   `((:deal-card . ,(make-fsm-state
-                    :action (lambda ()
-                              ;; (setf *current-debug-string*
-                              ;;       (format nil "d: ~A" "deal-card.action"))
-                              (setf *current-card* (random +ncards+))
-                              (setf
-                               *current-output-string*
-                               (format nil "~A"
-                                       (aref *deck* *current-card*))))
+                    :entry (lambda ()
+                             (setf *current-card* (random +ncards+))
+                             (setf
+                              *current-output-string*
+                              (format nil "~A"
+                                      (aref *deck* *current-card*))))
                     :out-edges `((#\c . :reveal-card))))
     (:reveal-card . ,(make-fsm-state
-                      :action (lambda ()
-                                ;; (setf *current-debug-string*
-                                ;;       (format nil "d: ~A" "reveal-card.action"))
+                      :entry (lambda ()
                                 (setf
                                  *current-output-string*
                                  (format nil "~A"
@@ -248,17 +244,17 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
                                           *cardhash*))))
                       :out-edges `((#\c . :deal-card))))))
 (defparameter *state-nyms* (mapcar #'car *states*))
+;; TODO: Replace state-nyms with states when done debugging.
+(defparameter *current-state-nym* :deal-card)
 
-(defparameter *current-state* :deal-card)
 (defun lookup (key dict) (cdr (assoc key dict)))
+
 (defun react (a-char)
-  (let ((the-state (lookup *current-state* *states*)))
-    ;; (setf *current-debug-string*
-    ;;       (format nil "d: reacting to ~A, funcalling ~A.action"
-    ;;               a-char *current-state*))
-    (funcall (fsm-state-action the-state))
-    (let ((next-state (lookup a-char (fsm-state-out-edges the-state))))
-      (setf *current-state* next-state)))
+  (let ((the-state (lookup *current-state-nym* *states*)))
+    (setf *current-state-nym*
+          (lookup a-char (fsm-state-out-edges the-state)))
+    (funcall (fsm-state-entry the-state)))
+  ;; Return nil so that loop does not exit (TODO: fix).
   nil)
 
 ;;                     _     _            __
@@ -270,12 +266,8 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
   "Return t when you want to exit the process."
   (case c
     ((nil)
-     ;; (setf *current-debug-string*
-     ;;       (format nil "d: controlling nil, char: ~A" c))
      nil)
     ((#\c)
-     ;; (setf *current-debug-string*
-     ;;       (format nil "d: controlling a char, char: ~A" c))
      (react c))
     ((#\q #\Q #\Esc)
      t)))
@@ -310,8 +302,8 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
   )
 
 (defun paint (a-char)
-  (dumpw *current-state* 2 1)
-  (dumpc a-char 2 2)
+  (dumpw *current-state-nym*     2 1)
+  (dumpc a-char                  2 2)
   (dumpw *current-output-string* 2 3)
   (dumpw *current-debug-string*  2 0))
 
