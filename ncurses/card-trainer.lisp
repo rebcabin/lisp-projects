@@ -222,12 +222,15 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 (defstruct fsm-state action out-edges)
 
 (defparameter *current-output-string* "")
+(defparameter *current-debug-string*  "")
 
 (defparameter *current-card*  0)
 (defparameter *state-nyms*    '(:deal-card :reveal-card))
 (defparameter *states*
   `((:deal-card . ,(make-fsm-state
                     :action (lambda ()
+                              ;; (setf *current-debug-string*
+                              ;;       (format nil "d: ~A" "deal-card.action"))
                               (setf *current-card* (random +ncards+))
                               (setf
                                *current-output-string*
@@ -236,6 +239,8 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
                     :out-edges `((#\c . :reveal-card))))
     (:reveal-card . ,(make-fsm-state
                       :action (lambda ()
+                                ;; (setf *current-debug-string*
+                                ;;       (format nil "d: ~A" "reveal-card.action"))
                                 (setf
                                  *current-output-string*
                                  (format nil "~A"
@@ -245,13 +250,14 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
                       :out-edges `((#\c . :deal-card))))))
 
 (defparameter *current-state* :deal-card)
-
+(defun lookup (key dict) (cdr (assoc key dict)))
 (defun react (a-char)
-  (let ((the-state
-          (cdr (assoc *current-state* *states*))))
+  (let ((the-state (lookup *current-state* *states*)))
+    ;; (setf *current-debug-string*
+    ;;       (format nil "d: reacting to ~A, funcalling ~A.action"
+    ;;               a-char *current-state*))
     (funcall (fsm-state-action the-state))
-    (let ((next-state
-            (cdr (assoc a-char (fsm-state-out-edges the-state)))))
+    (let ((next-state (lookup a-char (fsm-state-out-edges the-state))))
       (setf *current-state* next-state)))
   nil)
 
@@ -261,10 +267,18 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 ;;  \_,_/__/\___|_|   |_|_||_\__\___|_| |_| \__,_\__\___|
 
 (defun control-process (c)
+  "Return t when you want to exit the process."
   (case c
-    ((nil)           nil)
-    ((#\c)           (react c))
-    ((#\q #\Q #\Esc) t)))
+    ((nil)
+     (setf *current-debug-string*
+           (format nil "d: controlling nil, char: ~A" c))
+     nil)
+    ((#\c)
+     (setf *current-debug-string*
+           (format nil "d: controlling a char, char: ~A" c))
+     (react c))
+    ((#\q #\Q #\Esc)
+     t)))
 
 (defmacro with-loop-frame (loop-name &rest body)
   `(progn
@@ -272,10 +286,10 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
      ;; has been pressed. Always check last-non-nil-c instead of the return
      ;; value of get-char.
      (setf last-non-nil-c (or c last-non-nil-c))
+     (when (control-process c) (return-from ,loop-name))
      (clear-window *standard-window*)
      ,@body
      (refresh-window *standard-window*)
-     (when (control-process c) (return-from ,loop-name))
      ))
 
 (defmethod dump ((w window) (thing string) x y)
@@ -298,7 +312,8 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 (defun paint (a-char)
   (dumpw *current-state* 2 1)
   (dumpc a-char 2 2)
-  (dumpw *current-output-string* 2 3))
+  (dumpw *current-output-string* 2 3)
+  (dumpw *current-debug-string*  2 0))
 
 (defun main ()
   (let ((last-non-nil-c #\-))
