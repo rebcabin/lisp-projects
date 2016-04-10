@@ -5,7 +5,7 @@
 ;; (ql:quickload :hash-set)
 
 (defpackage #:card-trainer
-  (:shadow "enum")
+  ;; (:shadow "enum")
   (:use #:cl
         #:charms
         ;; #:defenum
@@ -19,6 +19,16 @@
 
 (defparameter *suits* #(:S :H :D :C))
 (defparameter *pips*  #(:A :2 :3 :4 :5 :6 :7 :8 :9 :T :J :Q :K))
+
+;;; TODO: Make "suit-mode" for training one suit at a time.
+;;; TODO: Make multiple keys trigger a single state transition.
+;;; TODO: Number the keys automatically.
+
+;;  _        _
+;; | |_  ___| |_ __  ___ _ _ ___
+;; | ' \/ -_) | '_ \/ -_) '_(_-<
+;; |_||_\___|_| .__/\___|_| /__/
+;;            |_|
 
 (defun flatten (tree &key (levels 1000000000000))
   "Like Wolfram's _flatten_, takes an optional _levels_ argument and flattens
@@ -50,15 +60,13 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 
 (defstruct cardkey peg oldpeg num pip npeg nato heb monday)
 
-(defparameter *cardkey-column-names*
-  (mapcar #'string-upcase
-          '("peg" "oldpeg" "num" "pip" "npeg" "nato" "heb" "monday")))
-
-(defparameter *cardkey-column-keywords*
-  (mapcar #'alexandria:make-keyword *cardkey-column-names*))
-
 (defun create-cardkey (lyst)
-  (apply #'make-cardkey (riffle-lists *cardkey-column-keywords* lyst)))
+  (let* ((column-names
+           (mapcar #'string-upcase
+                   '("peg" "oldpeg" "num" "pip" "npeg" "nato" "heb" "monday")))
+         (column-keywords
+           (mapcar #'alexandria:make-keyword column-names)))
+    (apply #'make-cardkey (riffle-lists column-keywords lyst))))
 
 (defparameter *keys*
   ;;  peg           oldpeg     num  pip  npeg     nato       heb       monday
