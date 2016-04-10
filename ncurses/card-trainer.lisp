@@ -61,7 +61,7 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
   (apply #'make-cardkey (riffle-lists *cardkey-column-keywords* lyst)))
 
 (defparameter *keys*
-  ;; peg          oldpeg       num pip  npeg     nato       heb       monday
+  ;;  peg           oldpeg     num  pip  npeg     nato       heb       monday
   #(("jail"        "bat"         1 "SA" "TEA"    "ALPHA"    "ARYEH"   "JAN 01")
     ("judge"       "bean"        2 "S2" "NOAH"   "BAKER"    "BAYIT"   "JAN 08")
     ("chalk"       "beam"        3 "S3" "ME"     "CHARLIE"  "GAMAL"   "JAN 15")
@@ -133,8 +133,9 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
   (make-hash-table :test #'equal))
 
 (defun install-cardkey (ck)
-  (setf (gethash (cardkey-pip ck)
-                 *cardhash*)
+  (setf (gethash
+         (cardkey-pip ck)
+         *cardhash*)
         ck))
 
 (map nil #'install-cardkey *cardkeys*)
@@ -160,7 +161,7 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 
 (defparameter *deck* (ordered-deck))
 
-;;; From https://goo.gl/8fCKZL
+;;; Fisher-Yates shuffle, from https://goo.gl/8fCKZL.
 (defun nshuffle-array (array)
   (let ((*random-state* (make-random-state t)))
     (loop for i from (length array) downto 2
@@ -170,16 +171,13 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
                       (aref array (1- i)))
           finally (return array))))
 
-;; (print *deck*)
-;; (print (nshuffle-array *deck*)) ;; Modify *deck* in-place.
-
 ;;     _       _
 ;;  __| |_ _ _(_)_ _  __ _ ___
 ;; (_-<  _| '_| | ' \/ _` (_-<
 ;; /__/\__|_| |_|_||_\__, /__/
 ;;                   |___/
 
-;; TODO: Deprecate. This is here just to reminde me of some unpleasant discovery
+;; TODO: Deprecate. This is here just to reminde me of an unpleasant discovery
 ;; process.
 
 (defun string-builder ()
@@ -238,50 +236,81 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
   (reduce
    (lambda (acc term) (and acc term))
    (mapcar (lambda (term)
-             (let ((state (cdr term)))
-               (xor (fsm-state-unconditional state)
-                    (fsm-state-out-edges     state))))
+             (let ((the-fsm-state (cdr term)))
+               (xor (fsm-state-unconditional the-fsm-state)
+                    (fsm-state-out-edges     the-fsm-state))))
            fsm-states)
    :initial-value nil))
 
-(defparameter *current-card*  0)
+;; Dealing a card always starts by cyclically incrementing the index. The first
+;; value of the index should be -1.
+(defparameter *current-card-index* -1)
+(defun reset-card-index ()
+  (setf *current-card-index* -1))
+
+(defun cyclically-increment (index modulus)
+  (mod (+ 1 index) modulus))
+
 (defparameter *states*
   `((:order-deck . ,(make-fsm-state
-                     :entry (lambda ())
+                     :entry (lambda ()
+                              (setf *deck* (ordered-deck))
+                              (reset-card-index))
                      :unconditional :deal-card
                      ))
+    (:shuffle-deck . ,(make-fsm-state
+                       :entry (lambda ()
+                                (nshuffle-array *deck*)
+                                (reset-card-index))
+                       :unconditional :deal-card))
     (:deal-card . ,(make-fsm-state
                     :entry (lambda ()
-                             (setf *current-card* (random +ncards+))
+                             (setf *current-card-index*
+                                   (cyclically-increment
+                                    *current-card-index*
+                                    +ncards+))
                              (setf
                               *current-output-string*
                               (format nil "~A"
-                                      (aref *deck* *current-card*))))
-                    :out-edges `((#\c . :reveal-card))))
+                                      (aref *deck* *current-card-index*))))
+                    :out-edges `((#\c . :reveal-card)
+                                 (#\o . :order-deck)
+                                 (#\s . :shuffle-deck))))
     (:reveal-card . ,(make-fsm-state
                       :entry (lambda ()
-                                (setf
-                                 *current-output-string*
-                                 (format nil "~A"
-                                         (gethash
-                                          (aref *deck* *current-card*)
-                                          *cardhash*))))
+                               (setf
+                                *current-output-string*
+                                (format nil "~A"
+                                        (gethash
+                                         (aref *deck* *current-card-index*)
+                                         *cardhash*))))
                       :out-edges `((#\c . :deal-card))))))
 
 (validate-states *states*)
-(defparameter *state-nyms* (mapcar #'car *states*))
+
 ;; TODO: Replace state-nyms with states when done debugging.
-(defparameter *current-state-nym* :deal-card)
+(defparameter *state-nyms* (mapcar #'car *states*))
 
 (defun lookup (key dict) (cdr (assoc key dict)))
 
+(defun enter-state (state-nym)
+  (setf *current-state-nym* state-nym)
+  (funcall (fsm-state-entry (lookup state-nym *states*))))
+
+(defparameter *current-state-nym* nil)
+(enter-state :deal-card)
+
 (defun react (a-char)
-  (let ((the-state (lookup *current-state-nym* *states*)))
-    (setf *current-state-nym*
-          (or (fsm-state-unconditional the-state)
-              (lookup a-char (fsm-state-out-edges the-state))))
-    (funcall (fsm-state-entry the-state)))
-  ;; Return nil so that loop does not exit (TODO: fix).
+  (let* ((current-state   (lookup *current-state-nym* *states*))
+         (conditional-nym (lookup a-char (fsm-state-out-edges current-state))))
+    (assert      conditional-nym)
+    (enter-state conditional-nym)
+    ;; Take all unconditional transitions without waiting for user input.
+    (loop while (fsm-state-unconditional
+                 (lookup *current-state-nym* *states*))
+          do (enter-state (fsm-state-unconditional
+                           (lookup *current-state-nym* *states*)))))
+  ;; Return nil so that driver loop does not exit (TODO: fix).
   nil)
 
 ;;                     _     _            __
@@ -294,7 +323,7 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
   (case c
     ((nil)
      nil)
-    ((#\c)
+    ((#\c #\o #\s)
      (react c))
     ((#\q #\Q #\Esc)
      t)))
