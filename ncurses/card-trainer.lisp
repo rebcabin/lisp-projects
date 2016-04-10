@@ -17,12 +17,10 @@
 (defconstant +npips+  13)
 (defconstant +ncards+ 52)
 
-(defparameter *suits* #(:S :H :D :C))
-(defparameter *pips*  #(:A :2 :3 :4 :5 :6 :7 :8 :9 :T :J :Q :K))
-
 ;;; TODO: Make "suit-mode" for training one suit at a time.
 ;;; TODO: Make multiple keys trigger a single state transition.
 ;;; TODO: Number the keys automatically.
+;;; TODO: Get rid of repetition between cardkey keywords and column names.
 
 ;;  _        _
 ;; | |_  ___| |_ __  ___ _ _ ___
@@ -157,15 +155,17 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 ;; The deck is a potentially scrambled array of pip strings.
 
 (defun ordered-deck ()
-  (let ((d (make-array (* +nsuits+ +npips+) :element-type 'string)))
+  (let ((suits #(:S :H :D :C))
+        (pips  #(:A :2 :3 :4 :5 :6 :7 :8 :9 :T :J :Q :K))
+        (d (make-array (* +nsuits+ +npips+) :element-type 'string)))
     (do ((s 0 (1+ s)))
         ((<= +nsuits+ s))
       (do ((p 0 (1+ p)))
           ((<= +npips+ p))
         (setf (aref d (+ p (* s +npips+)))
               (format nil "~A~A"
-                      (aref *suits* s)
-                      (aref *pips*  p)))))
+                      (aref suits s)
+                      (aref pips  p)))))
     d))
 
 ;; Start off with an ordered deck.
