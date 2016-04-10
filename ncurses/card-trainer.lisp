@@ -300,16 +300,19 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 (defparameter *current-state-nym* nil)
 (enter-state :deal-card)
 
+(defun take-unconditional-transition ()
+  (let ((uncon (fsm-state-unconditional
+                (lookup *current-state-nym* *states*))))
+    (if uncon (enter-state uncon))
+    uncon))
+
 (defun react (a-char)
   (let* ((current-state   (lookup *current-state-nym* *states*))
          (conditional-nym (lookup a-char (fsm-state-out-edges current-state))))
     (assert      conditional-nym)
     (enter-state conditional-nym)
     ;; Take all unconditional transitions without waiting for user input.
-    (loop while (fsm-state-unconditional
-                 (lookup *current-state-nym* *states*))
-          do (enter-state (fsm-state-unconditional
-                           (lookup *current-state-nym* *states*)))))
+    (loop while (take-unconditional-transition)))
   ;; Return nil so that driver loop does not exit (TODO: fix).
   nil)
 
