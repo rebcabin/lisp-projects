@@ -17,10 +17,12 @@
 (defconstant +npips+  13)
 (defconstant +ncards+ 52)
 
+;;; TODO: Keep score.
 ;;; TODO: Make "suit-mode" for training one suit at a time.
 ;;; TODO: Make multiple keys trigger a single state transition.
 ;;; TODO: Number the keys automatically.
 ;;; TODO: Get rid of repetition between cardkey keywords and column names.
+;;; TODO: Replace state-nyms with states when done debugging.
 
 ;;  _        _
 ;; | |_  ___| |_ __  ___ _ _ ___
@@ -231,8 +233,8 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 
 ;; This little fsm implements my user interface.
 
-(defparameter *current-output-string* "")
-(defparameter *current-debug-string*  "")
+(defparameter *current-output-string*   "")
+(defparameter *current-ui-guide-string* "")
 
 (defstruct fsm-state entry out-edge-nyms unconditional-nym)
 
@@ -255,6 +257,7 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 ;; Dealing a card always starts by cyclically incrementing the index. The first
 ;; value of the index should be -1.
 (defparameter *current-card-index* -1)
+
 (defun reset-card-index ()
   (setf *current-card-index* -1))
 
@@ -269,6 +272,10 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 (defparameter *states*
   `((:exit . ,(make-fsm-state
                :entry (lambda () nil)
+               ;; Do-nothing unconditional in this state. When we enter the
+               ;; state, the main loop will end because the entry function
+               ;; returns nil. The transition is here just because every state
+               ;; must have a transition, pro-forma.
                :unconditional-nym t))
     (:order-deck . ,(make-fsm-state
                      :entry (lambda ()
@@ -293,7 +300,7 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
                               (format nil "~A"
                                       (aref *deck* *current-card-index*)))
                              (setf
-                              *current-debug-string*
+                              *current-ui-guide-string*
                               (format nil "~A"
                                       "keyboard c: reveal, o: order, s: shuffle, q: quit"))
                              t)
@@ -310,7 +317,7 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
                                          (aref *deck* *current-card-index*)
                                          *cardhash*)))
                                (setf
-                                *current-debug-string*
+                                *current-ui-guide-string*
                                 (format nil "~A"
                                         "keyboard c: deal, q: quit"))
                                t)
@@ -319,7 +326,6 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 
 (validate-states *states*)
 
-;; TODO: Replace state-nyms with states when done debugging.
 (defparameter *state-nyms* (mapcar #'car *states*))
 
 (defun lookup (key dict) (cdr (assoc key dict)))
@@ -379,6 +385,18 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 (defun dumpc (thing x y)
   (dump *standard-window* (format nil "~A ~A" thing (char-code thing)) x y))
 
+(defun paint (a-char)
+  (dumpw *current-state-nym*       2 1)
+  (dumpc a-char                    2 2)
+  (dumpw *current-output-string*   2 3)
+  (dumpw *current-ui-guide-string* 2 0))
+
+;;             _           _   _
+;;  __ ___ _ _| |_ _ _ ___| | | |___  ___ _ __
+;; / _/ _ \ ' \  _| '_/ _ \ | | / _ \/ _ \ '_ \
+;; \__\___/_||_\__|_| \___/_| |_\___/\___/ .__/
+;;                                       |_|
+
 (defun set-up-input ()
   (disable-echoing)
   (charms/ll:curs-set 0)
@@ -386,12 +404,6 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
   (enable-raw-input :interpret-control-characters t)
   ; (enable-non-blocking-mode *standard-window*)
   )
-
-(defun paint (a-char)
-  (dumpw *current-state-nym*     2 1)
-  (dumpc a-char                  2 2)
-  (dumpw *current-output-string* 2 3)
-  (dumpw *current-debug-string*  2 0))
 
 (defun main ()
   (let ((last-non-nil-c #\-))
