@@ -1,12 +1,15 @@
 (load "~/quicklisp/setup.lisp")
 (ql:quickload :cl-charms)
-(ql:quickload :defenum)
 (ql:quickload :alexandria)
-(ql:quickload :hash-set)
+;; (ql:quickload :defenum)
+;; (ql:quickload :hash-set)
 
 (defpackage #:card-trainer
   (:shadow "enum")
-  (:use #:cl #:charms #:defenum))
+  (:use #:cl
+        #:charms
+        ;; #:defenum
+        ))
 
 (in-package #:card-trainer)
 
@@ -48,7 +51,8 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 (defstruct cardkey peg oldpeg num pip npeg nato heb monday)
 
 (defparameter *cardkey-column-names*
-  (mapcar #'string-upcase '("peg" "oldpeg" "num" "pip" "npeg" "nato" "heb" "monday")))
+  (mapcar #'string-upcase
+          '("peg" "oldpeg" "num" "pip" "npeg" "nato" "heb" "monday")))
 
 (defparameter *cardkey-column-keywords*
   (mapcar #'alexandria:make-keyword *cardkey-column-names*))
@@ -166,8 +170,8 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
                       (aref array (1- i)))
           finally (return array))))
 
-(print *deck*)
-(print (nshuffle-array *deck*)) ;; *deck* is modified in-place
+;; (print *deck*)
+;; (print (nshuffle-array *deck*)) ;; Modify *deck* in-place.
 
 ;;     _       _
 ;;  __| |_ _ _(_)_ _  __ _ ___
@@ -219,10 +223,26 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 
 ;; This little fsm implements my user interface.
 
-(defstruct fsm-state entry out-edges unconditional)
-
 (defparameter *current-output-string* "")
 (defparameter *current-debug-string*  "")
+
+(defstruct fsm-state entry out-edges unconditional)
+
+(defun xor (a b)
+  (or (and a (not b))
+      (and b (not a))))
+
+(defun validate-states (fsm-states)
+  ;; Each state must have either an :unconditional slot or an :out-edges slot
+  ;; but not both.
+  (reduce
+   (lambda (acc term) (and acc term))
+   (mapcar (lambda (term)
+             (let ((state (cdr term)))
+               (xor (fsm-state-unconditional state)
+                    (fsm-state-out-edges     state))))
+           fsm-states)
+   :initial-value nil))
 
 (defparameter *current-card*  0)
 (defparameter *states*
@@ -247,6 +267,8 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
                                           (aref *deck* *current-card*)
                                           *cardhash*))))
                       :out-edges `((#\c . :deal-card))))))
+
+(validate-states *states*)
 (defparameter *state-nyms* (mapcar #'car *states*))
 ;; TODO: Replace state-nyms with states when done debugging.
 (defparameter *current-state-nym* :deal-card)
