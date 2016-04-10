@@ -127,7 +127,7 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 ;; / _/ _` | '_/ _` |___| ' \/ _` (_-< ' \
 ;; \__\__,_|_| \__,_|   |_||_\__,_/__/_||_|
 
-;; Look up a cardkey by its two-character pip string, e.g., D9 or C3.
+;; Mapping from two-character pip string, e.g., D9 or C3, to a cardkey struct.
 
 (defparameter *cardhash*
   (make-hash-table :test #'equal))
@@ -138,6 +138,7 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
          *cardhash*)
         ck))
 
+;; Put all the cardkeys in the hashtable. 
 (map nil #'install-cardkey *cardkeys*)
 
 ;;     _        _
@@ -159,6 +160,7 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
                       (aref *pips*  p)))))
     d))
 
+;; Start off with an ordered deck.
 (defparameter *deck* (ordered-deck))
 
 ;;; Fisher-Yates shuffle, from https://goo.gl/8fCKZL.
@@ -224,20 +226,20 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 (defparameter *current-output-string* "")
 (defparameter *current-debug-string*  "")
 
-(defstruct fsm-state entry out-edges unconditional)
+(defstruct fsm-state entry out-edges unconditional-nym)
 
 (defun xor (a b)
   (or (and a (not b))
       (and b (not a))))
 
 (defun validate-states (fsm-states)
-  ;; Each state must have either an :unconditional slot or an :out-edges slot
+  ;; Each state must have either an :unconditional-nym slot or an :out-edges slot
   ;; but not both.
   (reduce
    (lambda (acc term) (and acc term))
    (mapcar (lambda (term)
              (let ((the-fsm-state (cdr term)))
-               (xor (fsm-state-unconditional the-fsm-state)
+               (xor (fsm-state-unconditional-nym the-fsm-state)
                     (fsm-state-out-edges     the-fsm-state))))
            fsm-states)
    :initial-value nil))
@@ -256,13 +258,13 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
                      :entry (lambda ()
                               (setf *deck* (ordered-deck))
                               (reset-card-index))
-                     :unconditional :deal-card
+                     :unconditional-nym :deal-card
                      ))
     (:shuffle-deck . ,(make-fsm-state
                        :entry (lambda ()
                                 (nshuffle-array *deck*)
                                 (reset-card-index))
-                       :unconditional :deal-card))
+                       :unconditional-nym :deal-card))
     (:deal-card . ,(make-fsm-state
                     :entry (lambda ()
                              (setf *current-card-index*
@@ -293,15 +295,15 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 
 (defun lookup (key dict) (cdr (assoc key dict)))
 
+(defparameter *current-state-nym* nil)
 (defun enter-state (state-nym)
   (setf *current-state-nym* state-nym)
   (funcall (fsm-state-entry (lookup state-nym *states*))))
 
-(defparameter *current-state-nym* nil)
 (enter-state :deal-card)
 
 (defun take-unconditional-transition ()
-  (let ((uncon (fsm-state-unconditional
+  (let ((uncon (fsm-state-unconditional-nym
                 (lookup *current-state-nym* *states*))))
     (if uncon (enter-state uncon))
     uncon))
@@ -309,10 +311,10 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 (defun react (a-char)
   (let* ((current-state   (lookup *current-state-nym* *states*))
          (conditional-nym (lookup a-char (fsm-state-out-edges current-state))))
-    (assert      conditional-nym)
-    (enter-state conditional-nym)
-    ;; Take all unconditional transitions without waiting for user input.
-    (loop while (take-unconditional-transition)))
+    (cond (conditional-nym
+           (enter-state conditional-nym)
+           ;; Take all unconditional transitions without waiting for user input.
+           (loop while (take-unconditional-transition)))))
   ;; Return nil so that driver loop does not exit (TODO: fix).
   nil)
 
