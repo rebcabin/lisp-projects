@@ -226,21 +226,21 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 (defparameter *current-output-string* "")
 (defparameter *current-debug-string*  "")
 
-(defstruct fsm-state entry out-edges unconditional-nym)
+(defstruct fsm-state entry out-edge-nyms unconditional-nym)
 
 (defun xor (a b)
   (or (and a (not b))
       (and b (not a))))
 
 (defun validate-states (fsm-states)
-  ;; Each state must have either an :unconditional-nym slot or an :out-edges slot
-  ;; but not both.
+  ;; Each state must have either an :unconditional-nym slot or an :out-edge-nyms
+  ;; slot, but not both.
   (reduce
    (lambda (acc term) (and acc term))
    (mapcar (lambda (term)
              (let ((the-fsm-state (cdr term)))
                (xor (fsm-state-unconditional-nym the-fsm-state)
-                    (fsm-state-out-edges     the-fsm-state))))
+                    (fsm-state-out-edge-nyms     the-fsm-state))))
            fsm-states)
    :initial-value nil))
 
@@ -253,17 +253,26 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 (defun cyclically-increment (index modulus)
   (mod (+ 1 index) modulus))
 
+;; A state's entry function should return non-nil if the program should continue
+;; after it's done executing. Every state, even those that unconditionally exit
+;; the program, must have either an :unconditional-nym slot or an :out-edge-nyms
+;; slot, but not both.
+
 (defparameter *states*
-  `((:order-deck . ,(make-fsm-state
+  `((:exit . ,(make-fsm-state
+               :entry (lambda () nil)
+               :unconditional-nym t))
+    (:order-deck . ,(make-fsm-state
                      :entry (lambda ()
                               (setf *deck* (ordered-deck))
-                              (reset-card-index))
-                     :unconditional-nym :deal-card
-                     ))
+                              (reset-card-index)
+                              t)
+                     :unconditional-nym :deal-card))
     (:shuffle-deck . ,(make-fsm-state
                        :entry (lambda ()
                                 (nshuffle-array *deck*)
-                                (reset-card-index))
+                                (reset-card-index)
+                                t)
                        :unconditional-nym :deal-card))
     (:deal-card . ,(make-fsm-state
                     :entry (lambda ()
@@ -274,10 +283,16 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
                              (setf
                               *current-output-string*
                               (format nil "~A"
-                                      (aref *deck* *current-card-index*))))
-                    :out-edges `((#\c . :reveal-card)
-                                 (#\o . :order-deck)
-                                 (#\s . :shuffle-deck))))
+                                      (aref *deck* *current-card-index*)))
+                             (setf
+                              *current-debug-string*
+                              (format nil "~A"
+                                      "keyboard c: reveal, o: order, s: shuffle, q: quit"))
+                             t)
+                    :out-edge-nyms `((#\c . :reveal-card)
+                                     (#\o . :order-deck)
+                                     (#\s . :shuffle-deck)
+                                     (#\q . :exit))))
     (:reveal-card . ,(make-fsm-state
                       :entry (lambda ()
                                (setf
@@ -285,8 +300,14 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
                                 (format nil "~A"
                                         (gethash
                                          (aref *deck* *current-card-index*)
-                                         *cardhash*))))
-                      :out-edges `((#\c . :deal-card))))))
+                                         *cardhash*)))
+                               (setf
+                                *current-debug-string*
+                                (format nil "~A"
+                                        "keyboard c: deal, q: quit"))
+                               t)
+                      :out-edge-nyms `((#\c . :deal-card)
+                                       (#\q . :exit))))))
 
 (validate-states *states*)
 
@@ -296,42 +317,38 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 (defun lookup (key dict) (cdr (assoc key dict)))
 
 (defparameter *current-state-nym* nil)
+
 (defun enter-state (state-nym)
+  "Enter a state and return the value of its entry function."
   (setf *current-state-nym* state-nym)
   (funcall (fsm-state-entry (lookup state-nym *states*))))
 
+;; Start off by dealing top card from ordered deck.
 (enter-state :deal-card)
 
 (defun take-unconditional-transition ()
   (let ((uncon (fsm-state-unconditional-nym
                 (lookup *current-state-nym* *states*))))
-    (if uncon (enter-state uncon))
-    uncon))
+    (if uncon (enter-state uncon))))
 
 (defun react (a-char)
   (let* ((current-state   (lookup *current-state-nym* *states*))
-         (conditional-nym (lookup a-char (fsm-state-out-edges current-state))))
-    (cond (conditional-nym
-           (enter-state conditional-nym)
-           ;; Take all unconditional transitions without waiting for user input.
-           (loop while (take-unconditional-transition)))))
-  ;; Return nil so that driver loop does not exit (TODO: fix).
-  nil)
+         (conditional-nym (lookup a-char (fsm-state-out-edge-nyms current-state))))
+    ;; If the character does not identify a transition to take, return ok, in
+    ;; the form of (not conditional-nym).
+    (or (not conditional-nym)
+     ;; Otherwise, return the results of all transitions, conditional and
+     ;; unconditional. Important to do conditional transitions before the
+     ;; unconditional, hence including them in a let*.
+     (let* ((transition-result-1 (enter-state conditional-nym))
+            ;; Take all unconditional transitions without waiting for user input.
+            (transition-result-2 (loop while (take-unconditional-transition))))
+       (or transition-result-1 transition-result-2)))))
 
 ;;                     _     _            __
 ;;  _  _ ___ ___ _ _  (_)_ _| |_ ___ _ _ / _|__ _ __ ___
 ;; | || (_-</ -_) '_| | | ' \  _/ -_) '_|  _/ _` / _/ -_)
 ;;  \_,_/__/\___|_|   |_|_||_\__\___|_| |_| \__,_\__\___|
-
-(defun control-process (c)
-  "Return t when you want to exit the process."
-  (case c
-    ((nil)
-     nil)
-    ((#\c #\o #\s)
-     (react c))
-    ((#\q #\Q #\Esc)
-     t)))
 
 (defmacro with-loop-frame (loop-name &rest body)
   `(progn
@@ -339,7 +356,7 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
      ;; has been pressed. Always check last-non-nil-c instead of the return
      ;; value of get-char.
      (setf last-non-nil-c (or c last-non-nil-c))
-     (when (control-process c) (return-from ,loop-name))
+     (when (not (react c)) (return-from ,loop-name))
      (clear-window *standard-window*)
      ,@body
      (refresh-window *standard-window*)
