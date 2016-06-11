@@ -96,7 +96,7 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
     ("fig"         "race"       23 "HT" "NAME"   "WHISKEY"  ""        "JUN 04")
     ("fife"        "rat-a-tat"  24 "HJ" "NERO"   "X-RAY"    ""        "JUN 11")
     ("fob"         "rattan"     25 "HQ" "NAIL"   "YANKEE"   ""        "JUN 18")
-    ("bat"         "radium"     26 "HK" "NICHE"  "ZULU"     ""        "JUN 25")
+    ("base"        "radium"     26 "HK" "NICHE"  "ZULU"     ""        "JUN 25")
 
     ("back"        "cat"        27 "CA" "tea"    "alpha"    "aryeh"   "JUL 02")
     ("beef"        "can"        28 "C2" "noah"   "baker"    "bayit"   "JUL 09")
