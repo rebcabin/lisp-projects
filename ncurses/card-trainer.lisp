@@ -23,6 +23,7 @@
 ;;; TODO: Number the keys automatically.
 ;;; TODO: Get rid of repetition between cardkey keywords and column names.
 ;;; TODO: Replace state-nyms with states when done debugging.
+;;; TODO: Calculate "ordered" statistics
 
 ;;  _        _
 ;; | |_  ___| |_ __  ___ _ _ ___
@@ -98,33 +99,33 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
     ("fob"         "rattan"     25 "HQ" "NAIL"   "YANKEE"   ""        "JUN 18")
     ("base"        "radium"     26 "HK" "NICHE"  "ZULU"     ""        "JUN 25")
 
-    ("back"        "cat"        27 "CA" "tea"    "alpha"    "aryeh"   "JUL 02")
-    ("beef"        "can"        28 "C2" "noah"   "baker"    "bayit"   "JUL 09")
-    ("pipe"        "cam"        29 "C3" "me"     "charlie"  "gamal"   "JUL 16")
-    ("thesis"      "car"        30 "C4" "ray"    "delta"    "dalet"   "JUL 23")
-    ("toast"       "coal"       31 "C5" "law"    "echo"     "har"     "JUL 30")
-    ("dozen"       "cage"       32 "C6" "jaw"    "foxtrot"  "vered"   "AUG 06")
-    ("twosome"     "cake"       33 "C7" "key"    "golf"     "zahav"   "AUG 13")
-    ("dowser"      "cuff"       34 "C8" "fee"    "hotel"    "chamor"  "AUG 20")
-    ("diesel"      "cap"        35 "C9" "pea"    "india"    "tayas"   "AUG 27")
-    ("wood-sage"   "case"       36 "CT" "toes"   "juliet"   "yad"     "SEP 03")
-    ("tusk"        "cadet"      37 "CJ" "tot"    "kilo"     "kiseh"   "SEP 10")
-    ("adhesive"    "katana"     38 "CQ" "tan"    "lima"     "lechem"  "SEP 17")
-    ("teaspoon"    "catamaran"  39 "CK" "tam"    "mike"     "mayim"   "SEP 24")
+    ("back"        "cat"        27 "CA" "NECK"   "alpha"    "aryeh"   "JUL 02")
+    ("beef"        "can"        28 "C2" "NAVY"   "baker"    "bayit"   "JUL 09")
+    ("pipe"        "cam"        29 "C3" "NAP"    "charlie"  "gamal"   "JUL 16")
+    ("thesis"      "car"        30 "C4" "MASS"   "delta"    "dalet"   "JUL 23")
+    ("toast"       "coal"       31 "C5" "MAT"    "echo"     "har"     "JUL 30")
+    ("dozen"       "cage"       32 "C6" "MAN"    "foxtrot"  "vered"   "AUG 06")
+    ("twosome"     "cake"       33 "C7" "MAMA"   "golf"     "zahav"   "AUG 13")
+    ("dowser"      "cuff"       34 "C8" "MARE"   "hotel"    "chamor"  "AUG 20")
+    ("diesel"      "cap"        35 "C9" "MAIL"   "india"    "tayas"   "AUG 27")
+    ("wood-sage"   "case"       36 "CT" "MATCH"  "juliet"   "yad"     "SEP 03")
+    ("tusk"        "cadet"      37 "CJ" "MIKE"   "kilo"     "kiseh"   "SEP 10")
+    ("adhesive"    "katana"     38 "CQ" "MUFF"   "lima"     "lechem"  "SEP 17")
+    ("teaspoon"    "catamaran"  39 "CK" "MAP"    "mike"     "mayim"   "SEP 24")
 
-    ("tights"      "tot"        40 "DA" "tar"    "november" "nachash" "OCT 01")
-    ("teetotaler"  "tan"        41 "D2" "tail"   "oscar"    "sefer"   "OCT 08")
-    ("titan"       "tam"        42 "D3" "tissue" "papa"     "ayin"    "OCT 15")
-    ("totem"       "tar"        43 "D4" "tack"   "quebec"   "panim"   "OCT 22")
-    ("tatar"       "tail"       44 "D5" "taffy"  "romeo"    "tzippor" "OCT 29")
-    ("title"       "tissue"     45 "D6" "tap"    "sierra"   "quf"     "NOV 05")
-    ("death-watch" "tack"       46 "D7" "nose"   "tango"    "rosh"    "NOV 12")
-    ("hot-dog"     "taffy"      47 "D8" "net"    "uniform"  "shad"    "NOV 19")
-    ("auto-da-fe"  "tap"        48 "D9" "nun"    "victor"   "tanin"   "NOV 26")
-    ("teddy-bear"  "toes"       49 "DT" "name"   "whiskey"  ""        "DEC 03")
-    ("dance"       "teetotaler" 50 "DJ" "nero"   "x-ray"    ""        "DEC 10")
-    ("doughnut"    "titan"      51 "DQ" "nail"   "yankee"   ""        "DEC 17")
-    ("athenian"    "totem"      52 "DK" "niche"  "zulu"     ""        "DEC 24")
+    ("tights"      "tot"        40 "DA" "RACE"   "november" "nachash" "OCT 01")
+    ("teetotaler"  "tan"        41 "D2" "RAT"    "oscar"    "sefer"   "OCT 08")
+    ("titan"       "tam"        42 "D3" "RAIN"   "papa"     "ayin"    "OCT 15")
+    ("totem"       "tar"        43 "D4" "RAM"    "quebec"   "panim"   "OCT 22")
+    ("tatar"       "tail"       44 "D5" "REAR"   "romeo"    "tzippor" "OCT 29")
+    ("title"       "tissue"     45 "D6" "RAIL"   "sierra"   "quf"     "NOV 05")
+    ("death-watch" "tack"       46 "D7" "RASH"   "tango"    "rosh"    "NOV 12")
+    ("hot-dog"     "taffy"      47 "D8" "RACK"   "uniform"  "shad"    "NOV 19")
+    ("auto-da-fe"  "tap"        48 "D9" "REEF"   "victor"   "tanin"   "NOV 26")
+    ("teddy-bear"  "toes"       49 "DT" "ROPE"   "whiskey"  ""        "DEC 03")
+    ("dance"       "teetotaler" 50 "DJ" "LACE"   "x-ray"    ""        "DEC 10")
+    ("doughnut"    "titan"      51 "DQ" "LOT"    "yankee"   ""        "DEC 17")
+    ("athenian"    "totem"      52 "DK" "LANE"   "zulu"     ""        "DEC 24")
     ))
 
 (defparameter *cardkeys*
@@ -146,7 +147,8 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
          *cardhash*)
         ck))
 
-;; Put all the cardkeys in the hashtable. 
+;; Put all the cardkeys in the hashtable.
+
 (map nil #'install-cardkey *cardkeys*)
 
 ;;     _        _
@@ -157,7 +159,7 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 ;; The deck is a potentially scrambled array of pip strings.
 
 (defun ordered-deck ()
-  (let ((suits #(:S :H :D :C))
+  (let ((suits #(:S :H :C :D))
         (pips  #(:A :2 :3 :4 :5 :6 :7 :8 :9 :T :J :Q :K))
         (d (make-array (* +nsuits+ +npips+) :element-type 'string)))
     (do ((s 0 (1+ s)))
@@ -171,9 +173,11 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
     d))
 
 ;; Start off with an ordered deck.
+
 (defparameter *deck* (ordered-deck))
 
 ;;; Fisher-Yates shuffle, from https://goo.gl/8fCKZL.
+
 (defun nshuffle-array (array)
   (let ((*random-state* (make-random-state t)))
     (loop for i from (length array) downto 2
@@ -183,13 +187,35 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
                       (aref array (1- i)))
           finally (return array))))
 
+;;; Order statistics: a perfectly ordered deck has order-statistics zero.
+
+(defun pairwise (binary-fn lyst)
+  (let ((l (length lyst)))
+    (cond ((or (= l 1) (= l 0)) nil)
+          (t (mapcar binary-fn
+                     (butlast lyst)
+                     (nthcdr 1 lyst))))))
+
+(defun cards-to-nums (cards)
+  (map 'list
+       (lambda (card) (cardkey-num (gethash card *cardhash*)))
+       cards))
+
+(defun square (x) (* x x))
+
+(defun cards-to-squared-differences-1 (cards)
+  (pairwise (lambda (c1 c2) (square (- c2 c1 1)))
+            (cards-to-nums cards)))
+
+(defun order-statistic (cards)
+  (reduce #'+ (cards-to-squared-differences-1 cards)))
 ;;     _       _
 ;;  __| |_ _ _(_)_ _  __ _ ___
 ;; (_-<  _| '_| | ' \/ _` (_-<
 ;; /__/\__|_| |_|_||_\__, /__/
 ;;                   |___/
 
-;; TODO: Deprecate. This is here just to reminde me of an unpleasant discovery
+;; TODO: Deprecate. This is here just to remind me of an unpleasant discovery
 ;; process.
 
 (defun string-builder ()
@@ -256,6 +282,7 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
 
 ;; Dealing a card always starts by cyclically incrementing the index. The first
 ;; value of the index should be -1.
+
 (defparameter *current-card-index* -1)
 
 (defun reset-card-index ()
@@ -265,7 +292,7 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
   (mod (+ 1 index) modulus))
 
 ;; A state's entry function should return non-nil if the program should continue
-;; after it's done executing. Every state, even those that unconditionally exit
+;; after it's done executing. Every state, even those that unconditionally exi
 ;; the program, must have either an :unconditional-nym slot or an :out-edge-nyms
 ;; slot, but not both.
 
@@ -375,7 +402,6 @@ a practical infinity, causing _flatten_ to produce a fully flattened list."
      ,@body
      (refresh-window *standard-window*)
      ))
-
 (defmethod dump ((w window) (thing string) x y)
   (write-string-at-point w thing x y))
 
